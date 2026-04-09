@@ -1,0 +1,52 @@
+# =========================
+# Flutter / Dart
+# =========================
+.dart_tool/
+.pub/
+.packages
+build/
+
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# =========================
+# FVM
+# =========================
+# Ignorar SDK y archivos generados por FVM
+.fvm/flutter_sdk/
+.fvm/versions/
+.fvm/links/
+.fvm/release
+.fvm/version
+
+# Mantener configuración FVM
+!.fvm/fvm_config.json
+
+# =========================
+# IDEs
+# =========================
+.idea/
+*.iml
+
+# =========================
+# Android
+# =========================
+android/.gradle/
+android/local.properties
+
+# =========================
+# iOS
+# =========================
+ios/Pods/
+ios/.symlinks/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Sistema operativo
+# =========================
+.DS_Store
+Thumbs.db
