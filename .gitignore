@@ -49,3 +49,8 @@ Thumbs.db
 # FVM Version Cache
 .fvm/
 .env
+
+# Archivos locales de Qwen (no commitear)
+.qwen/
+QWEN.md
+devtools_options.yaml
