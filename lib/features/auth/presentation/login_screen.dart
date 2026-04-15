@@ -39,6 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  /// Handles the login process with local validations.
+  /// Checks for empty fields, valid email format, and minimum password length.
   Future<void> _handleLogin(
     AuthViewModel viewModel,
     BuildContext context,
@@ -46,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
+    // Field presence validation
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
@@ -53,12 +56,34 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // Email format validation (must contain @)
+    if (!email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor ingresa un email válido')),
+      );
+      return;
+    }
+
+    // Password length validation (Supabase minimum requirement is 6)
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('La contraseña debe tener al menos 6 caracteres'),
+        ),
+      );
+      return;
+    }
+
+    // Perform sign-in through the ViewModel
     await viewModel.signIn(email, password);
 
+    // After async operation, check if the widget is still in the tree
     if (context.mounted) {
       if (viewModel.isAuthenticated) {
+        // Redirect to home if login was successful
         Navigator.of(context).pushReplacementNamed('/home');
       } else if (viewModel.errorMessage != null) {
+        // Show error message from the ViewModel (repository mapped to Spanish)
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));

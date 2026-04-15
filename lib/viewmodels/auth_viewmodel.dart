@@ -57,24 +57,24 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// Inicia sesión de un usuario existente.
+  /// Signs in an existing user using email and password.
+  /// Uses the AuthRepository to handle the business logic and error mapping.
   Future<void> signIn(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await Supabase.instance.client.auth.signInWithPassword(
-        email: email.trim(),
-        password: password.trim(),
-      );
+      // Call the repository instead of Supabase directly to maintain MVVM architecture
+      await _authRepository.signIn(email.trim(), password.trim());
 
-      if (response.user != null) {
-        _currentUser = response.user;
-        _errorMessage = null;
-      }
+      // Synchronize current user state from Supabase client
+      _currentUser = Supabase.instance.client.auth.currentUser;
+      _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      // The repository returns user-friendly error messages in Spanish
+      // We remove the 'Exception: ' prefix if present
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       _currentUser = null;
     } finally {
       _isLoading = false;
