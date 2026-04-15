@@ -9,11 +9,8 @@ void main() {
     // to user-friendly messages is testable.
 
     test('should map email_rate_limit to friendly Spanish message', () {
-      final repository = AuthRepository();
-
       // We simulate an error from Supabase
       const technicalError = 'Exception: email_rate_limit: Too many attempts';
-
       String mapError(String e) {
         if (e.contains('email_rate_limit')) {
           return 'Demasiados intentos. Espera unos minutos e intenta de nuevo';
