@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../viewmodels/auth_viewmodel.dart';
 import '../../auth/domain/entities/user_role.dart';
+import '../../auth/presentation/consent_screen.dart';
 import 'home_screen.dart';
 import 'professional_home_screen.dart';
 import 'admin_home_screen.dart';
@@ -27,6 +28,13 @@ class HomeSwitcher extends StatelessWidget {
         // rebuilds and switches the root widget to LoginScreen.
         if (!authViewModel.isAuthenticated) {
           return const Scaffold();
+        }
+
+        // MANDATORY ONBOARDING: Consent Check
+        // If the user hasn't accepted the consent terms, show the ConsentScreen
+        // regardless of their role.
+        if (!authViewModel.hasAcceptedConsent) {
+          return const ConsentScreen();
         }
 
         // Routing based on Role

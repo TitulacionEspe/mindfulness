@@ -19,13 +19,18 @@ class AuthViewModel extends ChangeNotifier {
   // State variables
   User? _currentUser;
   UserRole? _userRole;
+  bool _hasAcceptedConsent = false;
   bool _isLoading = false;
   String? _errorMessage;
   bool _isSigningUp = false;
 
+  // Constant for consent versioning
+  static const String currentConsentVersion = '1.0.0';
+
   // Getters for View layer
   User? get currentUser => _currentUser;
   UserRole? get userRole => _userRole;
+  bool get hasAcceptedConsent => _hasAcceptedConsent;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _currentUser != null;
@@ -50,11 +55,18 @@ class AuthViewModel extends ChangeNotifier {
           // Fetch role for persisted session
           final userEntity = await _authRepository.getCurrentUser();
           _userRole = userEntity?.role;
+
+          // Check for consent acceptance
+          _hasAcceptedConsent = await _authRepository.hasAcceptedConsent(
+            _currentUser!.id,
+            currentConsentVersion,
+          );
         }
       } catch (e) {
         debugPrint('AuthViewModel initialization error: $e');
         _currentUser = null;
         _userRole = null;
+        _hasAcceptedConsent = false;
       }
     }
 
@@ -86,6 +98,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> signIn(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
+    _hasAcceptedConsent = false;
     notifyListeners();
 
     try {
@@ -97,12 +110,43 @@ class AuthViewModel extends ChangeNotifier {
 
       _currentUser = Supabase.instance.client.auth.currentUser;
       _userRole = userEntity.role;
+
+      // Check for consent acceptance immediately after login
+      _hasAcceptedConsent = await _authRepository.hasAcceptedConsent(
+        _currentUser!.id,
+        currentConsentVersion,
+      );
+
       _errorMessage = null;
     } catch (e) {
       // Repository already returns friendly Spanish messages
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       _currentUser = null;
       _userRole = null;
+      _hasAcceptedConsent = false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Records explicit acceptance of the ethical consent by the user.
+  Future<void> acceptConsent() async {
+    if (_currentUser == null) return;
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authRepository.saveConsent(
+        _currentUser!.id,
+        currentConsentVersion,
+      );
+      _hasAcceptedConsent = true;
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -118,6 +162,7 @@ class AuthViewModel extends ChangeNotifier {
       await Supabase.instance.client.auth.signOut();
       _currentUser = null;
       _userRole = null;
+      _hasAcceptedConsent = false;
       _errorMessage = null;
     } catch (e) {
       _errorMessage = e.toString();

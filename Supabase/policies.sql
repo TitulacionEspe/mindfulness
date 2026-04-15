@@ -41,6 +41,7 @@ DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users can delete own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
 DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can delete profiles" ON public.profiles;
 DROP POLICY IF EXISTS "Professionals can view assigned patients" ON public.profiles;
 
 -- ============================================
@@ -107,6 +108,36 @@ CREATE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION public.create_user_profile();
+
+-- ============================================
+-- RLS (Row Level Security) Policies for Consents Table
+-- ============================================
+-- Purpose: Ensure users can only manage their own ethical consents
+-- Applied to table: public.consents
+
+-- Enable RLS on consents table
+ALTER TABLE public.consents ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they already exist (idempotent)
+DROP POLICY IF EXISTS "Users can view own consents" ON public.consents;
+DROP POLICY IF EXISTS "Users can insert own consents" ON public.consents;
+
+-- 1. SELECT policy: Users can only see their own consent records
+CREATE POLICY "Users can view own consents"
+ON public.consents FOR SELECT
+USING (auth.uid() = patient_id);
+
+-- 2. INSERT policy: Users can only insert their own consent
+CREATE POLICY "Users can insert own consents"
+ON public.consents FOR INSERT
+WITH CHECK (auth.uid() = patient_id);
+
+-- Index to prevent duplicate consents for the same version by the same user
+CREATE UNIQUE INDEX IF NOT EXISTS idx_consents_unique_user_version 
+ON public.consents (patient_id, document_version);
+
+-- Grant permissions
+GRANT ALL ON public.consents TO authenticated;
 
 -- ============================================
 -- Grant permissions

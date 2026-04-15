@@ -15,4 +15,10 @@ abstract class IAuthRepository {
 
   /// Get current authenticated user, or null if not logged in.
   Future<UserEntity?> getCurrentUser();
+
+  /// Check if the user has accepted a specific version of the consent document.
+  Future<bool> hasAcceptedConsent(String userId, String documentVersion);
+
+  /// Save user's explicit acceptance of the consent terms.
+  Future<void> saveConsent(String userId, String documentVersion);
 }

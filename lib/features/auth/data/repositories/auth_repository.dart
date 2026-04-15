@@ -96,6 +96,36 @@ class AuthRepository implements IAuthRepository {
     }
   }
 
+  @override
+  Future<bool> hasAcceptedConsent(String userId, String documentVersion) async {
+    try {
+      final response = await Supabase.instance.client
+          .from('consents')
+          .select('id')
+          .eq('patient_id', userId)
+          .eq('document_version', documentVersion)
+          .maybeSingle();
+
+      return response != null;
+    } catch (e) {
+      // If error (e.g. network), assume not accepted for safety
+      return false;
+    }
+  }
+
+  @override
+  Future<void> saveConsent(String userId, String documentVersion) async {
+    try {
+      await Supabase.instance.client.from('consents').insert({
+        'patient_id': userId,
+        'document_version': documentVersion,
+        'terms_accepted': true,
+      });
+    } catch (e) {
+      throw Exception('Error al guardar el consentimiento: ${e.toString()}');
+    }
+  }
+
   /// Fetches the user role from the 'profiles' table.
   /// Defaults to [UserRole.patient] if not found or on error.
   Future<UserRole> _getUserRole(String userId) async {
