@@ -27,11 +27,17 @@ class AdminHomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.admin_panel_settings, size: 80, color: AppTheme.accentOrange),
+            const Icon(
+              Icons.admin_panel_settings,
+              size: 80,
+              color: AppTheme.accentOrange,
+            ),
             const SizedBox(height: 16),
             Text(
               'Consola de Gestión',
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 24),
+              style: Theme.of(
+                context,
+              ).textTheme.displayLarge?.copyWith(fontSize: 24),
             ),
             const SizedBox(height: 8),
             const Text('Acceso total al sistema y control de perfiles.'),

@@ -16,15 +16,14 @@ class HomeSwitcher extends StatelessWidget {
     return Consumer<AuthViewModel>(
       builder: (context, authViewModel, _) {
         // While user data or role is loading
-        if (authViewModel.isLoading || (authViewModel.isAuthenticated && authViewModel.userRole == null)) {
+        if (authViewModel.isLoading ||
+            (authViewModel.isAuthenticated && authViewModel.userRole == null)) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        // If not authenticated, we return an empty scaffold while main.dart 
+        // If not authenticated, we return an empty scaffold while main.dart
         // rebuilds and switches the root widget to LoginScreen.
         if (!authViewModel.isAuthenticated) {
           return const Scaffold();

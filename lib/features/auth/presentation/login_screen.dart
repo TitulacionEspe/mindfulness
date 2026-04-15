@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
       }
-      // Note: No Navigator.push needed here. The root Consumer in main.dart 
+      // Note: No Navigator.push needed here. The root Consumer in main.dart
       // will automatically switch to HomeSwitcher when isAuthenticated is true.
     }
   }
