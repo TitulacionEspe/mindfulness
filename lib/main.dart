@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/supabase_config.dart';
+import 'core/theme/app_theme.dart';
+import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/presentation/register_screen.dart';
+import 'features/home/presentation/home_screen.dart';
+import 'viewmodels/auth_viewmodel.dart';
 
-/// Application entry point.
-/// Initializes Supabase before running the app.
+/// Punto de entrada de la aplicación.
+/// Carga el archivo .env e inicializa Supabase antes de ejecutar la app.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Supabase with configuration placeholders.
-  // Replace values using --dart-define or a secure dotenv loader in development.
+  // Carga el archivo .env (lee SUPABASE_URL y SUPABASE_ANON_KEY)
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (_) {
+    // .env no encontrado — SupabaseConfig.isConfigured lo detectará
+  }
+
+  // Inicializa Supabase con los valores del .env
   await Supabase.initialize(
     url: SupabaseConfig.url,
     anonKey: SupabaseConfig.anonKey,
@@ -23,80 +36,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Tesis Mindfulness',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
-      // Keep Spanish UI strings; business logic and comments are in English.
-      home: const MainScreen(),
-    );
-  }
-}
-
-// --- UI LAYER (Spanish text for end users) ---
-
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
-  }
-
-  // Builds the top app bar.
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: const Text('Mindfulness App'),
-      backgroundColor: Colors.teal.shade100,
-      centerTitle: true,
-    );
-  }
-
-  // Builds the main body with Spanish UI strings.
-  Widget _buildBody() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildHeaderSection(),
-            const SizedBox(height: 30),
-            _buildActionButtons(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderSection() {
-    return const Column(
-      children: [
-        Icon(Icons.self_improvement, size: 80, color: Colors.teal),
-        SizedBox(height: 10),
-        Text(
-          'Bienvenido a tu sesión',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        ),
+    return MultiProvider(
+      providers: [
+        // Proporciona AuthViewModel globalmente para toda la app.
+        ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
       ],
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return ElevatedButton.icon(
-      onPressed: () => print('Iniciando meditación...'),
-      icon: const Icon(Icons.play_arrow),
-      label: const Text('Comenzar Meditación'),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Mindfulness - Gestión del Sueño',
+        theme: AppTheme.lightTheme,
+        // Decide pantalla inicial según el estado de autenticación.
+        home: Consumer<AuthViewModel>(
+          builder: (context, authViewModel, _) {
+            if (authViewModel.isAuthenticated) {
+              return const HomeScreen();
+            } else {
+              return const LoginScreen();
+            }
+          },
+        ),
+        // Rutas nombradas para navegación.
+        routes: {
+          '/login': (_) => const LoginScreen(),
+          '/register': (_) => const RegisterScreen(),
+          '/home': (_) => const HomeScreen(),
+        },
       ),
     );
   }
