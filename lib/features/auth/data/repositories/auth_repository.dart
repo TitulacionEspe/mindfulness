@@ -9,12 +9,19 @@ import '../../domain/repositories/i_auth_repository.dart';
 /// Profile creation is handled by the database trigger (on_auth_user_created).
 class AuthRepository implements IAuthRepository {
   @override
-  Future<UserEntity> register(String email, String password) async {
+  Future<UserEntity> register(
+    String email,
+    String password,
+    String fullName,
+  ) async {
     try {
       // Sign up user in Supabase Auth.
+      // We pass the full_name in the data field (raw_user_meta_data)
+      // to trigger the profile creation in the database.
       final authResponse = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
+        data: {'full_name': fullName.trim()},
       );
 
       if (authResponse.user == null) {

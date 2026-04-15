@@ -14,6 +14,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -23,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -33,12 +35,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     AuthViewModel viewModel,
     BuildContext context,
   ) async {
+    final fullName = _fullNameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
     // Validations
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (fullName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
       );
@@ -77,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    await viewModel.signUp(email, password);
+    await viewModel.signUp(email, password, fullName);
 
     if (context.mounted) {
       if (viewModel.isSigningUp == false && viewModel.errorMessage == null) {
@@ -150,6 +156,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Full Name field
+                    Text(
+                      'Nombre Completo',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: _fullNameController,
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        hintText: 'Ej. Juan Pérez',
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: AppTheme.primaryTeal,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
                     // Email field
                     Text(
                       'Correo Institucional',

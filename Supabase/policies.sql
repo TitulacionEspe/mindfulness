@@ -95,10 +95,35 @@ USING (public.is_admin());
 -- ============================================
 CREATE OR REPLACE FUNCTION public.create_user_profile()
 RETURNS TRIGGER AS $$
+DECLARE
+    default_role public.user_role := 'patient';
+    default_segment public.user_segment := 'student';
+    metadata_full_name TEXT;
 BEGIN
-  INSERT INTO public.profiles (id, role, segment, full_name, is_active)
-  VALUES (NEW.id, 'patient', 'student', NULL, TRUE);
-  RETURN NEW;
+    -- Extract metadata with safety checks
+    IF NEW.raw_user_meta_data IS NOT NULL THEN
+        metadata_full_name := NEW.raw_user_meta_data ->> 'full_name';
+        
+        -- Optional: Override defaults if provided in metadata
+        IF NEW.raw_user_meta_data ? 'role' THEN
+            default_role := (NEW.raw_user_meta_data ->> 'role')::public.user_role;
+        END IF;
+        
+        IF NEW.raw_user_meta_data ? 'segment' THEN
+            default_segment := (NEW.raw_user_meta_data ->> 'segment')::public.user_segment;
+        END IF;
+    END IF;
+
+    -- Insert into public.profiles
+    INSERT INTO public.profiles (id, role, segment, full_name, is_active)
+    VALUES (
+        NEW.id, 
+        default_role, 
+        default_segment, 
+        metadata_full_name, 
+        TRUE
+    );
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

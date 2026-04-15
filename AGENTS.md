@@ -165,13 +165,43 @@ Tablas principales:
 
 ---
 
-## 🔁 Flujo de Desarrollo
+## 🔄 Flujo de Desarrollo y Calidad (CI/CD Local)
 
-1. Crear historia en Jira
-2. Descomponer en subtareas
-3. Implementar en MVVM
-4. Validar funcionalidad
-5. Merge a develop
+Para garantizar la estabilidad del proyecto y que los Pull Requests pasen los checks de GitHub Actions, **es obligatorio** validar los cambios localmente antes de realizar un `push`.
+
+### 🛠️ Comandos de Validación Obligatoria
+
+Antes de enviar tus cambios, ejecuta esta secuencia de comandos (usando `fvm`):
+
+1. **Formato:** Corregir el estilo del código.
+   ```bash
+   fvm dart format .
+   ```
+2. **Análisis Estático:** Verificar que no haya errores de linting o lógica.
+   ```bash
+   fvm flutter analyze
+   ```
+3. **Pruebas:** Asegurar que no hay regresiones.
+   ```bash
+   fvm flutter test
+   ```
+
+### 🚩 Reglas de Oro
+
+- **No Push con Errores:** Nunca hagas `push` si alguno de los comandos anteriores falla. Arregla los problemas primero.
+- **Consistencia de SDK:** Usa siempre `fvm` para ejecutar comandos de Flutter/Dart para asegurar que todos usamos la misma versión.
+- **Commits Limpios:** Si el CI falla por formato, aplica `dart format .` y añade ese cambio a tu commit.
+
+---
+
+## 🔁 Flujo de Trabajo en Jira
+
+1. Crear historia en Jira.
+2. Descomponer en subtareas.
+3. Implementar siguiendo el patrón MVVM.
+4. **Validar CI localmente (Format, Analyze, Test).**
+5. Crear PR y esperar a que el CI de GitHub confirme el éxito.
+6. Merge a develop/main.
 
 ---
 

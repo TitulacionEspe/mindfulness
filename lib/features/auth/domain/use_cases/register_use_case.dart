@@ -10,13 +10,20 @@ class RegisterUseCase {
 
   /// Execute registration.
   /// Throws Exception if:
+  /// - El nombre completo está vacío
   /// - El correo electrónico tiene formato inválido
   /// - La contraseña tiene menos de 6 caracteres
   /// - Supabase rechaza el registro (correo ya registrado, error de red, etc.)
   Future<UserEntity> call({
     required String email,
     required String password,
+    required String fullName,
   }) async {
+    // Validate fullName
+    if (fullName.trim().isEmpty) {
+      throw Exception('El nombre completo es obligatorio');
+    }
+
     // Validate email format
     if (!_isValidEmail(email)) {
       throw Exception('El correo electrónico no tiene un formato válido');
@@ -28,7 +35,7 @@ class RegisterUseCase {
     }
 
     // Delegate to repository (handles Supabase Auth + profile creation via trigger)
-    return await _repository.register(email, password);
+    return await _repository.register(email, password, fullName.trim());
   }
 
   /// Simple email validation

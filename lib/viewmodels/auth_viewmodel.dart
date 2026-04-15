@@ -75,17 +75,21 @@ class AuthViewModel extends ChangeNotifier {
 
   /// Signs up a new user (uses domain use case).
   /// User profile is auto-created by DB trigger.
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp(String email, String password, String fullName) async {
     _isLoading = true;
     _isSigningUp = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      await _registerUseCase(email: email.trim(), password: password.trim());
+      await _registerUseCase(
+        email: email.trim(),
+        password: password.trim(),
+        fullName: fullName.trim(),
+      );
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isLoading = false;
       _isSigningUp = false;

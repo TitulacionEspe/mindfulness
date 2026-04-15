@@ -4,8 +4,9 @@ import '../entities/user_entity.dart';
 /// Implementation in Data Layer must follow this contract.
 abstract class IAuthRepository {
   /// Register a new user with email and password.
+  /// Includes full_name for profile creation.
   /// Throws exception if email already exists or password too short.
-  Future<UserEntity> register(String email, String password);
+  Future<UserEntity> register(String email, String password, String fullName);
 
   /// Sign in existing user.
   Future<UserEntity> signIn(String email, String password);
