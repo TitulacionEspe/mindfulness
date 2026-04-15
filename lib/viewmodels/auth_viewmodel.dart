@@ -1,44 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/config/supabase_config.dart';
 import '../features/auth/data/repositories/auth_repository.dart';
+import '../features/auth/domain/entities/user_role.dart';
 import '../features/auth/domain/use_cases/register_use_case.dart';
 
-/// AuthViewModel gestiona el estado de autenticación y la sesión del usuario
-/// (patrón MVVM).
-/// Responsabilidades:
-/// - Usa casos de uso del dominio para registro e inicio de sesión
-/// - Mantiene la sesión del usuario actual
-/// - Rastrea estados de carga y error (para feedback a la UI)
-/// - Expone el estado de autenticación a las Vistas (desacopla lógica de UI)
+/// AuthViewModel manages authentication state and user session (MVVM pattern).
+/// Responsibilities:
+/// - Uses domain use cases for signup and login
+/// - Maintains current user session and role
+/// - Tracks loading and error states for UI feedback
+/// - Exposes authentication state to Views (decouples UI from logic)
 class AuthViewModel extends ChangeNotifier {
   late RegisterUseCase _registerUseCase;
   late AuthRepository _authRepository;
 
-  // Variables de estado
+  // State variables
   User? _currentUser;
+  UserRole? _userRole;
   bool _isLoading = false;
   String? _errorMessage;
   bool _isSigningUp = false;
 
-  // Getters para la capa de Vista
+  // Getters for View layer
   User? get currentUser => _currentUser;
+  UserRole? get userRole => _userRole;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _currentUser != null;
   bool get isSigningUp => _isSigningUp;
 
-  /// Inicializa el ViewModel con casos de uso y repositorios.
+  // Convenience getters for RBAC
+  bool get isPatient => _userRole == UserRole.patient;
+  bool get isProfessional => _userRole == UserRole.professional;
+  bool get isAdmin => _userRole == UserRole.admin;
+
+  /// Initializes the ViewModel with use cases and repositories.
   Future<void> initialize() async {
     _authRepository = AuthRepository();
     _registerUseCase = RegisterUseCase(_authRepository);
-    _currentUser = Supabase.instance.client.auth.currentUser;
+
+    // Only try to access Supabase if it was properly initialized in main()
+    if (SupabaseConfig.isConfigured) {
+      try {
+        _currentUser = Supabase.instance.client.auth.currentUser;
+
+        if (_currentUser != null) {
+          // Fetch role for persisted session
+          final userEntity = await _authRepository.getCurrentUser();
+          _userRole = userEntity?.role;
+        }
+      } catch (e) {
+        debugPrint('AuthViewModel initialization error: $e');
+        _currentUser = null;
+        _userRole = null;
+      }
+    }
+
     notifyListeners();
   }
 
-  /// Registra un nuevo usuario con correo y contraseña (usa el caso de uso del dominio).
-  /// Al completar el registro, el perfil se crea automáticamente por trigger de BD.
-  /// El usuario NO se loguea automáticamente (debe ir al login).
+  /// Signs up a new user (uses domain use case).
+  /// User profile is auto-created by DB trigger.
   Future<void> signUp(String email, String password) async {
     _isLoading = true;
     _isSigningUp = true;
@@ -58,31 +82,34 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   /// Signs in an existing user using email and password.
-  /// Uses the AuthRepository to handle the business logic and error mapping.
+  /// Uses the AuthRepository to handle business logic, role fetching, and error mapping.
   Future<void> signIn(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      // Call the repository instead of Supabase directly to maintain MVVM architecture
-      await _authRepository.signIn(email.trim(), password.trim());
+      // Call repository to handle logic and role fetching
+      final userEntity = await _authRepository.signIn(
+        email.trim(),
+        password.trim(),
+      );
 
-      // Synchronize current user state from Supabase client
       _currentUser = Supabase.instance.client.auth.currentUser;
+      _userRole = userEntity.role;
       _errorMessage = null;
     } catch (e) {
-      // The repository returns user-friendly error messages in Spanish
-      // We remove the 'Exception: ' prefix if present
+      // Repository already returns friendly Spanish messages
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
       _currentUser = null;
+      _userRole = null;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Cierra la sesión del usuario actual.
+  /// Signs out the current user and clears session state.
   Future<void> signOut() async {
     _isLoading = true;
     notifyListeners();
@@ -90,6 +117,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       await Supabase.instance.client.auth.signOut();
       _currentUser = null;
+      _userRole = null;
       _errorMessage = null;
     } catch (e) {
       _errorMessage = e.toString();
@@ -99,7 +127,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// Limpia el mensaje de error (llamar después de que el usuario descarta el snackbar).
+  /// Clears error message (call after user dismisses feedback).
   void clearError() {
     _errorMessage = null;
     notifyListeners();

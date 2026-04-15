@@ -79,15 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // After async operation, check if the widget is still in the tree
     if (context.mounted) {
-      if (viewModel.isAuthenticated) {
-        // Redirect to home if login was successful
-        Navigator.of(context).pushReplacementNamed('/home');
-      } else if (viewModel.errorMessage != null) {
+      if (viewModel.errorMessage != null) {
         // Show error message from the ViewModel (repository mapped to Spanish)
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
       }
+      // Note: No Navigator.push needed here. The root Consumer in main.dart 
+      // will automatically switch to HomeSwitcher when isAuthenticated is true.
     }
   }
 

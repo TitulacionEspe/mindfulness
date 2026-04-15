@@ -1,19 +1,17 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/user_entity.dart';
+import '../../domain/entities/user_role.dart';
 import '../../domain/repositories/i_auth_repository.dart';
 
-/// Implementación concreta de IAuthRepository (Capa de Datos).
-/// Maneja llamadas a Supabase Auth y mapeo de entidades.
-/// La creación del perfil la realiza el trigger de base de datos
-/// (on_auth_user_created), no es necesaria inserción manual desde Flutter.
+/// Concrete implementation of IAuthRepository (Data Layer).
+/// Handles calls to Supabase Auth and entity mapping.
+/// Profile creation is handled by the database trigger (on_auth_user_created).
 class AuthRepository implements IAuthRepository {
   @override
   Future<UserEntity> register(String email, String password) async {
     try {
       // Sign up user in Supabase Auth.
-      // The database trigger (on_auth_user_created) automatically
-      // creates the profile row — no manual insert needed from Flutter.
       final authResponse = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
@@ -23,7 +21,8 @@ class AuthRepository implements IAuthRepository {
         throw Exception('Error en registro: no se creó el usuario');
       }
 
-      return _mapSupabaseUserToEntity(authResponse.user!);
+      // After registration, the role is default ('patient')
+      return _mapSupabaseUserToEntity(authResponse.user!, UserRole.patient);
     } catch (e) {
       final message = e.toString();
       // Map common Supabase errors to user-friendly Spanish messages
@@ -59,7 +58,10 @@ class AuthRepository implements IAuthRepository {
         throw Exception('Credenciales inválidas');
       }
 
-      return _mapSupabaseUserToEntity(authResponse.user!);
+      // Fetch the role from the profiles table
+      final role = await _getUserRole(authResponse.user!.id);
+
+      return _mapSupabaseUserToEntity(authResponse.user!, role);
     } catch (e) {
       final message = e.toString();
       if (message.contains('Invalid login') ||
@@ -84,19 +86,41 @@ class AuthRepository implements IAuthRepository {
     try {
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) return null;
-      return _mapSupabaseUserToEntity(user);
+
+      // Fetch the role from the profiles table
+      final role = await _getUserRole(user.id);
+
+      return _mapSupabaseUserToEntity(user, role);
     } catch (e) {
       return null;
     }
   }
 
-  /// Convert Supabase User to domain UserEntity
-  UserEntity _mapSupabaseUserToEntity(User user) {
+  /// Fetches the user role from the 'profiles' table.
+  /// Defaults to [UserRole.patient] if not found or on error.
+  Future<UserRole> _getUserRole(String userId) async {
+    try {
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .single();
+
+      return UserRole.fromString(data['role'] as String?);
+    } catch (e) {
+      // For safety, fallback to patient role if profile cannot be read
+      return UserRole.patient;
+    }
+  }
+
+  /// Convert Supabase User to domain UserEntity with explicitly provided role
+  UserEntity _mapSupabaseUserToEntity(User user, UserRole role) {
     return UserEntity(
       id: user.id,
       email: user.email ?? '',
       fullName: user.userMetadata?['full_name'],
       createdAt: _parseDateTime(user.createdAt),
+      role: role,
     );
   }
 

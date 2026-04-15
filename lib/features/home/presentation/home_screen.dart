@@ -43,10 +43,8 @@ class _HomeScreenState extends State<HomeScreen>
           Consumer<AuthViewModel>(
             builder: (context, viewModel, _) => IconButton(
               onPressed: () async {
+                // Just call signOut, the Consumer in main.dart handles redirection
                 await viewModel.signOut();
-                if (context.mounted) {
-                  Navigator.of(context).pushReplacementNamed('/login');
-                }
               },
               icon: Icon(Icons.logout),
             ),
