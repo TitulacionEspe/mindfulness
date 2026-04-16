@@ -1,55 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../viewmodels/psicologa_nav_viewmodel.dart';
+import '../../../../core/theme/app_colors.dart'; // Tus colores
+
+// Importa tus vistas
+import '../../../../views/modulo_psicologa/home_psicologa_view.dart';
+import '../../../../views/modulo_psicologa/pacientes_view.dart';
+import '../../../../views/modulo_psicologa/asignar_view.dart';
+import '../../../../views/modulo_psicologa/actividades_view.dart';
+import '../../../../views/modulo_psicologa/citas_view.dart';
 
 class ProfessionalHomeScreen extends StatelessWidget {
   const ProfessionalHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // 1. Enganchamos ambos mundos
     final authViewModel = Provider.of<AuthViewModel>(context);
+    final navVM = Provider.of<PsicologaNavViewModel>(context);
+
+    // 2. Tus 5 páginas
+    final List<Widget> pages = [
+      const HomePsicologaView(),
+      const PacientesView(),
+      const AsignarView(),
+      const ActividadesView(),
+      const CitasView(),
+    ];
 
     return Scaffold(
+      // Mantenemos el AppBar del compañero para el Logout, pero con tu estilo
       appBar: AppBar(
-        title: const Text('Panel del Profesional'),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: const Text('Panel Profesional', style: TextStyle(color: Colors.white, fontSize: 18)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: AppColors.accent),
             onPressed: () async {
-              // Just call signOut, the Consumer in main.dart handles redirection
-              await authViewModel.signOut();
+              await authViewModel.signOut(); // Funcionalidad de tu compañero
             },
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.assignment_ind,
-              size: 80,
-              color: AppTheme.primaryTeal,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Bienvenido, Profesional',
-              style: Theme.of(
-                context,
-              ).textTheme.displayLarge?.copyWith(fontSize: 24),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Aquí podrás gestionar las asignaciones de tus pacientes.',
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Funcionalidad en desarrollo',
-              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
-            ),
-          ],
-        ),
+      // 3. Tu cuerpo con IndexedStack
+      body: IndexedStack(
+        index: navVM.currentIndex,
+        children: pages,
+      ),
+      // 4. Tu barra de navegación
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: navVM.currentIndex,
+        onTap: (index) => navVM.updateIndex(index),
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: AppColors.cardBackground,
+        selectedItemColor: AppColors.accent,
+        unselectedItemColor: AppColors.textSecondary,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Paciente'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: 'Cuestionario'),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Actividades'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Cita'),
+        ],
       ),
     );
   }

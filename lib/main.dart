@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'viewmodels/psicologa_nav_viewmodel.dart';
 import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
@@ -48,6 +48,10 @@ class MyApp extends StatelessWidget {
       providers: [
         // The ViewModel will handle its own initialization safely
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
+        //barra
+        // AGREGAMOS TU VIEWMODEL AQUÍ:
+      ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
+      //fin
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
