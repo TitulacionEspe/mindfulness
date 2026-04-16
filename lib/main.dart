@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+// En lugar de usar 'package:tesis_mindfulness/...'
+import 'viewmodels/psicologa_nav_view_model.dart';
 
 // Importaciones de tus archivos (Ajusta las rutas según tu carpetas)
 import 'core/config/supabase_config.dart';
