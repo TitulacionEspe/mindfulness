@@ -22,8 +22,6 @@ class StatsCard extends StatelessWidget {
     // Usamos LayoutBuilder para que se adapte al tamaño de la pantalla (Infinix)
     return LayoutBuilder(
       builder: (context, constraints) {
-        
-
         return Container(
           // Diseño de la tarjeta blanca según el mockup
           padding: const EdgeInsets.all(15),

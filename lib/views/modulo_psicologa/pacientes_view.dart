@@ -19,9 +19,9 @@ class PacientesView extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            // 1. BANNER SUPERIOR 
+            // 1. BANNER SUPERIOR
             // Asegúrate que el componente se llame PacientBar o importa el correcto
-            const PacientBar(), 
+            const PacientBar(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -74,7 +74,7 @@ class PacientesView extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // 2. REGISTRO DE DÍAS
                   const DayRegistry(),
 
