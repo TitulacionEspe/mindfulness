@@ -1,23 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
-import 'pacientes/components/patient_search_bar.dart';
-import 'pacientes/components/patient_filter_row.dart';
-import 'pacientes/components/patient_card.dart';
-
-import 'pacientes/components/patient_header.dart';
-import 'pacientes/components/patient_search_row.dart';
-import 'pacientes/components/pacient_bar.dart';
-
-import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-
-// Importación de tus componentes modulares
-
-import 'pacientes/components/day_registry.dart';
+// Importación de componentes realmente utilizados
+import 'pacientes/components/pacient_bar.dart'; // Verifica si este es tu Banner
 import 'pacientes/components/patient_search_row.dart';
 import 'pacientes/components/status_filters.dart';
 import 'pacientes/components/patient_card_white.dart';
+import 'pacientes/components/day_registry.dart';
 
 class PacientesView extends StatelessWidget {
   const PacientesView({super.key});
@@ -25,15 +14,14 @@ class PacientesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Fondo oscuro de la app
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            // 1. BANNER SUPERIOR (Imagen + Título)
-            const PacienBanner(),
-
-            // Contenedor para el resto de elementos con margen lateral
+            // 1. BANNER SUPERIOR 
+            // Asegúrate que el componente se llame PacientBar o importa el correcto
+            const PacientBar(), 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -41,12 +29,12 @@ class PacientesView extends StatelessWidget {
                 children: [
                   const SizedBox(height: 20),
 
-                  // 3. FILA DE BÚSQUEDA (Botón circular + Buscador)
+                  // 3. FILA DE BÚSQUEDA
                   const PatientSearchRow(),
 
                   const SizedBox(height: 20),
 
-                  // 4. FILTROS DE ESTADO (Realizados / No realizados)
+                  // 4. FILTROS DE ESTADO
                   const StatusFilters(),
 
                   const SizedBox(height: 25),
@@ -63,11 +51,9 @@ class PacientesView extends StatelessWidget {
 
                   const SizedBox(height: 15),
 
-                  // 6. LISTA DE TARJETAS BLANCAS
-                  // Usamos ListView.builder en el futuro para Supabase
+                  // 6. LISTA DE TARJETAS
                   ListView(
-                    shrinkWrap:
-                        true, // Para que funcione dentro de SingleChildScrollView
+                    shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: const [
                       PatientCardWhite(
@@ -88,7 +74,8 @@ class PacientesView extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // 2. REGISTRO DE DÍAS (Sección Blanca)
+                  
+                  // 2. REGISTRO DE DÍAS
                   const DayRegistry(),
 
                   const SizedBox(height: 25),

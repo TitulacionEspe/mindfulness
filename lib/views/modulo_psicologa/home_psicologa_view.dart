@@ -76,7 +76,7 @@ class HomePsicologaView extends StatelessWidget {
       // Botón flotante para Chat/Compartir (opcional según imagen)
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Colors.white.withOpacity(0.9),
+        backgroundColor: Colors.white.withValues(alpha: 0.9),
         child: const Icon(Icons.chat_bubble_outline, color: Colors.black87),
       ),
     );

@@ -20,7 +20,7 @@ class CuestioBanner extends StatelessWidget {
       child: Stack(
         children: [
           // Capa oscura para que el texto resalte
-          Container(color: Colors.black.withOpacity(0.3)),
+          Container(color: Colors.black.withValues(alpha: 0.3)),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -35,7 +35,7 @@ class CuestioBanner extends StatelessWidget {
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: const Column(

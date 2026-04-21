@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class PacienBanner extends StatelessWidget {
-  const PacienBanner({super.key});
+class PacientBar extends StatelessWidget {
+  const PacientBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 220, // Altura según el mockup
       width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
-        image: const DecorationImage(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+        image: DecorationImage(
           image: NetworkImage(
             'https://www.lavanguardia.com/files/image_449_220/files/fp/uploads/2022/03/05/6223a44538bd2.r_d.3252-1998.jpeg',
           ), // Imagen de oficina/psicología
@@ -19,8 +19,8 @@ class PacienBanner extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Capa oscura para que el texto resalte
-          Container(color: Colors.black.withOpacity(0.3)),
+          // 1. Capa oscura con la nueva función .withValues (Para pasar el CI)
+          Container(color: Colors.black.withValues(alpha: 0.3)),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -35,7 +35,8 @@ class PacienBanner extends StatelessWidget {
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    // 2. Usando .withValues aquí también
+                    color: Colors.white.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: const Column(

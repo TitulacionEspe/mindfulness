@@ -27,7 +27,7 @@ class PatientCard extends StatelessWidget {
           // Icono/Imagen circular del paciente
           CircleAvatar(
             radius: 24,
-            backgroundColor: AppColors.accent.withOpacity(0.2),
+            backgroundColor: AppColors.accent.withValues(alpha: 0.2),
             child: const Icon(Icons.person, color: AppColors.accent),
           ),
           const SizedBox(width: 16),
@@ -57,7 +57,7 @@ class PatientCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: Colors.white.withOpacity(0.05),
+                    backgroundColor: Colors.white.withValues(alpha: 0.05),
                     valueColor: const AlwaysStoppedAnimation<Color>(
                       Color(0xFF76C121),
                     ),
