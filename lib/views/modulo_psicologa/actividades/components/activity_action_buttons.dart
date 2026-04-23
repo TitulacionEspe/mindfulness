@@ -8,7 +8,7 @@ class ActivityActionButtons extends StatelessWidget {
   void _goToResources(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecursosAudioView()),
+      MaterialPageRoute(builder: (context) => RecursosView()),
     );
 
     // Navigator.push(context, MaterialPageRoute(builder: (context) => TuPantallaDeRecursos()));
