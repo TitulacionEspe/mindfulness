@@ -89,7 +89,7 @@ class _FavoritosViewState extends State<FavoritosView> {
               label: const Text("Todos"),
               selected: viewModel.selectedCategory == null,
               onSelected: (_) => viewModel.filterByCategory(null),
-              selectedColor: Colors.indigo.withOpacity(0.2),
+              selectedColor: Colors.indigo.withValues(alpha: 0.2),
               checkmarkColor: Colors.indigo,
             ),
           ),
@@ -101,7 +101,7 @@ class _FavoritosViewState extends State<FavoritosView> {
                 label: Text(cat),
                 selected: viewModel.selectedCategory == cat,
                 onSelected: (_) => viewModel.filterByCategory(cat),
-                selectedColor: Colors.teal.withOpacity(0.2),
+                selectedColor: Colors.teal.withValues(alpha: 0.2),
                 checkmarkColor: Colors.teal,
               ),
             );

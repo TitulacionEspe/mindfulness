@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // Importante para debugPrint y kDebugMode
 import 'package:just_audio/just_audio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -49,22 +49,30 @@ class FreesoundViewModel extends ChangeNotifier {
     final session = Supabase.instance.client.auth.currentSession;
     final user = Supabase.instance.client.auth.currentUser;
 
-    print("--- 🛡️ DEBUG AUTH ---");
+    // Solo imprimimos si estamos en modo debug (desarrollo)
+    if (kDebugMode) {
+      debugPrint("--- 🛡️ DEBUG AUTH ---");
+      if (session == null) {
+        debugPrint(
+          "❌ ERROR: No hay sesión activa. El token no existe o expiró.",
+        );
+      } else {
+        debugPrint("✅ Sesión activa hasta: ${session.expiresAt}");
+        debugPrint("🔑 Token: ${session.accessToken.substring(0, 10)}...");
+      }
+    }
+
     if (session == null) {
-      print("❌ ERROR: No hay sesión activa. El token no existe o expiró.");
       throw Exception("Sesión expirada. Por favor, re-inicia sesión.");
-    } else {
-      print("✅ Sesión activa hasta: ${session.expiresAt}");
-      print("🔑 Token: ${session.accessToken.substring(0, 10)}...");
     }
 
     if (user == null) {
-      print("❌ ERROR: currentUser es NULL");
+      debugPrint("❌ ERROR: currentUser es NULL");
       throw Exception("Debes estar logueado para guardar favoritos");
     }
-    print("👤 ID Usuario: ${user.id}");
 
-    // Construcción del objeto
+    debugPrint("👤 ID Usuario: ${user.id}");
+
     final favorite = ProfessionalFavorite(
       professionalId: user.id,
       externalId: sound.id,
@@ -74,21 +82,19 @@ class FreesoundViewModel extends ChangeNotifier {
       category: category,
     );
 
-    print("📝 Intentando insertar en Supabase: ${favorite.toJson()}");
+    debugPrint("📝 Intentando insertar en Supabase: ${favorite.toJson()}");
 
     try {
       await _favoritesService.saveFavorite(favorite);
-      print("🚀 EXITO: ¡Guardado en la tabla professional_favorites!");
+      debugPrint("🚀 EXITO: ¡Guardado en la tabla professional_favorites!");
     } catch (e) {
-      print("🔥 ERROR AL GUARDAR: $e");
+      debugPrint("🔥 ERROR AL GUARDAR: $e");
 
-      // Si el error es un '403', es casi seguro que es RLS
       if (e.toString().contains("403")) {
-        print(
+        debugPrint(
           "💡 TIP: El error 403 suele indicar que el RLS está bloqueando el INSERT.",
         );
       }
-
       throw Exception("Error al guardar: $e");
     }
   }
@@ -105,7 +111,7 @@ class FreesoundViewModel extends ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      print("🎵 Error de Audio: $e");
+      debugPrint("🎵 Error de Audio: $e");
     }
   }
 
