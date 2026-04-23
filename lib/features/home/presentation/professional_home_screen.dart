@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../core/theme/app_colors.dart'; // Tus colores
 import '../../../../viewmodels/auth_viewmodel.dart';
 import '../../../../viewmodels/psicologa_nav_viewmodel.dart';
-import '../../../../core/theme/app_colors.dart'; // Tus colores
-
+import '../../../../views/modulo_psicologa/actividades_view.dart';
+import '../../../../views/modulo_psicologa/asignar_view.dart';
+import '../../../../views/modulo_psicologa/citas_view.dart';
 // Importa tus vistas
 import '../../../../views/modulo_psicologa/home_psicologa_view.dart';
 import '../../../../views/modulo_psicologa/pacientes_view.dart';
-import '../../../../views/modulo_psicologa/asignar_view.dart';
-import '../../../../views/modulo_psicologa/actividades_view.dart';
-import '../../../../views/modulo_psicologa/citas_view.dart';
 
 class ProfessionalHomeScreen extends StatelessWidget {
   const ProfessionalHomeScreen({super.key});

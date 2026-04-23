@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:mindfulness_app/views/modulo_psicologa/actividades/components/activity_action_buttons.dart';
 
+import '../../core/theme/app_colors.dart';
+import 'actividades/components/activi_banner.dart';
+import 'actividades/components/activity_item_card.dart';
 // Importamos los componentes locales
 import 'actividades/components/activity_search.dart';
 import 'actividades/components/category_filters.dart';
-import 'actividades/components/activity_item_card.dart';
-import 'actividades/components/activi_banner.dart';
 
 class ActividadesView extends StatelessWidget {
   const ActividadesView({super.key});
@@ -28,6 +29,14 @@ class ActividadesView extends StatelessWidget {
                 children: [
                   // 1. Buscador
                   const ActivitySearch(),
+
+                  const SizedBox(height: 30),
+
+                  // Dentro de tu Column:
+                  const SizedBox(height: 30),
+
+                  // 2. Botones de Acción (En lugar de CategoryFilters)
+                  const ActivityActionButtons(),
 
                   const SizedBox(height: 30),
 

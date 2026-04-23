@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/favorites_viewmodel.dart';
+import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/freesound_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'viewmodels/psicologa_nav_viewmodel.dart';
+
 import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
+import 'viewmodels/psicologa_nav_viewmodel.dart';
 import 'viewmodels/sleep_habits_viewmodel.dart';
 
 /// App Entry Point.
@@ -49,6 +52,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
+        ChangeNotifierProvider(create: (_) => FreesoundViewModel()),
+
+        ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
+        //fin
         ChangeNotifierProvider(create: (_) => SleepHabitsViewModel()),
       ],
       child: MaterialApp(
