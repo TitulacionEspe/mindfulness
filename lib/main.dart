@@ -12,6 +12,7 @@ import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'viewmodels/psicologa_nav_viewmodel.dart';
+import 'viewmodels/sleep_habits_viewmodel.dart';
 
 /// App Entry Point.
 Future<void> main() async {
@@ -49,15 +50,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // The ViewModel will handle its own initialization safely
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
-        //barra
-        // AGREGAMOS TU VIEWMODEL AQUÍ:
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
         ChangeNotifierProvider(create: (_) => FreesoundViewModel()),
 
         ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
         //fin
+        ChangeNotifierProvider(create: (_) => SleepHabitsViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

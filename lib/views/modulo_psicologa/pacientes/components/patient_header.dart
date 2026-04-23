@@ -15,7 +15,7 @@ class PatientHeader extends StatelessWidget {
             const Text(
               "Pacientes",
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
@@ -24,7 +24,11 @@ class PatientHeader extends StatelessWidget {
             CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.cardBackground,
-              child: const Icon(Icons.person, color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.person,
+                color: AppColors.textPrimary,
+                size: 20,
+              ),
             ),
           ],
         ),

@@ -3,51 +3,47 @@ import 'package:provider/provider.dart';
 import '../../../viewmodels/auth_viewmodel.dart';
 import '../../auth/domain/entities/user_role.dart';
 import '../../auth/presentation/consent_screen.dart';
-import 'home_screen.dart';
+import '../../../views/modulo_paciente/patient_wrapper.dart';
 import 'professional_home_screen.dart';
 import 'admin_home_screen.dart';
+import '../../../core/theme/app_colors.dart';
 
-/// HomeSwitcher determines which home screen to display based on the user's role.
-/// It acts as a router for authenticated users.
 class HomeSwitcher extends StatelessWidget {
   const HomeSwitcher({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthViewModel>(
-      builder: (context, authViewModel, _) {
-        // While user data or role is loading
-        if (authViewModel.isLoading ||
-            (authViewModel.isAuthenticated && authViewModel.userRole == null)) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    final authViewModel = context.watch<AuthViewModel>();
 
-        // If not authenticated, we return an empty scaffold while main.dart
-        // rebuilds and switches the root widget to LoginScreen.
-        if (!authViewModel.isAuthenticated) {
-          return const Scaffold();
-        }
+    // 1. Carga inicial de autenticación o rol
+    if (authViewModel.isLoading ||
+        (authViewModel.isAuthenticated && authViewModel.userRole == null)) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator(color: AppColors.mint)),
+      );
+    }
 
-        // MANDATORY ONBOARDING: Consent Check
-        // If the user hasn't accepted the consent terms, show the ConsentScreen
-        // regardless of their role.
-        if (!authViewModel.hasAcceptedConsent) {
-          return const ConsentScreen();
-        }
+    // 2. Si no está autenticado
+    if (!authViewModel.isAuthenticated) {
+      return const Scaffold(backgroundColor: AppColors.background);
+    }
 
-        // Routing based on Role
-        switch (authViewModel.userRole) {
-          case UserRole.admin:
-            return const AdminHomeScreen();
-          case UserRole.professional:
-            return const ProfessionalHomeScreen();
-          case UserRole.patient:
-          default:
-            return const HomeScreen();
-        }
-      },
-    );
+    // 3. Consentimiento obligatorio
+    if (!authViewModel.hasAcceptedConsent) {
+      return const ConsentScreen();
+    }
+
+    // 4. Enrutamiento por Rol
+    switch (authViewModel.userRole) {
+      case UserRole.admin:
+        return const AdminHomeScreen();
+      case UserRole.professional:
+        return const ProfessionalHomeScreen();
+      case UserRole.patient:
+      default:
+        // El PatientWrapper ahora se encargará de decidir si muestra Onboarding o Home
+        return const PatientWrapper();
+    }
   }
 }

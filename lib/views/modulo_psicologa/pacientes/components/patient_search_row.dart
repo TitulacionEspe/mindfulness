@@ -15,13 +15,13 @@ class PatientSearchRow extends StatelessWidget {
             color: AppColors.cardBackground,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.tune, color: Colors.white, size: 20),
+          child: const Icon(Icons.tune, color: AppColors.textPrimary, size: 20),
         ),
         const SizedBox(width: 12),
         // Buscador expandido
         Expanded(
           child: TextField(
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: "Busca el nombre del paciente",
               hintStyle: const TextStyle(

@@ -26,7 +26,7 @@ class StatusFilters extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isSelected ? Colors.white : AppColors.textBlack,
+          color: isSelected ? AppColors.textPrimary : AppColors.textBlack,
           fontWeight: FontWeight.w500,
         ),
       ),

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
 import 'register_screen.dart';
 
-/// Login screen for existing users with accessibility support.
-/// Features: email, password, remember me, forgot password, signup link.
-/// A11y: Semantics labels, proper tap targets (48x48), contrast ratios.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -20,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   late FocusNode _emailFocus;
   late FocusNode _passwordFocus;
-  bool _rememberMe = false;
   bool _obscurePassword = true;
 
   @override
@@ -39,8 +35,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  /// Handles the login process with local validations.
-  /// Checks for empty fields, valid email format, and minimum password length.
   Future<void> _handleLogin(
     AuthViewModel viewModel,
     BuildContext context,
@@ -48,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Field presence validation
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
@@ -56,269 +49,195 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Email format validation (must contain @)
-    if (!email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor ingresa un email válido')),
-      );
-      return;
-    }
-
-    // Password length validation (Supabase minimum requirement is 6)
-    if (password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('La contraseña debe tener al menos 6 caracteres'),
-        ),
-      );
-      return;
-    }
-
-    // Perform sign-in through the ViewModel
     await viewModel.signIn(email, password);
 
-    // After async operation, check if the widget is still in the tree
-    if (context.mounted) {
-      if (viewModel.errorMessage != null) {
-        // Show error message from the ViewModel (repository mapped to Spanish)
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
-      }
-      // Note: No Navigator.push needed here. The root Consumer in main.dart
-      // will automatically switch to HomeSwitcher when isAuthenticated is true.
+    if (context.mounted && viewModel.errorMessage != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryTeal,
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              ExcludeSemantics(
-                child: Icon(Icons.security, size: 60, color: AppTheme.white),
-              ),
-              SizedBox(height: 12),
-              Semantics(
-                label: 'Iniciar Sesión',
-                child: Text(
-                  'Iniciar Sesión',
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    color: AppTheme.white,
-                    fontSize: 24,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icono/Logo minimalista
+                const Icon(
+                  Icons.nights_stay_rounded,
+                  size: 80,
+                  color: AppColors.mint,
+                ),
+                const SizedBox(height: 24),
+
+                // Título
+                Text(
+                  'Bienvenido',
+                  style: Theme.of(context).textTheme.displayLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Gestiona tu bienestar y sueño de forma segura.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 48),
+
+                // Formulario
+                _buildInputField(
+                  controller: _emailController,
+                  focusNode: _emailFocus,
+                  label: 'Correo Institucional',
+                  hint: 'usuario@espe.edu.ec',
+                  icon: Icons.email_outlined,
+                  onSubmitted: (_) => _passwordFocus.requestFocus(),
+                ),
+                const SizedBox(height: 20),
+
+                _buildInputField(
+                  controller: _passwordController,
+                  focusNode: _passwordFocus,
+                  label: 'Contraseña',
+                  hint: '••••••••',
+                  icon: Icons.lock_outlined,
+                  obscureText: _obscurePassword,
+                  suffixIcon: IconButton(
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Acceso seguro para la gestión de pacientes y bienestar.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.white.withValues(alpha: 0.9),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 32),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppTheme.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 12,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Correo Institucional',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8),
-                    Semantics(
-                      textField: true,
-                      label: 'Correo Institucional',
-                      child: TextField(
-                        controller: _emailController,
-                        focusNode: _emailFocus,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'usuario@espe.edu.ec',
-                          prefixIcon: Icon(
-                            Icons.email_outlined,
-                            color: AppTheme.primaryTeal,
-                          ),
-                        ),
-                        onSubmitted: (_) => _passwordFocus.requestFocus(),
+
+                const SizedBox(height: 12),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(
+                        color: AppColors.lavender,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
-                      'Contraseña',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8),
-                    Semantics(
-                      textField: true,
-                      label: 'Contraseña',
-                      child: TextField(
-                        controller: _passwordController,
-                        focusNode: _passwordFocus,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: '••••••••',
-                          prefixIcon: Icon(
-                            Icons.lock_outlined,
-                            color: AppTheme.primaryTeal,
-                          ),
-                          suffixIcon: IconButton(
-                            onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            ),
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: AppTheme.primaryTeal,
-                            ),
-                            tooltip: _obscurePassword
-                                ? 'Mostrar contraseña'
-                                : 'Ocultar contraseña',
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Semantics(
-                          checked: _rememberMe,
-                          child: Checkbox(
-                            value: _rememberMe,
-                            onChanged: (val) =>
-                                setState(() => _rememberMe = val ?? false),
-                            activeColor: AppTheme.primaryTeal,
-                          ),
-                        ),
-                        Text(
-                          'Recuérdame',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Spacer(),
-                        Semantics(
-                          button: true,
-                          label: 'Recuperar contraseña',
-                          child: TextButton(
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Funcionalidad en desarrollo'),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              '¿Olvidó su contraseña?',
-                              style: TextStyle(
-                                color: AppTheme.accentOrange,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24),
-                    Consumer<AuthViewModel>(
-                      builder: (context, viewModel, _) => SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: Semantics(
-                          button: true,
-                          enabled: !viewModel.isLoading,
-                          label: 'Entrar al Sistema',
-                          child: ElevatedButton(
-                            onPressed: viewModel.isLoading
-                                ? null
-                                : () => _handleLogin(viewModel, context),
-                            child: viewModel.isLoading
-                                ? CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppTheme.white,
-                                    ),
-                                  )
-                                : Text(
-                                    'Entrar al Sistema',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 24),
-              MergeSemantics(
-                child: Row(
+
+                const SizedBox(height: 32),
+
+                // Botón Principal
+                Consumer<AuthViewModel>(
+                  builder: (context, viewModel, _) => ElevatedButton(
+                    onPressed: viewModel.isLoading
+                        ? null
+                        : () => _handleLogin(viewModel, context),
+                    child: viewModel.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.buttonPrimaryText,
+                            ),
+                          )
+                        : const Text('Entrar al Sistema'),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Link a Registro
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       '¿No tienes cuenta? ',
-                      style: TextStyle(color: AppTheme.white),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
-                    Semantics(
-                      button: true,
-                      label: 'Regístrate aquí',
+                    GestureDetector(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const RegisterScreen(),
                         ),
                       ),
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
-                          ),
-                        ),
-                        child: Text(
-                          'Regístrate aquí',
-                          style: TextStyle(
-                            color: AppTheme.accentOrange,
-                            fontWeight: FontWeight.w700,
-                            decoration: TextDecoration.underline,
-                          ),
+                      child: const Text(
+                        'Regístrate aquí',
+                        style: TextStyle(
+                          color: AppColors.mint,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                '¿Necesitas ayuda? Contacta a soporte técnico',
-                style: TextStyle(
-                  color: AppTheme.white.withValues(alpha: 0.7),
-                  fontSize: 12,
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    void Function(String)? onSubmitted,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          focusNode: focusNode,
+          obscureText: obscureText,
+          onSubmitted: onSubmitted,
+          style: const TextStyle(color: AppColors.textPrimary),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
+            suffixIcon: suffixIcon,
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+        ),
+      ],
     );
   }
 }

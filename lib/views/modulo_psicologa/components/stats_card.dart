@@ -1,84 +1,52 @@
 import 'package:flutter/material.dart';
-// Ajusta la ruta si es necesario
+import '../../../core/theme/app_colors.dart';
 
 class StatsCard extends StatelessWidget {
+  final String title;
+  final String value;
   final IconData icon;
-  final String titleLine1; // "Pacientes"
-  final String titleLine2; // "totales"
-  final String value; // "20"
-  final Color accentColor; // El color del icono y detalles
+  final Color? iconColor;
 
   const StatsCard({
     super.key,
-    required this.icon,
-    required this.titleLine1,
-    required this.titleLine2,
+    required this.title,
     required this.value,
-    required this.accentColor,
+    required this.icon,
+    this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Usamos LayoutBuilder para que se adapte al tamaño de la pantalla (Infinix)
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          // Diseño de la tarjeta blanca según el mockup
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: Colors.white, // Fondo blanco según imagen
-            borderRadius: BorderRadius.circular(25), // Bordes muy redondeados
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
+    return Card(
+      color: AppColors.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: iconColor ?? AppColors.mint, size: 28),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // FILA SUPERIOR: Icono de color + Número Grande
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(icon, color: accentColor, size: 28),
-                  ),
-                  Text(
-                    value,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 32, // Número grande
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
               ),
-              const Spacer(), // Empuja el texto hacia abajo
-              // TEXTO INFERIOR: Dos líneas en negro
-              Text(
-                titleLine1,
-                style: const TextStyle(
-                  color: Colors.black87,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                titleLine2,
-                style: const TextStyle(color: Colors.black54, fontSize: 14),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

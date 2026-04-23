@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
 class HomeHeader extends StatelessWidget {
-  final String userName; // "Lic. Ximena"
+  final String userName;
 
   const HomeHeader({super.key, required this.userName});
 
@@ -29,26 +29,29 @@ class HomeHeader extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              "\"Un dia a la vez...\"", // La frase del mockup
+              "\"Un dia a la vez...\"",
               style: TextStyle(
-                color: AppColors.accentLight, // Color de acento para la frase
+                color: AppColors.lavender,
                 fontStyle: FontStyle.italic,
                 fontSize: 14,
               ),
             ),
           ],
         ),
-        // Icono de Notificación con punto rojo (puedes implementarlo luego)
         Stack(
           children: [
-            const Icon(Icons.notifications_none, color: Colors.white, size: 30),
+            const Icon(
+              Icons.notifications_none,
+              color: AppColors.textPrimary,
+              size: 30,
+            ),
             Positioned(
               right: 0,
               top: 0,
               child: Container(
                 padding: const EdgeInsets.all(2),
                 decoration: const BoxDecoration(
-                  color: Colors.red,
+                  color: AppColors.error,
                   shape: BoxShape.circle,
                 ),
                 constraints: const BoxConstraints(minWidth: 12, minHeight: 12),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_theme.dart';
-import '../../../viewmodels/auth_viewmodel.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../viewmodels/auth_viewmodel.dart';
 
 /// Welcome/Home screen displayed after successful login.
 /// Shows user greeting, quick stats, and onboarding hints.
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
     _animationController.forward();
@@ -36,9 +36,14 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryTeal,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Inicio'),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: const Text(
+          'Inicio',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
         actions: [
           Consumer<AuthViewModel>(
             builder: (context, viewModel, _) => IconButton(
@@ -46,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
                 // Just call signOut, the Consumer in main.dart handles redirection
                 await viewModel.signOut();
               },
-              icon: Icon(Icons.logout),
+              icon: const Icon(Icons.logout, color: AppColors.textPrimary),
             ),
           ),
         ],
@@ -54,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -67,14 +72,17 @@ class _HomeScreenState extends State<HomeScreen>
                       Text(
                         '¡Bienvenido!',
                         style: Theme.of(context).textTheme.displayLarge
-                            ?.copyWith(color: AppTheme.white, fontSize: 32),
+                            ?.copyWith(
+                              color: AppColors.textPrimary,
+                              fontSize: 32,
+                            ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Consumer<AuthViewModel>(
                         builder: (context, viewModel, _) => Text(
                           'Tu sesión está activa: ${viewModel.currentUser?.email ?? 'Usuario'}',
-                          style: TextStyle(
-                            color: AppTheme.white.withValues(alpha: 0.9),
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
                             fontSize: 14,
                           ),
                         ),
@@ -82,82 +90,86 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
 
                 // Quick stats cards
                 _buildStatsCard(
                   icon: Icons.favorite,
                   label: 'Sesiones Completadas',
                   value: '0',
-                  color: AppTheme.accentGreen,
+                  color: AppColors.mint,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildStatsCard(
                   icon: Icons.trending_up,
                   label: 'Racha Actual',
                   value: '--',
-                  color: AppTheme.accentOrange,
+                  color: AppColors.lavender,
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
 
                 // Getting started section
                 Text(
                   'Primeros Pasos',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.headlineSmall?.copyWith(color: AppTheme.white),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 _buildQuickActionTile(
                   icon: Icons.self_improvement,
                   title: 'Comenzar Sesión de Mindfulness',
                   subtitle: 'Explora ejercicios guiados',
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildQuickActionTile(
                   icon: Icons.bedtime,
                   title: 'Registrar Actividad de Sueño',
                   subtitle: 'Monitorea tu calidad de sueño',
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildQuickActionTile(
                   icon: Icons.settings,
                   title: 'Configurar Preferencias',
                   subtitle: 'Personaliza tu experiencia',
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
 
                 // Info banner
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.white.withValues(alpha: 0.1),
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppTheme.white.withValues(alpha: 0.2),
-                    ),
+                    border: Border.all(color: AppColors.navBorder),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline, color: AppTheme.white, size: 24),
-                      SizedBox(width: 12),
+                      const Icon(
+                        Icons.info_outline,
+                        color: AppColors.lavender,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Integración en Progreso',
                               style: TextStyle(
-                                color: AppTheme.white,
+                                color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               'Estamos integrando todas las funcionalidades. Las pantallas de sesiones y tracking estarán disponibles pronto.',
                               style: TextStyle(
-                                color: AppTheme.white.withValues(alpha: 0.8),
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.8,
+                                ),
                                 fontSize: 12,
                               ),
                             ),
@@ -182,41 +194,35 @@ class _HomeScreenState extends State<HomeScreen>
     required Color color,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
+        // Eliminamos elevación/sombra como pide la regla
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.darkText),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   style: Theme.of(
@@ -237,40 +243,44 @@ class _HomeScreenState extends State<HomeScreen>
     required String subtitle,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.white.withValues(alpha: 0.15),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.white.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.navBorder),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.white, size: 28),
-          SizedBox(width: 16),
+          Icon(icon, color: AppColors.mint, size: 28),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    color: AppTheme.white,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    color: AppTheme.white.withValues(alpha: 0.7),
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
               ],
             ),
           ),
-          Icon(Icons.arrow_forward_ios, color: AppTheme.white, size: 16),
+          const Icon(
+            Icons.arrow_forward_ios,
+            color: AppColors.textSecondary,
+            size: 16,
+          ),
         ],
       ),
     );
