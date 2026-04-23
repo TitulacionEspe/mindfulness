@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ActivitySearch extends StatelessWidget {
-  const ActivitySearch({super.key});
+  final Function(String)? onChanged;
+
+  const ActivitySearch({super.key, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE9ECEF)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: const TextField(
-        style: TextStyle(color: Colors.black),
+      child: TextField(
+        onChanged: onChanged,
+        style: const TextStyle(color: AppColors.textPrimary),
         decoration: InputDecoration(
-          icon: Text("🔍", style: TextStyle(fontSize: 18)),
           hintText: 'Buscar actividades...',
-          hintStyle: TextStyle(color: Colors.black54, fontSize: 14),
+          hintStyle: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+          ),
+          prefixIcon: const Icon(Icons.search, color: AppColors.mint),
           border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
       ),
     );

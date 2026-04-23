@@ -1,36 +1,43 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color background = Color(0xFF0F1A2A);
-  static const Color cardBackground = Color(0xFF1B314B);
-  static const Color accent = Color(0xFF42A5F5);
-  static const Color accentLight = Color(0xFF64B5F6);
-  static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Colors.white70;
+  // --- NUEVO SISTEMA: Nocturne Minimalist ---
+  static const Color background = Color(0xFF1E1A24);
+  static const Color surface = Color(0xFF2A2532);
+  static const Color textPrimary = Color(0xFFE6E1EB);
+  static const Color textSecondary = Color(0xFF9E95A3);
+  static const Color lavender = Color(0xFFD1C4E9);
+  static const Color mint = Color(0xFFB2DFDB);
+  static const Color navBorder = Color(0xFF362F3D);
+  static const Color buttonPrimary = Color(0xFFB2DFDB);
+  static const Color buttonPrimaryText = Color(0xFF1E1A24);
   static const Color error = Color(0xFFCF6679);
-  // Añade esto a tu clase AppColors
-  static const Color success = Color(0xFF76C121); // El verde de tus mockups
-  static const Color greyLight = Color(0xFFE0E0E0);
-  static const Color sectionWhite = Colors.white;
-  static const Color textBlack = Color(0xFF2D2D2D);
 
-  // Colores para los estados de las tareas
-  static const Color successBg = Color(0xFFE8F5E9); // Verde clarito
-  static const Color successText = Color(0xFF2E7D32); // Verde oscuro
-  static const Color warningBg = Color(0xFFFFF3CD); // Amarillo clarito
-  static const Color warningText = Color(0xFF856404); // Marrón/Amarillo oscuro
-  static const Color greyBg = Color(
-    0xFFE9ECEF,
-  ); // Gris para el placeholder del paciente
+  // --- COMPATIBILIDAD: Colores antiguos mapeados al nuevo sistema ---
+  // Estos se irán eliminando a medida que refactoricemos las vistas
+  static const Color accent = mint;
+  static const Color accentLight = lavender;
+  static const Color cardBackground = surface;
+  static const Color white = textPrimary;
+  static const Color textBlack = buttonPrimaryText;
+  static const Color sectionWhite = textPrimary;
 
-  static const Color figmaBlue = Color(0xFF003B5C);
-  static const Color figmaGrayBg = Color(
-    0xFFF0F3F5,
-  ); // Fondo de categorías inactivas
-  static const Color figmaBlack = Color(
-    0xFF212529,
-  ); // Texto oscuro y chips activos
-  static const Color figmaMuted = Color(
-    0xFF6C757D,
-  ); // Texto gris de descripción
+  // Colores específicos para módulos antiguos (Psicóloga)
+  static const Color successBg = Color(0x26B2DFDB); // 15% opacidad Mint
+  static const Color successText = mint;
+  static const Color warningBg = Color(0x26D1C4E9); // 15% opacidad Lavender
+  static const Color warningText = lavender;
+  static const Color greyBg = surface;
+  static const Color greyLight = textSecondary;
+
+  static const Color figmaBlue = lavender;
+  static const Color figmaGrayBg = surface;
+  static const Color figmaBlack = textPrimary;
+  static const Color figmaMuted = textSecondary;
+
+  // Otros nombres usados en el código
+  static const Color primaryTeal = mint;
+  static const Color accentOrange =
+      lavender; // Mapeado a lavender para evitar vibrantes
+  static const Color darkText = textSecondary;
 }

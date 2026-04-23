@@ -43,7 +43,7 @@ class PacientesView extends StatelessWidget {
                   const Text(
                     "Lista de pacientes",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

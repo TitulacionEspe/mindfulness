@@ -19,11 +19,11 @@ class PatientCardWhite extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: AppColors.sectionWhite,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.background.withValues(alpha: 0.05),
             blurRadius: 10,
           ),
         ],
@@ -44,18 +44,21 @@ class PatientCardWhite extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: AppColors.textBlack,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   task,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: progress,
-                  backgroundColor: Colors.grey.shade200,
-                  color: Colors.green,
+                  backgroundColor: AppColors.navBorder,
+                  color: AppColors.mint,
                   minHeight: 5,
                 ),
               ],
@@ -64,7 +67,10 @@ class PatientCardWhite extends StatelessWidget {
           const SizedBox(width: 10),
           // Icono de Configuración/Más
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.grey),
+            icon: const Icon(
+              Icons.settings_outlined,
+              color: AppColors.textSecondary,
+            ),
             onPressed: () {}, // Aquí iría la configuración del paciente
           ),
         ],

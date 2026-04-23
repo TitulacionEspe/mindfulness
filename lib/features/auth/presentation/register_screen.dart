@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
 
-/// Registration screen for new users.
-/// Features: email, password confirmation, terms checkbox, link back to login.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -18,7 +16,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _agreeToTerms = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
@@ -40,29 +37,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    // Validations
     if (fullName.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
-      );
-      return;
-    }
-
-    if (!email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor ingresa un email válido')),
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('La contraseña debe tener al menos 6 caracteres'),
-        ),
       );
       return;
     }
@@ -74,26 +54,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes aceptar los términos y condiciones'),
-        ),
-      );
-      return;
-    }
-
     await viewModel.signUp(email, password, fullName);
 
     if (context.mounted) {
-      if (viewModel.isSigningUp == false && viewModel.errorMessage == null) {
+      if (viewModel.errorMessage == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registro exitoso. Por favor inicia sesión.'),
-          ),
+          const SnackBar(content: Text('Registro exitoso. Inicia sesión.')),
         );
-        Navigator.of(context).pop(); // Return to login
-      } else if (viewModel.errorMessage != null) {
+        Navigator.of(context).pop();
+      } else {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
@@ -104,256 +73,160 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryTeal,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppTheme.primaryTeal,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back, color: AppTheme.white),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+          ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              // Top section
-              SizedBox(height: 12),
-              Icon(Icons.person_add, size: 60, color: AppTheme.white),
-              SizedBox(height: 12),
-              Text(
-                'Crear Cuenta',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  color: AppTheme.white,
-                  fontSize: 24,
-                ),
+              const Icon(
+                Icons.person_add_rounded,
+                size: 60,
+                color: AppColors.mint,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
-                'Únete a nuestra comunidad de mindfulness y bienestar.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.white.withValues(alpha: 0.9),
-                ),
+                'Crea tu Cuenta',
+                style: Theme.of(
+                  context,
+                ).textTheme.displayLarge?.copyWith(fontSize: 28),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Únete para mejorar tu higiene del sueño.',
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 40),
 
-              // White card with form
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppTheme.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 12,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Full Name field
-                    Text(
-                      'Nombre Completo',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      controller: _fullNameController,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(
-                        hintText: 'Ej. Juan Pérez',
-                        prefixIcon: Icon(
-                          Icons.person_outline,
-                          color: AppTheme.primaryTeal,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
+              _buildInputField(
+                controller: _fullNameController,
+                label: 'Nombre Completo',
+                hint: 'Ej. Juan Pérez',
+                icon: Icons.person_outline,
+              ),
+              const SizedBox(height: 20),
 
-                    // Email field
-                    Text(
-                      'Correo Institucional',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: 'usuario@espe.edu.ec',
-                        prefixIcon: Icon(
-                          Icons.email_outlined,
-                          color: AppTheme.primaryTeal,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
+              _buildInputField(
+                controller: _emailController,
+                label: 'Correo Institucional',
+                hint: 'usuario@espe.edu.ec',
+                icon: Icons.email_outlined,
+              ),
+              const SizedBox(height: 20),
 
-                    // Password field
-                    Text(
-                      'Contraseña',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        hintText: '••••••••',
-                        prefixIcon: Icon(
-                          Icons.lock_outlined,
-                          color: AppTheme.primaryTeal,
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: AppTheme.primaryTeal,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
-                    // Confirm password field
-                    Text(
-                      'Confirmar Contraseña',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      controller: _confirmPasswordController,
-                      obscureText: _obscureConfirm,
-                      decoration: InputDecoration(
-                        hintText: '••••••••',
-                        prefixIcon: Icon(
-                          Icons.lock_outlined,
-                          color: AppTheme.primaryTeal,
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: () => setState(
-                            () => _obscureConfirm = !_obscureConfirm,
-                          ),
-                          icon: Icon(
-                            _obscureConfirm
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: AppTheme.primaryTeal,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
-                    // Terms checkbox
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Checkbox(
-                          value: _agreeToTerms,
-                          onChanged: (val) =>
-                              setState(() => _agreeToTerms = val ?? false),
-                          activeColor: AppTheme.primaryTeal,
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: RichText(
-                              text: TextSpan(
-                                style: Theme.of(context).textTheme.bodySmall,
-                                children: [
-                                  TextSpan(text: 'Acepto los '),
-                                  TextSpan(
-                                    text: 'términos y condiciones',
-                                    style: TextStyle(
-                                      color: AppTheme.accentOrange,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: ' y la política de privacidad',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24),
-
-                    // Sign up button
-                    Consumer<AuthViewModel>(
-                      builder: (context, viewModel, _) => SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: viewModel.isLoading
-                              ? null
-                              : () => _handleSignUp(viewModel, context),
-                          child: viewModel.isLoading
-                              ? SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppTheme.white,
-                                    ),
-                                  ),
-                                )
-                              : Text(
-                                  'Registrarse',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
-                  ],
+              _buildInputField(
+                controller: _passwordController,
+                label: 'Contraseña',
+                hint: '••••••••',
+                icon: Icons.lock_outlined,
+                obscureText: _obscurePassword,
+                suffixIcon: IconButton(
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
+              const SizedBox(height: 20),
 
-              SizedBox(height: 24),
-
-              // Login link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '¿Ya tienes cuenta? ',
-                    style: TextStyle(color: AppTheme.white),
+              _buildInputField(
+                controller: _confirmPasswordController,
+                label: 'Confirmar Contraseña',
+                hint: '••••••••',
+                icon: Icons.lock_outlined,
+                obscureText: _obscureConfirm,
+                suffixIcon: IconButton(
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
+                  icon: Icon(
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                    color: AppColors.textSecondary,
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Text(
-                      'Inicia sesión',
-                      style: TextStyle(
-                        color: AppTheme.accentOrange,
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
+              const SizedBox(height: 40),
 
-              SizedBox(height: 20),
+              Consumer<AuthViewModel>(
+                builder: (context, viewModel, _) => ElevatedButton(
+                  onPressed: viewModel.isLoading
+                      ? null
+                      : () => _handleSignUp(viewModel, context),
+                  child: viewModel.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.buttonPrimaryText,
+                          ),
+                        )
+                      : const Text('Registrarse'),
+                ),
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          obscureText: obscureText,
+          style: const TextStyle(color: AppColors.textPrimary),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
+            suffixIcon: suffixIcon,
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -19,7 +19,7 @@ class PatientCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -39,7 +39,7 @@ class PatientCard extends StatelessWidget {
                 Text(
                   name,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -57,9 +57,11 @@ class PatientCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: Colors.white.withValues(alpha: 0.05),
+                    backgroundColor: AppColors.textPrimary.withValues(
+                      alpha: 0.05,
+                    ),
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF76C121),
+                      AppColors.mint,
                     ),
                     minHeight: 5,
                   ),
@@ -75,17 +77,13 @@ class PatientCard extends StatelessWidget {
               Text(
                 "${(progress * 100).toInt()}%",
                 style: const TextStyle(
-                  color: Color(0xFF76C121),
+                  color: AppColors.mint,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
               ),
               const SizedBox(height: 4),
-              const Icon(
-                Icons.check_circle,
-                color: Color(0xFF76C121),
-                size: 22,
-              ),
+              const Icon(Icons.check_circle, color: AppColors.mint, size: 22),
             ],
           ),
         ],

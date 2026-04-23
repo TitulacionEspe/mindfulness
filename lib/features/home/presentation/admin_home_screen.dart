@@ -17,7 +17,6 @@ class AdminHomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              // Just call signOut, the Consumer in main.dart handles redirection
               await authViewModel.signOut();
             },
           ),
@@ -27,7 +26,7 @@ class AdminHomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.admin_panel_settings,
               size: 80,
               color: AppTheme.accentOrange,

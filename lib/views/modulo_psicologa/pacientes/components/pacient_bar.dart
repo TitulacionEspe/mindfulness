@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class PacientBar extends StatelessWidget {
   const PacientBar({super.key});
@@ -20,7 +21,7 @@ class PacientBar extends StatelessWidget {
       child: Stack(
         children: [
           // 1. Capa oscura con la nueva función .withValues (Para pasar el CI)
-          Container(color: Colors.black.withValues(alpha: 0.3)),
+          Container(color: AppColors.background.withValues(alpha: 0.3)),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -36,7 +37,7 @@ class PacientBar extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     // 2. Usando .withValues aquí también
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: AppColors.textPrimary.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: const Column(
@@ -45,7 +46,7 @@ class PacientBar extends StatelessWidget {
                       Text(
                         "Panel General",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: AppColors.buttonPrimaryText,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -53,7 +54,7 @@ class PacientBar extends StatelessWidget {
                       Text(
                         "Psicologares",
                         style: TextStyle(
-                          color: Colors.green,
+                          color: AppColors.mint,
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
@@ -67,7 +68,7 @@ class PacientBar extends StatelessWidget {
                   child: Text(
                     "Lunes, 30 Marzo 2026",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),

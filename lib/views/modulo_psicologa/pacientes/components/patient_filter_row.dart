@@ -10,7 +10,10 @@ class PatientFilterRow extends StatelessWidget {
       children: [
         const Text(
           "Filtrar por",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(width: 15),
         _buildFilterChip("Ultimos", true),
@@ -30,7 +33,7 @@ class PatientFilterRow extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isSelected ? Colors.white : AppColors.textSecondary,
+          color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
           fontSize: 12,
         ),
       ),

@@ -30,13 +30,14 @@ class ProfessionalHomeScreen extends StatelessWidget {
     ];
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       // Mantenemos el AppBar del compañero para el Logout, pero con tu estilo
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
         title: const Text(
           'Panel Profesional',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
         ),
         actions: [
           IconButton(

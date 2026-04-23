@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-import 'components/home_banner.dart';
+import 'package:provider/provider.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../viewmodels/auth_viewmodel.dart';
+import 'components/home_header.dart';
 import 'components/stats_card.dart';
 import 'components/quick_actions.dart';
 
@@ -9,75 +11,82 @@ class HomePsicologaView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = context.watch<AuthViewModel>();
+    final userName =
+        authViewModel.currentUser?.userMetadata?['full_name'] ?? 'Profesional';
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        // Permite scroll para ver todo
-        child: Column(
-          children: [
-            // 1. Banner con Imagen y Título
-            const HomeBanner(),
-
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  // 2. Grilla de Estadísticas (Fija, sin scroll propio)
-                  GridView.count(
-                    shrinkWrap:
-                        true, // Importante dentro de SingleChildScrollView
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    childAspectRatio: 1.2,
-                    children: const [
-                      StatsCard(
-                        icon: Icons.people,
-                        titleLine1: "Pacientes",
-                        titleLine2: "totales",
-                        value: "20",
-                        accentColor: Colors.blue,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: HomeHeader(userName: userName),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Resumen General',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontSize: 20,
+                        color: AppColors.textPrimary,
                       ),
-                      StatsCard(
-                        icon: Icons.task,
-                        titleLine1: "Taks Comple",
-                        titleLine2: "totales",
-                        value: "20",
-                        accentColor: Colors.green,
+                    ),
+                    const SizedBox(height: 20),
+                    const Row(
+                      children: [
+                        Expanded(
+                          child: StatsCard(
+                            title: 'Pacientes',
+                            value: '24',
+                            icon: Icons.people_outline,
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: StatsCard(
+                            title: 'Alertas',
+                            value: '3',
+                            icon: Icons.warning_amber_rounded,
+                            iconColor: AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Acciones Rápidas',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontSize: 20,
+                        color: AppColors.textPrimary,
                       ),
-                      StatsCard(
-                        icon: Icons.timer,
-                        titleLine1: "Citas",
-                        titleLine2: "Pendientes",
-                        value: "20",
-                        accentColor: Colors.blueGrey,
-                      ),
-                      StatsCard(
-                        icon: Icons.check_circle,
-                        titleLine1: "Cita",
-                        titleLine2: "Confirm",
-                        value: "20",
-                        accentColor: Colors.blue,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // 3. Acciones Rápidas
-                  const QuickActions(),
-                ],
+                    ),
+                    const SizedBox(height: 16),
+                    const QuickActions(),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-      // Botón flotante para Chat/Compartir (opcional según imagen)
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Colors.white.withValues(alpha: 0.9),
-        child: const Icon(Icons.chat_bubble_outline, color: Colors.black87),
+        backgroundColor: AppColors.mint,
+        child: const Icon(
+          Icons.chat_bubble_outline,
+          color: AppColors.buttonPrimaryText,
+        ),
       ),
     );
   }
