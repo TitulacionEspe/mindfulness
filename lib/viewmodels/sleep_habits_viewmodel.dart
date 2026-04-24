@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SleepHabitsViewModel extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
+  bool _hasLoadedSettings = false;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -51,7 +52,10 @@ class SleepHabitsViewModel extends ChangeNotifier {
   }
 
   /// Carga la configuración actual del usuario desde Supabase
-  Future<void> loadSettings() async {
+  Future<void> loadSettings({bool force = false}) async {
+    if (_isLoading) return;
+    if (!force && _hasLoadedSettings) return;
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -92,6 +96,7 @@ class SleepHabitsViewModel extends ChangeNotifier {
       } else {
         _hasCompletedOnboarding = false;
       }
+      _hasLoadedSettings = true;
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -125,6 +130,7 @@ class SleepHabitsViewModel extends ChangeNotifier {
       });
 
       _hasCompletedOnboarding = true;
+      _hasLoadedSettings = true;
       notifyListeners();
       return true;
     } catch (e) {

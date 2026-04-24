@@ -12,6 +12,7 @@ import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'viewmodels/psicologa_nav_viewmodel.dart';
+import 'viewmodels/routines_viewmodel.dart';
 import 'viewmodels/sleep_habits_viewmodel.dart';
 
 /// App Entry Point.
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
         //fin
         ChangeNotifierProvider(create: (_) => SleepHabitsViewModel()),
+        ChangeNotifierProvider(create: (_) => RoutinesViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
