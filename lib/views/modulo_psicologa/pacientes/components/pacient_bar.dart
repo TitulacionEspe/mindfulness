@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/theme/app_colors.dart';
 
 class PacientBar extends StatelessWidget {
@@ -13,7 +14,7 @@ class PacientBar extends StatelessWidget {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         image: DecorationImage(
           image: NetworkImage(
-            'https://www.lavanguardia.com/files/image_449_220/files/fp/uploads/2022/03/05/6223a44538bd2.r_d.3252-1998.jpeg',
+            'https://jftnjpnwcdmndnfdhtld.supabase.co/storage/v1/object/public/tesis/peaceful-sleep-moon.jpg',
           ), // Imagen de oficina/psicología
           fit: BoxFit.cover,
         ),

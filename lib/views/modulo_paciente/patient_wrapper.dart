@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/views/modulo_paciente/conten_cita.dart';
 import 'package:provider/provider.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
-import 'sleep_habits_view.dart';
 import 'profile_view.dart'; // Importamos la nueva vista
+import 'sleep_habits_view.dart';
 
 class PatientWrapper extends StatefulWidget {
   const PatientWrapper({super.key});
@@ -32,9 +34,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
     const Center(
       child: Text('Tareas', style: TextStyle(color: AppColors.textPrimary)),
     ),
-    const Center(
-      child: Text('Citas', style: TextStyle(color: AppColors.textPrimary)),
-    ),
+    const CitaCont(), // Reemplazamos el placeholder por SolicitarCitaView
     const Center(
       child: Text('Logros', style: TextStyle(color: AppColors.textPrimary)),
     ),

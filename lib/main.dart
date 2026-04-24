@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:mindfulness_app/moduloCitas/viewmodels/appointments_viewmodel.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/favorites_viewmodel.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/freesound_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,10 @@ import 'viewmodels/sleep_habits_viewmodel.dart';
 Future<void> main() async {
   // Ensure Flutter bindings are initialized first
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Inicializa los datos de idioma para español
+  // Esto carga los nombres de los meses y días en 'es'
+  await initializeDateFormatting('es', null);
 
   // 1. Load environment variables
   try {
@@ -53,6 +59,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
         ChangeNotifierProvider(create: (_) => FreesoundViewModel()),
+        ChangeNotifierProvider(create: (_) => AppointmentsViewModel()),
 
         ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
         //fin

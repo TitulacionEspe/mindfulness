@@ -12,7 +12,7 @@ class CuestioBanner extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         image: const DecorationImage(
           image: NetworkImage(
-            'https://pymstatic.com/6531/conversions/tipos-test-psicologicos-wide_webp.webp',
+            'https://jftnjpnwcdmndnfdhtld.supabase.co/storage/v1/object/public/tesis/peaceful-sleep-moon.jpg',
           ), // Imagen de oficina/psicología
           fit: BoxFit.cover,
         ),

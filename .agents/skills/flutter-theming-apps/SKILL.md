@@ -126,10 +126,10 @@ TextButton(
     overlayColor: MaterialStateProperty.resolveWith<Color?>(
       (Set<MaterialState> states) {
         if (states.contains(MaterialState.hovered)) {
-          return Colors.blue.withOpacity(0.04);
+          return Colors.blue.withValues(alpha:0.04);
         }
         if (states.contains(MaterialState.focused) || states.contains(MaterialState.pressed)) {
-          return Colors.blue.withOpacity(0.12);
+          return Colors.blue.withValues(alpha:0.12);
         }
         return null; // Defer to the widget's default.
       },

@@ -12,7 +12,7 @@ class HomeBanner extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         image: const DecorationImage(
           image: NetworkImage(
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbYFUuQBZcAl64oQL5TLXXwKhMY65KWwk5QWaJuBWE77mYyxTQ',
+            'https://jftnjpnwcdmndnfdhtld.supabase.co/storage/v1/object/public/tesis/peaceful-sleep-moon.jpg',
           ), // Imagen de oficina/psicología
           fit: BoxFit.cover,
         ),

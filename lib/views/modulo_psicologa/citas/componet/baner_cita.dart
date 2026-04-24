@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ActiBanner extends StatelessWidget {
-  const ActiBanner({super.key});
+class BannerCita extends StatelessWidget {
+  const BannerCita({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class ActiBanner extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Actividades",
+                        "Mis Citas",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 24,

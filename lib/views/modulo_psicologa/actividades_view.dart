@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindfulness_app/views/modulo_psicologa/actividades/components/activity_action_buttons.dart';
 
-import '../../core/theme/app_colors.dart';
 import 'actividades/components/activi_banner.dart';
 import 'actividades/components/activity_item_card.dart';
 // Importamos los componentes locales
@@ -14,7 +13,7 @@ class ActividadesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.figmaBlue, // El azul profundo del Figma
+      // El azul profundo del Figma
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,11 +26,6 @@ class ActividadesView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. Buscador
-                  const ActivitySearch(),
-
-                  const SizedBox(height: 30),
-
                   // Dentro de tu Column:
                   const SizedBox(height: 30),
 
@@ -42,6 +36,10 @@ class ActividadesView extends StatelessWidget {
 
                   // 2. Filtros de Categorías
                   const CategoryFilters(),
+
+                  const SizedBox(height: 30),
+                  // 1. Buscador
+                  const ActivitySearch(),
 
                   const SizedBox(height: 30),
 
