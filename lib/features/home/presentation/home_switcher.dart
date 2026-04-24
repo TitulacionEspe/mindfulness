@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../viewmodels/auth_viewmodel.dart';
+import '../../../viewmodels/sleep_habits_viewmodel.dart';
 import '../../auth/domain/entities/user_role.dart';
 import '../../auth/presentation/consent_screen.dart';
 import '../../../views/modulo_paciente/patient_wrapper.dart';
@@ -42,7 +43,15 @@ class HomeSwitcher extends StatelessWidget {
         return const ProfessionalHomeScreen();
       case UserRole.patient:
       default:
-        // El PatientWrapper ahora se encargará de decidir si muestra Onboarding o Home
+        // Cargamos los settings proactivamente antes de entrar al wrapper
+        final sleepViewModel = Provider.of<SleepHabitsViewModel>(
+          context,
+          listen: false,
+        );
+        if (!sleepViewModel.hasCompletedOnboarding &&
+            !sleepViewModel.isLoading) {
+          Future.microtask(() => sleepViewModel.loadSettings());
+        }
         return const PatientWrapper();
     }
   }

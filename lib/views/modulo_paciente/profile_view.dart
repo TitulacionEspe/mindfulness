@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/views/modulo_paciente/reminders_view.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/auth_viewmodel.dart';
@@ -134,6 +135,18 @@ class ProfileView extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const SleepHabitsView()),
+                  );
+                },
+              ),
+
+              _buildSettingsTile(
+                context: context,
+                icon: Icons.notifications_active_rounded,
+                title: 'Recordatorios',
+                subtitle: 'Avisos de rutina y descanso',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const RemindersView()),
                   );
                 },
               ),

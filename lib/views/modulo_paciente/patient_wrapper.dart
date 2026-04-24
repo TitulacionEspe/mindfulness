@@ -16,16 +16,6 @@ class PatientWrapper extends StatefulWidget {
 
 class _PatientWrapperState extends State<PatientWrapper> {
   int _selectedIndex = 0;
-  bool _initialized = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_initialized) {
-      context.read<SleepHabitsViewModel>().loadSettings();
-      _initialized = true;
-    }
-  }
 
   final List<Widget> _pages = [
     const Center(

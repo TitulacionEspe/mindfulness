@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mindfulness_app/moduloCitas/viewmodels/appointments_viewmodel.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/favorites_viewmodel.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/freesound_viewmodel.dart';
+import 'package:mindfulness_app/services/notification_service.dart';
+import 'package:mindfulness_app/viewmodels/reminders_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -34,7 +36,6 @@ Future<void> main() async {
   }
 
   // 2. Initialize Supabase
-  // We use a try-catch here to prevent the app from crashing if keys are invalid
   try {
     if (SupabaseConfig.isConfigured) {
       await Supabase.initialize(
@@ -44,6 +45,14 @@ Future<void> main() async {
     }
   } catch (e) {
     debugPrint("Supabase initialization failed: $e");
+  }
+
+  // 3. Initialize Notification Service
+  try {
+    await NotificationService().init();
+    debugPrint("Notifications initialized successfully");
+  } catch (e) {
+    debugPrint("Notification initialization failed: $e");
   }
 
   runApp(const MyApp());
@@ -60,10 +69,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
         ChangeNotifierProvider(create: (_) => FreesoundViewModel()),
         ChangeNotifierProvider(create: (_) => AppointmentsViewModel()),
-
         ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
-        //fin
         ChangeNotifierProvider(create: (_) => SleepHabitsViewModel()),
+        ChangeNotifierProvider(create: (_) => RemindersViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

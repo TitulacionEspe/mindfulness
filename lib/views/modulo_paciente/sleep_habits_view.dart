@@ -17,7 +17,8 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInit) {
-      context.read<SleepHabitsViewModel>().loadSettings();
+      final viewModel = context.read<SleepHabitsViewModel>();
+      Future.microtask(viewModel.loadSettings);
       _isInit = true;
     }
   }
