@@ -27,7 +27,7 @@ class ActionButton extends StatelessWidget {
           ), // Bordes bien redondeados como la foto
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
