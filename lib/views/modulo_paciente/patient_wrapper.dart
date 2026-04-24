@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/views/modulo_paciente/conten_cita.dart';
 import 'package:provider/provider.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
-import 'sleep_habits_view.dart';
-import 'profile_view.dart'; // Importamos la nueva vista
+import 'profile_view.dart';
 import 'routines_library_view.dart';
+import 'sleep_habits_view.dart';
 
 class PatientWrapper extends StatefulWidget {
   const PatientWrapper({super.key});
@@ -30,13 +32,11 @@ class _PatientWrapperState extends State<PatientWrapper> {
       child: Text('Home', style: TextStyle(color: AppColors.textPrimary)),
     ),
     const RoutinesLibraryView(),
-    const Center(
-      child: Text('Citas', style: TextStyle(color: AppColors.textPrimary)),
-    ),
+    const CitaCont(),
     const Center(
       child: Text('Logros', style: TextStyle(color: AppColors.textPrimary)),
     ),
-    const ProfileView(), // Reemplazamos el placeholder por ProfileView
+    const ProfileView(),
   ];
 
   void _onItemTapped(int index) {
