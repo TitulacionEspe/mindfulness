@@ -120,8 +120,8 @@ class _TasksHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 22, 20, 14),
-      padding: const EdgeInsets.all(18),
+      margin: EdgeInsets.fromLTRB(20, 22, 20, 14),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(20),
@@ -130,7 +130,7 @@ class _TasksHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -155,7 +155,7 @@ class _TasksHeader extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           SizedBox(
             width: 46,
             height: 46,
@@ -164,12 +164,12 @@ class _TasksHeader extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColors.surfaceLowest,
-                side: const BorderSide(color: AppColors.outlineVariant),
+                side: BorderSide(color: AppColors.outlineVariant),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_none_rounded,
                 color: AppColors.lavender,
               ),
@@ -189,7 +189,7 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
+      padding: EdgeInsets.fromLTRB(20, 6, 20, 10),
       child: Row(
         children: [
           Container(
@@ -200,10 +200,10 @@ class _SectionTitle extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -264,13 +264,13 @@ class _AssignedActivityCard extends StatelessWidget {
       color: AppColors.surfaceHigh,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: AppColors.outlineVariant),
+        side: BorderSide(color: AppColors.outlineVariant),
       ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -322,34 +322,34 @@ class _AssignedActivityCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.schedule_rounded,
                           size: 16,
                           color: AppColors.textSecondary,
                         ),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         Text(
                           routine.durationLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
+                        SizedBox(width: 8),
+                        Text(
                           '|',
                           style: TextStyle(
                             color: AppColors.navBorder,
                             fontSize: 14,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           routine.category.label,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
                           ),
@@ -379,11 +379,11 @@ class _AssignedActivityCard extends StatelessWidget {
 
   _StatusStyle _styleForStatus(AssignmentStatus status) {
     return switch (status) {
-      AssignmentStatus.pending => const _StatusStyle(
+      AssignmentStatus.pending => _StatusStyle(
         background: AppColors.warningBg,
         foreground: AppColors.lavender,
       ),
-      AssignmentStatus.completed => const _StatusStyle(
+      AssignmentStatus.completed => _StatusStyle(
         background: AppColors.successBg,
         foreground: AppColors.mint,
       ),
@@ -409,8 +409,8 @@ class _QuestionnaireCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(18),
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(20),
@@ -419,7 +419,7 @@ class _QuestionnaireCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Completa el formulario para que la psicologa asigne rutinas personalizadas.',
             style: TextStyle(
               color: AppColors.textSecondary,
@@ -427,14 +427,14 @@ class _QuestionnaireCard extends StatelessWidget {
               height: 1.35,
             ),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     backgroundColor: AppColors.surface,
                     content: Text(
                       'Flujo de cuestionario disponible en el siguiente ticket.',
@@ -443,8 +443,8 @@ class _QuestionnaireCard extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(Icons.fact_check_outlined),
-              label: const Text(
+              icon: Icon(Icons.fact_check_outlined),
+              label: Text(
                 'Iniciar cuestionario',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
@@ -523,13 +523,13 @@ class _LibraryRoutineCard extends StatelessWidget {
       color: AppColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: AppColors.outlineVariant),
+        side: BorderSide(color: AppColors.outlineVariant),
       ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
@@ -556,16 +556,16 @@ class _LibraryRoutineCard extends StatelessWidget {
                       routine.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
                       '${routine.durationLabel} | ${routine.category.label}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -573,8 +573,8 @@ class _LibraryRoutineCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
-              const Icon(
+              SizedBox(width: 10),
+              Icon(
                 Icons.arrow_forward_ios_rounded,
                 color: AppColors.lavender,
                 size: 18,
@@ -595,16 +595,16 @@ class _InlineMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.warningBg,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
           message,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.lavender,
             fontSize: 14,
             height: 1.3,
@@ -620,7 +620,7 @@ class _LoadingBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 40),
       child: Center(child: CircularProgressIndicator(color: AppColors.mint)),
     );
@@ -633,14 +633,14 @@ class _EmptyAssignedState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(18),
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.outlineVariant),
       ),
-      child: const Text(
+      child: Text(
         'Aun no tienes actividades asignadas por tu psicologa. Esta seccion queda lista para integrarse con asignaciones reales.',
         style: TextStyle(
           color: AppColors.textSecondary,
@@ -657,7 +657,7 @@ class _EmptyLibraryState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.fromLTRB(20, 14, 20, 26),
       child: Text(
         'No hay rutinas para el filtro seleccionado.',

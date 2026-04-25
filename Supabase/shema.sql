@@ -28,6 +28,7 @@ CREATE TABLE public.profiles (
     role user_role NOT NULL DEFAULT 'patient',
     segment user_segment NOT NULL DEFAULT 'student',
     full_name TEXT,
+    theme_mode TEXT NOT NULL DEFAULT 'light' CHECK (theme_mode IN ('light', 'dark')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     is_active BOOLEAN NOT NULL DEFAULT TRUE
@@ -47,7 +48,7 @@ CREATE TABLE public.patient_settings (
     patient_id UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
     habitual_bedtime TIME WITHOUT TIME ZONE,
     habitual_wake_time TIME WITHOUT TIME ZONE,
-    dark_mode_enforced BOOLEAN NOT NULL DEFAULT TRUE,
+    dark_mode_enforced BOOLEAN NOT NULL DEFAULT FALSE,
     preferred_voice TEXT,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

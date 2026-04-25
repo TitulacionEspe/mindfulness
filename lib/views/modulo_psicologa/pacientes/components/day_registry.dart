@@ -7,7 +7,7 @@ class DayRegistry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: AppColors.sectionWhite,
         borderRadius: BorderRadius.circular(20),
@@ -15,7 +15,7 @@ class DayRegistry extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Registro de días",
             style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -35,20 +35,24 @@ class DayRegistry extends StatelessWidget {
                     day,
                     style: TextStyle(
                       fontSize: 12,
-                      color: isToday ? AppColors.accent : Colors.grey,
+                      color: isToday
+                          ? AppColors.accent
+                          : AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5),
                   CircleAvatar(
                     radius: 15,
                     backgroundColor: isToday
                         ? AppColors.accent
-                        : Colors.grey.shade200,
+                        : AppColors.surfaceHigh,
                     child: Text(
                       "15",
                       style: TextStyle(
                         fontSize: 12,
-                        color: isToday ? Colors.white : Colors.black,
+                        color: isToday
+                            ? AppColors.surfaceLowest
+                            : AppColors.textPrimary,
                       ),
                     ),
                   ),

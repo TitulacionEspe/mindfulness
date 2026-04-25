@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 class CuestionarioStats extends StatelessWidget {
   const CuestionarioStats({super.key});
@@ -8,7 +9,7 @@ class CuestionarioStats extends StatelessWidget {
     return Row(
       children: [
         _buildStatBox('🔄', 'Respuestas Recientes', '(5)'),
-        const SizedBox(width: 15),
+        SizedBox(width: 15),
         _buildStatBox('⌛', 'Pendientes', '(12)'),
       ],
     );
@@ -19,11 +20,11 @@ class CuestionarioStats extends StatelessWidget {
       child: Container(
         height: 85,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surfaceLowest,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: AppColors.textPrimary.withValues(alpha: 0.05),
               blurRadius: 12,
             ),
           ],
@@ -31,21 +32,21 @@ class CuestionarioStats extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 5),
+            Text(emoji, style: TextStyle(fontSize: 24)),
+            SizedBox(height: 5),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF6C757D),
+              style: TextStyle(
+                color: AppColors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               count,
-              style: const TextStyle(
-                color: Color(0xFF6C757D),
+              style: TextStyle(
+                color: AppColors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),

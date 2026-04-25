@@ -45,9 +45,7 @@ class _RemindersViewState extends State<RemindersView> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: viewModel.isLoading && viewModel.reminders.isEmpty
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.mint),
-              )
+            ? Center(child: CircularProgressIndicator(color: AppColors.mint))
             : CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
@@ -62,7 +60,7 @@ class _RemindersViewState extends State<RemindersView> {
                               onPressed: () => Navigator.of(context).pop(),
                               style: OutlinedButton.styleFrom(
                                 padding: EdgeInsets.zero,
-                                side: const BorderSide(
+                                side: BorderSide(
                                   color: AppColors.outlineVariant,
                                 ),
                                 backgroundColor: AppColors.surfaceLow,
@@ -70,15 +68,15 @@ class _RemindersViewState extends State<RemindersView> {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back_ios_new_rounded,
                                 color: AppColors.textPrimary,
                                 size: 18,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          const Text(
+                          SizedBox(width: 12),
+                          Text(
                             'Recordatorios',
                             style: TextStyle(
                               color: AppColors.textPrimary,
@@ -92,8 +90,8 @@ class _RemindersViewState extends State<RemindersView> {
                   ),
                   SliverToBoxAdapter(
                     child: Container(
-                      margin: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                      padding: const EdgeInsets.all(18),
+                      margin: EdgeInsets.fromLTRB(20, 8, 20, 16),
+                      padding: EdgeInsets.all(18),
                       decoration: BoxDecoration(
                         color: AppColors.surfaceHigh,
                         borderRadius: BorderRadius.circular(20),
@@ -102,7 +100,7 @@ class _RemindersViewState extends State<RemindersView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Manten la constancia',
                             style: TextStyle(
                               color: AppColors.textPrimary,
@@ -111,8 +109,8 @@ class _RemindersViewState extends State<RemindersView> {
                               height: 1.08,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
+                          SizedBox(height: 8),
+                          Text(
                             'Configura avisos para higiene del sueno, inicio de rutina y pausas de relajacion.',
                             style: TextStyle(
                               color: AppColors.textSecondary,
@@ -121,10 +119,10 @@ class _RemindersViewState extends State<RemindersView> {
                             ),
                           ),
                           if (viewModel.errorMessage != null) ...[
-                            const SizedBox(height: 14),
+                            SizedBox(height: 14),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: AppColors.warningBg,
                                 borderRadius: BorderRadius.circular(14),
@@ -136,7 +134,7 @@ class _RemindersViewState extends State<RemindersView> {
                               ),
                               child: Text(
                                 viewModel.errorMessage!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.lavender,
                                   fontSize: 14,
                                 ),
@@ -169,7 +167,7 @@ class _RemindersViewState extends State<RemindersView> {
                         itemCount: viewModel.reminders.length,
                       ),
                     ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 96)),
+                  SliverToBoxAdapter(child: SizedBox(height: 96)),
                 ],
               ),
       ),
@@ -217,13 +215,13 @@ class _ReminderCard extends StatelessWidget {
       color: AppColors.surfaceHigh,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: AppColors.outlineVariant),
+        side: BorderSide(color: AppColors.outlineVariant),
       ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
@@ -235,7 +233,7 @@ class _ReminderCard extends StatelessWidget {
                   border: Border.all(color: AppColors.outlineVariant),
                 ),
                 alignment: Alignment.center,
-                child: const Icon(
+                child: Icon(
                   Icons.alarm_rounded,
                   color: AppColors.lavender,
                   size: 22,
@@ -248,7 +246,7 @@ class _ReminderCard extends StatelessWidget {
                   children: [
                     Text(
                       reminder.triggerTime.format(context),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -258,7 +256,7 @@ class _ReminderCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 10,
                             vertical: 6,
                           ),
@@ -268,7 +266,7 @@ class _ReminderCard extends StatelessWidget {
                           ),
                           child: Text(
                             reminder.type.label,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.lavender,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -277,10 +275,10 @@ class _ReminderCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       daysSummary,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
@@ -309,17 +307,17 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Center(
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: AppColors.surfaceHigh,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.outlineVariant),
           ),
-          child: const Text(
+          child: Text(
             'Aun no tienes recordatorios configurados. Usa "Nuevo aviso" para crear el primero.',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -380,7 +378,7 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
                 widget.reminder == null
                     ? 'Nuevo recordatorio'
                     : 'Editar recordatorio',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -388,10 +386,7 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
               ),
               if (widget.reminder != null)
                 IconButton(
-                  icon: const Icon(
-                    Icons.delete_outline,
-                    color: AppColors.error,
-                  ),
+                  icon: Icon(Icons.delete_outline, color: AppColors.error),
                   onPressed: () async {
                     final navigator = Navigator.of(context);
                     final success = await viewModel.deleteReminder(
@@ -404,8 +399,8 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
                 ),
             ],
           ),
-          const SizedBox(height: 22),
-          const Text(
+          SizedBox(height: 22),
+          Text(
             'Tipo de aviso',
             style: TextStyle(
               color: AppColors.lavender,
@@ -427,7 +422,7 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
                 },
                 selectedColor: AppColors.mint,
                 backgroundColor: AppColors.surfaceLow,
-                side: const BorderSide(color: AppColors.outlineVariant),
+                side: BorderSide(color: AppColors.outlineVariant),
                 labelStyle: TextStyle(
                   color: isSelected
                       ? AppColors.buttonPrimaryText
@@ -437,8 +432,8 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 22),
-          const Text(
+          SizedBox(height: 22),
+          Text(
             'Horario',
             style: TextStyle(
               color: AppColors.lavender,
@@ -446,7 +441,7 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Material(
             color: AppColors.surfaceLow,
             borderRadius: BorderRadius.circular(16),
@@ -456,13 +451,13 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
               ),
               title: Text(
                 _time.format(context),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.mint,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              trailing: const Icon(Icons.access_time, color: AppColors.mint),
+              trailing: Icon(Icons.access_time, color: AppColors.mint),
               onTap: () async {
                 final time = await showTimePicker(
                   context: context,
@@ -472,8 +467,8 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
               },
             ),
           ),
-          const SizedBox(height: 22),
-          const Text(
+          SizedBox(height: 22),
+          Text(
             'Dias',
             style: TextStyle(
               color: AppColors.lavender,
@@ -521,12 +516,10 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
                     }
                   },
             style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 56),
+              minimumSize: Size(double.infinity, 56),
             ),
             child: viewModel.isLoading
-                ? const CircularProgressIndicator(
-                    color: AppColors.buttonPrimaryText,
-                  )
+                ? CircularProgressIndicator(color: AppColors.buttonPrimaryText)
                 : const Text('Guardar'),
           ),
         ],

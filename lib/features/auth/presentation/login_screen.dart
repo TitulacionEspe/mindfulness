@@ -65,12 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Icono/Logo minimalista
-                const Icon(
+                Icon(
                   Icons.nights_stay_rounded,
                   size: 80,
                   color: AppColors.mint,
@@ -120,13 +120,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {},
-                    child: const Text(
+                    child: Text(
                       '¿Olvidaste tu contraseña?',
                       style: TextStyle(
                         color: AppColors.lavender,
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : () => _handleLogin(viewModel, context),
                     child: viewModel.isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
@@ -157,23 +157,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Link a Registro
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       '¿No tienes cuenta? ',
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
+                        MaterialPageRoute(builder: (_) => RegisterScreen()),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Regístrate aquí',
                         style: TextStyle(
                           color: AppColors.mint,
@@ -207,25 +205,22 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: controller,
           focusNode: focusNode,
           obscureText: obscureText,
           onSubmitted: onSubmitted,
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-            ),
+            hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
             suffixIcon: suffixIcon,
             filled: true,

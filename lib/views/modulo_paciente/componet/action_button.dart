@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 class ActionButton extends StatelessWidget {
   final String label;
@@ -29,7 +30,7 @@ class ActionButton extends StatelessWidget {
             BoxShadow(
               color: color.withValues(alpha: 0.3),
               blurRadius: 10,
-              offset: const Offset(0, 5),
+              offset: Offset(0, 5),
             ),
           ],
         ),
@@ -38,12 +39,12 @@ class ActionButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Icono en la parte superior
-            Icon(icon, color: Colors.white, size: 45),
+            Icon(icon, color: AppColors.surfaceLowest, size: 45),
             // Texto en la parte inferior
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.surfaceLowest,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

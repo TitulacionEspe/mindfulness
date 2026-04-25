@@ -23,13 +23,13 @@ class CuestionarioCardPro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 182,
-      margin: const EdgeInsets.only(right: 15),
+      margin: EdgeInsets.only(right: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceLowest,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.textPrimary.withValues(alpha: 0.05),
             blurRadius: 12,
           ),
         ],
@@ -57,7 +57,7 @@ class CuestionarioCardPro extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(emoji, style: const TextStyle(fontSize: 10)),
+                Text(emoji, style: TextStyle(fontSize: 10)),
               ],
             ),
           ),
@@ -66,31 +66,31 @@ class CuestionarioCardPro extends StatelessWidget {
             height: 120,
             width: double.infinity,
             color: AppColors.greyBg,
-            child: const Center(
+            child: Center(
               child: Text(
                 "Paciente",
-                style: TextStyle(color: Color(0xFF6C757D)),
+                style: TextStyle(color: AppColors.textSecondary),
               ),
             ),
           ),
           // Información inferior
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   patientName,
-                  style: const TextStyle(
-                    color: Color(0xFF6C757D),
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   testName,
-                  style: const TextStyle(
-                    color: Colors.black,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),

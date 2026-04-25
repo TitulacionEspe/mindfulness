@@ -43,7 +43,7 @@ class HomePsicologaView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Row(
+                    Row(
                       children: [
                         Expanded(
                           child: StatsCard(
@@ -63,7 +63,7 @@ class HomePsicologaView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     Text(
                       'Acciones Rápidas',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -71,8 +71,8 @@ class HomePsicologaView extends StatelessWidget {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const QuickActions(),
+                    SizedBox(height: 16),
+                    QuickActions(),
                   ],
                 ),
               ),
@@ -83,7 +83,7 @@ class HomePsicologaView extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: AppColors.mint,
-        child: const Icon(
+        child: Icon(
           Icons.chat_bubble_outline,
           color: AppColors.buttonPrimaryText,
         ),

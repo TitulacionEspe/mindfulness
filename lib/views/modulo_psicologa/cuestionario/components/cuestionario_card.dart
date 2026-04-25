@@ -26,44 +26,40 @@ class CuestionarioCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(
-                    Icons.timer_outlined,
-                    color: AppColors.mint,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 4),
+                  Icon(Icons.timer_outlined, color: AppColors.mint, size: 16),
+                  SizedBox(width: 4),
                   Text(
                     duration,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  const Icon(
+                  SizedBox(width: 16),
+                  Icon(
                     Icons.assignment_outlined,
                     color: AppColors.mint,
                     size: 16,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
                     questions,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
                     ),

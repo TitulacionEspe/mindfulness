@@ -21,16 +21,16 @@ class ActivityItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(15),
+      margin: EdgeInsets.only(bottom: 15),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceLowest,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.textPrimary.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -41,14 +41,14 @@ class ActivityItemCard extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: const Color(0xFFE9ECEF),
+              color: AppColors.surfaceHigh,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
               child: Text(emoji, style: const TextStyle(fontSize: 28)),
             ),
           ),
-          const SizedBox(width: 15),
+          SizedBox(width: 15),
           // Info Central
           Expanded(
             child: Column(
@@ -56,36 +56,33 @@ class ActivityItemCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.figmaBlack,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   category,
-                  style: const TextStyle(
-                    color: AppColors.figmaMuted,
-                    fontSize: 11,
-                  ),
+                  style: TextStyle(color: AppColors.figmaMuted, fontSize: 11),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 // Fila de tiempo y reproducciones
                 Row(
                   children: [
                     Text(
                       '⏱ $duration',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.figmaMuted,
                         fontSize: 9.5,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    SizedBox(width: 15),
                     Text(
                       stats,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.figmaMuted,
                         fontSize: 9.5,
                         fontWeight: FontWeight.w700,

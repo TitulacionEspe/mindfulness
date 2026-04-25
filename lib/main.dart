@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/supabase_config.dart';
+import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
@@ -18,25 +19,20 @@ import 'viewmodels/auth_viewmodel.dart';
 import 'viewmodels/psicologa_nav_viewmodel.dart';
 import 'viewmodels/routines_viewmodel.dart';
 import 'viewmodels/sleep_habits_viewmodel.dart';
+import 'viewmodels/theme_viewmodel.dart';
 
-/// App Entry Point.
 Future<void> main() async {
-  // Ensure Flutter bindings are initialized first
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Inicializa los datos de idioma para español
-  // Esto carga los nombres de los meses y días en 'es'
   await initializeDateFormatting('es', null);
 
-  // 1. Load environment variables
   try {
-    await dotenv.load(fileName: ".env");
-    debugPrint("Environment loaded successfully");
+    await dotenv.load(fileName: '.env');
+    debugPrint('Environment loaded successfully');
   } catch (e) {
-    debugPrint("Error loading .env file: $e");
+    debugPrint('Error loading .env file: $e');
   }
 
-  // 2. Initialize Supabase
   try {
     if (SupabaseConfig.isConfigured) {
       await Supabase.initialize(
@@ -45,15 +41,14 @@ Future<void> main() async {
       );
     }
   } catch (e) {
-    debugPrint("Supabase initialization failed: $e");
+    debugPrint('Supabase initialization failed: $e');
   }
 
-  // 3. Initialize Notification Service
   try {
     await NotificationService().init();
-    debugPrint("Notifications initialized successfully");
+    debugPrint('Notifications initialized successfully');
   } catch (e) {
-    debugPrint("Notification initialization failed: $e");
+    debugPrint('Notification initialization failed: $e');
   }
 
   runApp(const MyApp());
@@ -66,6 +61,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
         ChangeNotifierProvider(create: (_) => FreesoundViewModel()),
@@ -75,40 +71,50 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RoutinesViewModel()),
         ChangeNotifierProvider(create: (_) => RemindersViewModel()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Mindfulness - Gestión del Sueño',
-        theme: AppTheme.lightTheme,
-        home: Consumer<AuthViewModel>(
-          builder: (context, authViewModel, _) {
-            // If Supabase is not configured, show a helpful error screen
-            if (!SupabaseConfig.isConfigured) {
-              return const Scaffold(
-                body: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: Text(
-                      'Configuración faltante en el archivo .env\n\nPor favor, asegúrate de tener SUPABASE_URL y SUPABASE_ANON_KEY configurados.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.red, fontSize: 16),
-                    ),
-                  ),
-                ),
-              );
-            }
+      child: Consumer<ThemeViewModel>(
+        builder: (context, themeViewModel, _) {
+          AppColors.useThemeMode(themeViewModel.themeMode);
 
-            // Normal authentication flow
-            if (authViewModel.isAuthenticated) {
-              return const HomeSwitcher();
-            } else {
-              return const LoginScreen();
-            }
-          },
-        ),
-        routes: {
-          '/login': (_) => const LoginScreen(),
-          '/register': (_) => const RegisterScreen(),
-          '/home': (_) => const HomeSwitcher(),
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Mindfulness - Gestion del Sueno',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeViewModel.themeMode,
+            home: Consumer<AuthViewModel>(
+              builder: (context, authViewModel, _) {
+                if (!SupabaseConfig.isConfigured) {
+                  return Scaffold(
+                    body: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          'Configuracion faltante en el archivo .env\n\n'
+                          'Por favor, asegurate de tener SUPABASE_URL y '
+                          'SUPABASE_ANON_KEY configurados.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (authViewModel.isAuthenticated) {
+                  return const HomeSwitcher();
+                }
+                return const LoginScreen();
+              },
+            ),
+            routes: {
+              '/login': (_) => const LoginScreen(),
+              '/register': (_) => const RegisterScreen(),
+              '/home': (_) => const HomeSwitcher(),
+            },
+          );
         },
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 class HomeBanner extends StatelessWidget {
   const HomeBanner({super.key});
@@ -20,7 +21,7 @@ class HomeBanner extends StatelessWidget {
       child: Stack(
         children: [
           // Capa oscura para que el texto resalte
-          Container(color: Colors.black.withValues(alpha: 0.3)),
+          Container(color: AppColors.textPrimary.withValues(alpha: 0.3)),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -30,21 +31,18 @@ class HomeBanner extends StatelessWidget {
               children: [
                 // Caja blanca semi-transparente del título
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: AppColors.surfaceLowest.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Panel General",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: AppColors.textPrimary,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -52,7 +50,7 @@ class HomeBanner extends StatelessWidget {
                       Text(
                         "Psicologares",
                         style: TextStyle(
-                          color: Colors.green,
+                          color: AppColors.mint,
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
@@ -60,13 +58,13 @@ class HomeBanner extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Align(
+                SizedBox(height: 10),
+                Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
                     "Lunes, 30 Marzo 2026",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.surfaceLowest,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -56,9 +57,9 @@ class _SolicitarCitaViewState extends State<SolicitarCitaView> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text("✅ Solicitud enviada con éxito"),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.mint,
             ),
           );
           Navigator.pop(context); // Regresamos al home
@@ -68,7 +69,7 @@ class _SolicitarCitaViewState extends State<SolicitarCitaView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("❌ Error: $e"),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -80,11 +81,11 @@ class _SolicitarCitaViewState extends State<SolicitarCitaView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Nueva Cita"),
+        title: Text("Nueva Cita"),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black87,
+        backgroundColor: AppColors.background.withValues(alpha: 0),
+        foregroundColor: AppColors.textPrimary,
       ),
       body: _fetchingPros
           ? const Center(child: CircularProgressIndicator())
@@ -140,8 +141,10 @@ class _SolicitarCitaViewState extends State<SolicitarCitaView> {
                           selected: _selectedType == type,
                           onSelected: (val) =>
                               setState(() => _selectedType = type),
-                          selectedColor: Colors.indigo.withValues(alpha: 0.2),
-                          checkmarkColor: Colors.indigo,
+                          selectedColor: AppColors.lavender.withValues(
+                            alpha: 0.2,
+                          ),
+                          checkmarkColor: AppColors.lavender,
                         );
                       }).toList(),
                     ),
@@ -161,7 +164,7 @@ class _SolicitarCitaViewState extends State<SolicitarCitaView> {
                         hintText:
                             "Ej: Me he sentido muy ansioso esta semana...",
                         filled: true,
-                        fillColor: Colors.grey[100],
+                        fillColor: AppColors.surfaceLow,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -170,21 +173,24 @@ class _SolicitarCitaViewState extends State<SolicitarCitaView> {
                       validator: (val) =>
                           val!.isEmpty ? "Por favor escribe algo" : null,
                     ),
-                    const SizedBox(height: 40),
+                    SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
                         onPressed: _submit,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.indigo,
+                          backgroundColor: AppColors.lavender,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "Enviar Solicitud",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          style: TextStyle(
+                            color: AppColors.surfaceLowest,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),

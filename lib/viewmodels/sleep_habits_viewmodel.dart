@@ -24,7 +24,7 @@ class SleepHabitsViewModel extends ChangeNotifier {
   int _academicLoadDays = 0;
   int get academicLoadDays => _academicLoadDays;
 
-  bool _darkModeEnforced = true;
+  bool _darkModeEnforced = false;
   bool get darkModeEnforced => _darkModeEnforced;
 
   void setBedtime(TimeOfDay time) {
@@ -92,7 +92,7 @@ class SleepHabitsViewModel extends ChangeNotifier {
         }
 
         _academicLoadDays = response['academic_load_days'] ?? 0;
-        _darkModeEnforced = response['dark_mode_enforced'] ?? true;
+        _darkModeEnforced = response['dark_mode_enforced'] ?? false;
       } else {
         _hasCompletedOnboarding = false;
       }

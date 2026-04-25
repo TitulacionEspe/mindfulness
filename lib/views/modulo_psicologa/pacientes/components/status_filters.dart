@@ -9,7 +9,7 @@ class StatusFilters extends StatelessWidget {
     return Row(
       children: [
         _filterChip("Realizados", true),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         _filterChip("No realizados", false),
       ],
     );
@@ -17,11 +17,11 @@ class StatusFilters extends StatelessWidget {
 
   Widget _filterChip(String label, bool isSelected) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
         color: isSelected ? AppColors.accent : AppColors.sectionWhite,
         borderRadius: BorderRadius.circular(20),
-        border: isSelected ? null : Border.all(color: Colors.grey.shade300),
+        border: isSelected ? null : Border.all(color: AppColors.outlineVariant),
       ),
       child: Text(
         label,

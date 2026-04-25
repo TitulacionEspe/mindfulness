@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../model_ps/freesound_model.dart';
@@ -21,14 +22,14 @@ class SoundCard extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Elige una categoría o escribe una nueva:"),
-            const SizedBox(height: 15),
+            Text("Elige una categoría o escribe una nueva:"),
+            SizedBox(height: 15),
             TextField(
               controller: customController,
               decoration: InputDecoration(
                 hintText: "Ej: Insomnio, Ansiedad...",
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: AppColors.surfaceLow,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -50,7 +51,7 @@ class SoundCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar", style: TextStyle(color: Colors.red)),
+            child: Text("Cancelar", style: TextStyle(color: AppColors.error)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -80,7 +81,7 @@ class SoundCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("✅ Agregado a favoritos en '$category'"),
-            backgroundColor: Colors.green[700],
+            backgroundColor: AppColors.mint,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -89,9 +90,9 @@ class SoundCard extends StatelessWidget {
       // SNACKBAR DE ERROR (Lo que faltaba)
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text("❌ Ya existe en tus favoritos o hubo un error"),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -119,17 +120,17 @@ class SoundCard extends StatelessWidget {
               child: Image.network(
                 sound.waveformUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.waves),
+                errorBuilder: (_, __, ___) => Icon(Icons.waves),
               ),
             ),
           ),
           ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.indigo,
+              backgroundColor: AppColors.lavender,
               child: IconButton(
                 icon: Icon(
                   isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: Colors.white,
+                  color: AppColors.surfaceLowest,
                 ),
                 onPressed: () => viewModel.togglePlay(sound.previewUrl),
               ),
@@ -141,7 +142,7 @@ class SoundCard extends StatelessWidget {
             ),
             subtitle: Text("${sound.duration.toStringAsFixed(1)} seg"),
             trailing: IconButton(
-              icon: const Icon(Icons.settings, color: Colors.blueGrey),
+              icon: Icon(Icons.settings, color: AppColors.outline),
               onPressed: () => _showCategoryDialog(context, viewModel),
             ),
           ),

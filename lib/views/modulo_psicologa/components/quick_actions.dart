@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -8,29 +9,29 @@ class QuickActions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Acciones Rápidas",
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.surfaceLowest,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 15),
+        SizedBox(height: 15),
         _buildActionItem(
           "Asignar Nueva Actividad",
           Icons.arrow_forward,
-          Colors.white,
+          AppColors.surfaceLowest,
         ),
         _buildActionItem(
           "Revisar Cuestionarios (12)",
           Icons.arrow_forward,
-          Colors.white,
+          AppColors.surfaceLowest,
         ),
         _buildActionItem(
           "Atender Alertas (2)",
           Icons.arrow_forward,
-          const Color(0xFFFFF1C1),
+          AppColors.tertiaryContainer,
           isAlert: true,
         ),
       ],
@@ -56,19 +57,25 @@ class QuickActions extends StatelessWidget {
           Row(
             children: [
               if (isAlert)
-                const Icon(Icons.warning, color: Colors.orange, size: 20),
-              if (isAlert) const SizedBox(width: 10),
+                Icon(Icons.warning, color: AppColors.tertiary, size: 20),
+              if (isAlert) SizedBox(width: 10),
               Text(
                 title,
                 style: TextStyle(
-                  color: isAlert ? Colors.brown : Colors.black54,
+                  color: isAlert
+                      ? AppColors.tertiaryOnContainer
+                      : AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                 ),
               ),
             ],
           ),
-          Icon(icon, color: isAlert ? Colors.orange : Colors.black26, size: 18),
+          Icon(
+            icon,
+            color: isAlert ? AppColors.tertiary : AppColors.outlineVariant,
+            size: 18,
+          ),
         ],
       ),
     );

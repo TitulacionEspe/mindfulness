@@ -22,11 +22,11 @@ class ProfessionalHomeScreen extends StatelessWidget {
 
     // 2. Tus 5 páginas
     final List<Widget> pages = [
-      const HomePsicologaView(),
-      const PacientesView(),
-      const AsignarView(),
-      const ActividadesView(),
-      const CitasView(),
+      HomePsicologaView(),
+      PacientesView(),
+      AsignarView(),
+      ActividadesView(),
+      CitasView(),
     ];
 
     return Scaffold(
@@ -35,13 +35,13 @@ class ProfessionalHomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Panel Profesional',
           style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: AppColors.accent),
+            icon: Icon(Icons.logout, color: AppColors.accent),
             onPressed: () async {
               await authViewModel.signOut(); // Funcionalidad de tu compañero
             },

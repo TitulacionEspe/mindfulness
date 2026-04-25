@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -38,12 +39,15 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
               ).textTheme.displayLarge?.copyWith(fontSize: 24),
             ),
-            const SizedBox(height: 8),
-            const Text('Acceso total al sistema y control de perfiles.'),
-            const SizedBox(height: 24),
-            const Text(
+            SizedBox(height: 8),
+            Text('Acceso total al sistema y control de perfiles.'),
+            SizedBox(height: 24),
+            Text(
               'Funcionalidad en desarrollo',
-              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),

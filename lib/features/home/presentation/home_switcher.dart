@@ -19,7 +19,7 @@ class HomeSwitcher extends StatelessWidget {
     // 1. Carga inicial de autenticación o rol
     if (authViewModel.isLoading ||
         (authViewModel.isAuthenticated && authViewModel.userRole == null)) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.background,
         body: Center(child: CircularProgressIndicator(color: AppColors.mint)),
       );
@@ -27,7 +27,7 @@ class HomeSwitcher extends StatelessWidget {
 
     // 2. Si no está autenticado
     if (!authViewModel.isAuthenticated) {
-      return const Scaffold(backgroundColor: AppColors.background);
+      return Scaffold(backgroundColor: AppColors.background);
     }
 
     // 3. Consentimiento obligatorio

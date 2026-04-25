@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../componets_ps/favorite_sound_card.dart';
@@ -26,32 +27,32 @@ class _FavoritosViewState extends State<FavoritosView> {
     final viewModel = context.watch<FavoritesViewModel>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Fondo gris azulado muy suave
+      backgroundColor: AppColors.background, // Fondo gris azulado muy suave
       appBar: AppBar(
         // FLECHA DE RETROCESO PERSONALIZADA
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Mi Biblioteca",
           style: TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surfaceLowest,
         elevation: 0,
         centerTitle: true,
         actions: [
           // BOTÓN DE REFRESCAR
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.indigo),
+            icon: Icon(Icons.refresh, color: AppColors.lavender),
             onPressed: () => viewModel.loadFavorites(),
           ),
         ],
@@ -84,25 +85,25 @@ class _FavoritosViewState extends State<FavoritosView> {
         children: [
           // Opción "Todos"
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: EdgeInsets.only(right: 8.0),
             child: FilterChip(
-              label: const Text("Todos"),
+              label: Text("Todos"),
               selected: viewModel.selectedCategory == null,
               onSelected: (_) => viewModel.filterByCategory(null),
-              selectedColor: Colors.indigo.withValues(alpha: 0.2),
-              checkmarkColor: Colors.indigo,
+              selectedColor: AppColors.lavender.withValues(alpha: 0.2),
+              checkmarkColor: AppColors.lavender,
             ),
           ),
           // Categorías dinámicas (las que tú inventaste al guardar)
           ...viewModel.categories.map((cat) {
             return Padding(
-              padding: const EdgeInsets.only(right: 8.0),
+              padding: EdgeInsets.only(right: 8.0),
               child: FilterChip(
                 label: Text(cat),
                 selected: viewModel.selectedCategory == cat,
                 onSelected: (_) => viewModel.filterByCategory(cat),
-                selectedColor: Colors.teal.withValues(alpha: 0.2),
-                checkmarkColor: Colors.teal,
+                selectedColor: AppColors.mint.withValues(alpha: 0.2),
+                checkmarkColor: AppColors.mint,
               ),
             );
           }),
@@ -129,20 +130,24 @@ class _FavoritosViewState extends State<FavoritosView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.library_music_outlined, size: 80, color: Colors.grey[300]),
-          const SizedBox(height: 20),
+          Icon(
+            Icons.library_music_outlined,
+            size: 80,
+            color: AppColors.textSecondary.withValues(alpha: 0.72),
+          ),
+          SizedBox(height: 20),
           Text(
             "No hay recursos en esta categoría",
             style: TextStyle(
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             "Guarda sonidos desde el buscador para verlos aquí",
-            style: TextStyle(color: Colors.grey[400], fontSize: 14),
+            style: TextStyle(color: AppColors.outline, fontSize: 14),
           ),
         ],
       ),

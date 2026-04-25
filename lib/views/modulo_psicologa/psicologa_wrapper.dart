@@ -22,7 +22,7 @@ class PsicologaWrapper extends StatelessWidget {
       const PacientesView(),
       const AsignarView(),
       const ActividadesView(),
-      const CitasView(),
+      CitasView(),
     ];
 
     return Scaffold(

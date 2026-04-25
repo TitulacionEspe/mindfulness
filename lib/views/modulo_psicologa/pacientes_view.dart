@@ -32,15 +32,15 @@ class PacientesView extends StatelessWidget {
                   // 3. FILA DE BÚSQUEDA
                   const PatientSearchRow(),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // 4. FILTROS DE ESTADO
-                  const StatusFilters(),
+                  StatusFilters(),
 
-                  const SizedBox(height: 25),
+                  SizedBox(height: 25),
 
                   // 5. TÍTULO DE LA LISTA
-                  const Text(
+                  Text(
                     "Lista de pacientes",
                     style: TextStyle(
                       color: AppColors.textPrimary,

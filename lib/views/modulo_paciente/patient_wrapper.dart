@@ -28,12 +28,12 @@ class _PatientWrapperState extends State<PatientWrapper> {
   }
 
   final List<Widget> _pages = [
-    const Center(
+    Center(
       child: Text('Home', style: TextStyle(color: AppColors.textPrimary)),
     ),
-    const RoutinesLibraryView(),
-    const CitaCont(),
-    const Center(
+    RoutinesLibraryView(),
+    CitaCont(),
+    Center(
       child: Text('Logros', style: TextStyle(color: AppColors.textPrimary)),
     ),
     const ProfileView(),
@@ -50,11 +50,11 @@ class _PatientWrapperState extends State<PatientWrapper> {
     final sleepViewModel = context.watch<SleepHabitsViewModel>();
 
     if (!sleepViewModel.hasCompletedOnboarding && !sleepViewModel.isLoading) {
-      return const SleepHabitsView();
+      return SleepHabitsView();
     }
 
     if (sleepViewModel.isLoading && !sleepViewModel.hasCompletedOnboarding) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.background,
         body: Center(child: CircularProgressIndicator(color: AppColors.mint)),
       );
@@ -64,7 +64,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
       backgroundColor: AppColors.background,
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
             top: BorderSide(color: AppColors.navBorder, width: 1.0),
           ),

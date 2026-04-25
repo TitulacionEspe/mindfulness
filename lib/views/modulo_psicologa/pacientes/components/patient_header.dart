@@ -12,7 +12,7 @@ class PatientHeader extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Pacientes",
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -24,16 +24,12 @@ class PatientHeader extends StatelessWidget {
             CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.cardBackground,
-              child: const Icon(
-                Icons.person,
-                color: AppColors.textPrimary,
-                size: 20,
-              ),
+              child: Icon(Icons.person, color: AppColors.textPrimary, size: 20),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: 8),
+        Text(
           "Lista de pacientes para asignar una nueva actividad o cuestionario",
           style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),

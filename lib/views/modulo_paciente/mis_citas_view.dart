@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:intl/intl.dart'; // Para formatear la fecha
 import 'package:provider/provider.dart';
 
@@ -27,13 +28,16 @@ class _MisCitasViewState extends State<MisCitasView> {
     final citas = viewModel.allAppointments;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Mis Solicitudes",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surfaceLowest,
         elevation: 0,
         centerTitle: true,
       ),
@@ -73,52 +77,48 @@ class _MisCitasViewState extends State<MisCitasView> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 _buildStatusBadge(appointment.status),
-                const Spacer(),
+                Spacer(),
                 Text(
                   appointment.type,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.indigo,
+                    color: AppColors.lavender,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            const Text(
+            SizedBox(height: 15),
+            Text(
               "Motivo:",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             Text(
               appointment.motive,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
 
             if (appointment.scheduledDate != null) ...[
-              const Divider(height: 30),
+              Divider(height: 30),
               Row(
                 children: [
-                  const Icon(
-                    Icons.calendar_month,
-                    size: 18,
-                    color: Colors.teal,
-                  ),
+                  Icon(Icons.calendar_month, size: 18, color: AppColors.mint),
                   const SizedBox(width: 8),
                   Text(
                     DateFormat(
                       'EEEE d MMMM - hh:mm a',
                       'es',
                     ).format(appointment.scheduledDate!),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.timer_outlined,
                     size: 18,
-                    color: Colors.orange,
+                    color: AppColors.tertiary,
                   ),
                   const SizedBox(width: 8),
                   Text("Duración: ${appointment.durationMinutes} min"),
@@ -139,8 +139,8 @@ class _MisCitasViewState extends State<MisCitasView> {
                         'RECHAZADA',
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
+                        foregroundColor: AppColors.error,
+                        side: BorderSide(color: AppColors.error),
                       ),
                       child: const Text("Rechazar"),
                     ),
@@ -155,11 +155,11 @@ class _MisCitasViewState extends State<MisCitasView> {
                         'CONFIRMADA',
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.mint,
                       ),
-                      child: const Text(
+                      child: Text(
                         "Aceptar Hora",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppColors.surfaceLowest),
                       ),
                     ),
                   ),
@@ -201,19 +201,19 @@ class _MisCitasViewState extends State<MisCitasView> {
     Color color;
     switch (status) {
       case 'SOLICITADA':
-        color = Colors.orange;
+        color = AppColors.tertiary;
         break;
       case 'PROPUESTA':
-        color = Colors.blue;
+        color = AppColors.lavender;
         break;
       case 'CONFIRMADA':
-        color = Colors.green;
+        color = AppColors.mint;
         break;
       case 'RECHAZADA':
-        color = Colors.red;
+        color = AppColors.error;
         break;
       default:
-        color = Colors.grey;
+        color = AppColors.textSecondary;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

@@ -26,7 +26,7 @@ class CitaCont extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.count(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
       crossAxisSpacing: 15,
       mainAxisSpacing: 15,

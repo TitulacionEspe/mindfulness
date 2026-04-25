@@ -7,11 +7,11 @@ class PatientSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: AppColors.surfaceLowest),
       decoration: InputDecoration(
         hintText: "Busca el nombre del paciente",
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
-        prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+        hintStyle: TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
         filled: true,
         fillColor: AppColors.cardBackground,
         border: OutlineInputBorder(

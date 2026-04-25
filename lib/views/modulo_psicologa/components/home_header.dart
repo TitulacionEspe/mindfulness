@@ -14,21 +14,21 @@ class HomeHeader extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "¡Hola Buenos Dias!",
               style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               userName,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               "\"Un dia a la vez...\"",
               style: TextStyle(
                 color: AppColors.lavender,
@@ -40,7 +40,7 @@ class HomeHeader extends StatelessWidget {
         ),
         Stack(
           children: [
-            const Icon(
+            Icon(
               Icons.notifications_none,
               color: AppColors.textPrimary,
               size: 30,
@@ -49,8 +49,8 @@ class HomeHeader extends StatelessWidget {
               right: 0,
               top: 0,
               child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: const BoxDecoration(
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
                   color: AppColors.error,
                   shape: BoxShape.circle,
                 ),

@@ -7,11 +7,11 @@ class CuestionarioSearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: AppColors.surfaceLowest),
       decoration: InputDecoration(
         hintText: "Buscar test psicológico...",
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
-        suffixIcon: const Icon(Icons.search, color: AppColors.accent),
+        hintStyle: TextStyle(color: AppColors.textSecondary),
+        suffixIcon: Icon(Icons.search, color: AppColors.accent),
         filled: true,
         fillColor: AppColors.cardBackground, // Tu azul oscuro de componentes
         border: OutlineInputBorder(

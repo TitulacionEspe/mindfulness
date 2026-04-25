@@ -75,11 +75,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background.withValues(alpha: 0),
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.textPrimary,
           ),
@@ -87,14 +87,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              const Icon(
-                Icons.person_add_rounded,
-                size: 60,
-                color: AppColors.mint,
-              ),
+              Icon(Icons.person_add_rounded, size: 60, color: AppColors.mint),
               const SizedBox(height: 16),
               Text(
                 'Crea tu Cuenta',
@@ -166,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ? null
                       : () => _handleSignUp(viewModel, context),
                   child: viewModel.isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
@@ -198,23 +194,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: obscureText,
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-            ),
+            hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
             suffixIcon: suffixIcon,
             filled: true,

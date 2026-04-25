@@ -67,26 +67,23 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
                 onPressed: viewModel.isCompleting
                     ? null
                     : () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close, color: AppColors.textPrimary),
+                icon: Icon(Icons.close, color: AppColors.textPrimary),
                 tooltip: 'Salir de la sesion',
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               Text(
                 widget.routine.title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
                   height: 1.15,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Tiempo restante ${_formatTime(_remainingSeconds)}',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
               ),
               const Spacer(),
               Center(
@@ -107,16 +104,16 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
                           240,
                         ),
                         alignment: Alignment.center,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: AppColors.successBg,
                           shape: BoxShape.circle,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(28),
+                          padding: EdgeInsets.all(28),
                           child: Text(
                             phaseText,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
@@ -129,17 +126,17 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
                   },
                 ),
               ),
-              const Spacer(),
+              Spacer(),
               Text(
                 _guidanceText(widget.routine),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 16,
                   height: 1.45,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 height: 54,
@@ -231,7 +228,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
         backgroundColor: saved ? AppColors.surface : AppColors.error,
         content: Text(
           saved ? 'Sesion registrada correctamente.' : viewModel.errorMessage!,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
         ),
       ),
     );

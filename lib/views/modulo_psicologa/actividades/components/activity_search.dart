@@ -15,14 +15,11 @@ class ActivitySearch extends StatelessWidget {
       ),
       child: TextField(
         onChanged: onChanged,
-        style: const TextStyle(color: AppColors.textPrimary),
+        style: TextStyle(color: AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: 'Buscar actividades...',
-          hintStyle: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
-          ),
-          prefixIcon: const Icon(Icons.search, color: AppColors.mint),
+          hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: AppColors.mint),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),

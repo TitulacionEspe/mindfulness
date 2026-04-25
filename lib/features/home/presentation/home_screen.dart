@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: Duration(milliseconds: 800),
       vsync: this,
     );
     _animationController.forward();
@@ -40,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        title: const Text(
-          'Inicio',
-          style: TextStyle(color: AppColors.textPrimary),
-        ),
+        title: Text('Inicio', style: TextStyle(color: AppColors.textPrimary)),
         actions: [
           Consumer<AuthViewModel>(
             builder: (context, viewModel, _) => IconButton(
@@ -51,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
                 // Just call signOut, the Consumer in main.dart handles redirection
                 await viewModel.signOut();
               },
-              icon: const Icon(Icons.logout, color: AppColors.textPrimary),
+              icon: Icon(Icons.logout, color: AppColors.textPrimary),
             ),
           ),
         ],
@@ -77,11 +74,11 @@ class _HomeScreenState extends State<HomeScreen>
                               fontSize: 32,
                             ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Consumer<AuthViewModel>(
                         builder: (context, viewModel, _) => Text(
                           'Tu sesión está activa: ${viewModel.currentUser?.email ?? 'Usuario'}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
                           ),
@@ -90,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // Quick stats cards
                 _buildStatsCard(
@@ -99,14 +96,14 @@ class _HomeScreenState extends State<HomeScreen>
                   value: '0',
                   color: AppColors.mint,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildStatsCard(
                   icon: Icons.trending_up,
                   label: 'Racha Actual',
                   value: '--',
                   color: AppColors.lavender,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // Getting started section
                 Text(
@@ -133,11 +130,11 @@ class _HomeScreenState extends State<HomeScreen>
                   title: 'Configurar Preferencias',
                   subtitle: 'Personaliza tu experiencia',
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // Info banner
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
@@ -146,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline,
                         color: AppColors.lavender,
                         size: 24,
@@ -156,14 +153,14 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Integración en Progreso',
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               'Estamos integrando todas las funcionalidades. Las pantallas de sesiones y tracking estarán disponibles pronto.',
                               style: TextStyle(
@@ -194,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen>
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -211,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen>
     required String subtitle,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -252,23 +249,23 @@ class _HomeScreenState extends State<HomeScreen>
       child: Row(
         children: [
           Icon(icon, color: AppColors.mint, size: 28),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
@@ -276,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen>
               ],
             ),
           ),
-          const Icon(
+          Icon(
             Icons.arrow_forward_ios,
             color: AppColors.textSecondary,
             size: 16,

@@ -16,8 +16,8 @@ class PatientCardWhite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(15),
+      margin: EdgeInsets.only(bottom: 15),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
@@ -41,7 +41,7 @@ class PatientCardWhite extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: AppColors.textPrimary,
@@ -49,12 +49,12 @@ class PatientCardWhite extends StatelessWidget {
                 ),
                 Text(
                   task,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: progress,
                   backgroundColor: AppColors.navBorder,
@@ -64,13 +64,10 @@ class PatientCardWhite extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           // Icono de Configuración/Más
           IconButton(
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: AppColors.textSecondary,
-            ),
+            icon: Icon(Icons.settings_outlined, color: AppColors.textSecondary),
             onPressed: () {}, // Aquí iría la configuración del paciente
           ),
         ],

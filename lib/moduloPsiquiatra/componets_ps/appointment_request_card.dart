@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 import '../../moduloCitas/model/appointment_model.dart';
 
@@ -29,19 +30,16 @@ class AppointmentRequestCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.1),
+                    color: AppColors.tertiaryBg,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     appointment.type.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: Colors.orange,
+                      color: AppColors.tertiary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -49,53 +47,56 @@ class AppointmentRequestCard extends StatelessWidget {
                 ElevatedButton(
                   onPressed: onTap,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
+                    backgroundColor: AppColors.lavender,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
-                    minimumSize: const Size(80, 35),
+                    minimumSize: Size(80, 35),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Gestionar",
-                    style: TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(
+                      color: AppColors.surfaceLowest,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // CUERPO: MOTIVO
-            const Text(
+            Text(
               "Motivo de la consulta:",
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey,
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               appointment.motive,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
                 height: 1.3,
               ),
             ),
 
-            const Divider(height: 24),
+            Divider(height: 24),
 
             // PIE: ID / REFERENCIA
             Text(
               "ID de solicitud: ${appointment.id?.substring(0, 8) ?? 'Pendiente'}",
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.grey[400],
+                color: AppColors.outline,
                 fontStyle: FontStyle.italic,
               ),
             ),

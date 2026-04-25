@@ -16,8 +16,8 @@ class PatientCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
@@ -28,9 +28,9 @@ class PatientCard extends StatelessWidget {
           CircleAvatar(
             radius: 24,
             backgroundColor: AppColors.accent.withValues(alpha: 0.2),
-            child: const Icon(Icons.person, color: AppColors.accent),
+            child: Icon(Icons.person, color: AppColors.accent),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           // Info Central
           Expanded(
             child: Column(
@@ -38,7 +38,7 @@ class PatientCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -46,12 +46,12 @@ class PatientCard extends StatelessWidget {
                 ),
                 Text(
                   condition,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 // Barra de progreso delgada
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
@@ -60,30 +60,28 @@ class PatientCard extends StatelessWidget {
                     backgroundColor: AppColors.textPrimary.withValues(
                       alpha: 0.05,
                     ),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.mint,
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.mint),
                     minHeight: 5,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           // Indicador de porcentaje y check
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "${(progress * 100).toInt()}%",
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.mint,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
               ),
-              const SizedBox(height: 4),
-              const Icon(Icons.check_circle, color: AppColors.mint, size: 22),
+              SizedBox(height: 4),
+              Icon(Icons.check_circle, color: AppColors.mint, size: 22),
             ],
           ),
         ],

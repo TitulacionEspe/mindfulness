@@ -21,6 +21,7 @@ Este documento resume el esquema SQL actual, columnas por tabla, Ã­ndices y polÃ
 | role       | user_role    | default 'patient'                                |
 | segment    | user_segment | default 'student'                                |
 | full_name  | TEXT         |                                                  |
+| theme_mode | TEXT         | default 'light'; valores 'light', 'dark'         |
 | created_at | TIMESTAMPTZ  | default NOW()                                    |
 | updated_at | TIMESTAMPTZ  | default NOW(); trigger `set_updated_at_profiles` |
 | is_active  | BOOLEAN      | default TRUE                                     |
@@ -42,7 +43,7 @@ Este documento resume el esquema SQL actual, columnas por tabla, Ã­ndices y polÃ
 | patient_id         | UUID PK     | FK -> `public.profiles(id)`                      |
 | habitual_bedtime   | TIME        | horario preferido para dormir                    |
 | habitual_wake_time | TIME        | horario de despertar                             |
-| dark_mode_enforced | BOOLEAN     | default TRUE                                     |
+| dark_mode_enforced | BOOLEAN     | default FALSE                                    |
 | preferred_voice    | TEXT        | voz TTS preferida                                |
 | updated_at         | TIMESTAMPTZ | default NOW(); trigger `set_updated_at_settings` |
 

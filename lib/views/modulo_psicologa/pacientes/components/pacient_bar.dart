@@ -32,16 +32,13 @@ class PacientBar extends StatelessWidget {
               children: [
                 // Caja blanca semi-transparente del título
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   decoration: BoxDecoration(
                     // 2. Usando .withValues aquí también
                     color: AppColors.textPrimary.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -63,8 +60,8 @@ class PacientBar extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Align(
+                SizedBox(height: 10),
+                Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
                     "Lunes, 30 Marzo 2026",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:mindfulness_app/views/modulo_psicologa/actividades/components/activity_action_buttons.dart';
 
 import 'actividades/components/activi_banner.dart';
@@ -37,17 +38,17 @@ class ActividadesView extends StatelessWidget {
                   // 2. Filtros de Categorías
                   const CategoryFilters(),
 
-                  const SizedBox(height: 30),
+                  SizedBox(height: 30),
                   // 1. Buscador
-                  const ActivitySearch(),
+                  ActivitySearch(),
 
-                  const SizedBox(height: 30),
+                  SizedBox(height: 30),
 
                   // 3. Título de la lista
-                  const Text(
+                  Text(
                     "Explorar Actividades",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.surfaceLowest,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

@@ -17,13 +17,13 @@ class CitasView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BannerCita(),
+              BannerCita(),
 
               // Título de la sección
-              const SizedBox(height: 5),
-              const Text(
+              SizedBox(height: 5),
+              Text(
                 "Organiza tu agenda del día",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
 
               const SizedBox(height: 25),
@@ -36,16 +36,18 @@ class CitasView extends StatelessWidget {
               // 2. ESPACIO PREPARADO PARA OTROS COMPONENTES
               // Aquí puedes llamar a otros widgets en el futuro
               _buildSectionTitle("Próximas Citas"),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               // Ejemplo de un componente futuro (un placeholder)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surfaceLowest,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                  border: Border.all(
+                    color: AppColors.outlineVariant.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: const Center(
                   child: Text("Aquí irán más componentes en el futuro"),

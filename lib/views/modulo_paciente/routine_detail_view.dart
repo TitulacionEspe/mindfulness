@@ -20,19 +20,19 @@ class RoutineDetailView extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 20, 12),
+                padding: EdgeInsets.fromLTRB(8, 8, 20, 12),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back,
                         color: AppColors.textPrimary,
                       ),
                       tooltip: 'Volver',
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
+                    SizedBox(width: 4),
+                    Text(
                       'Detalle',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -45,12 +45,12 @@ class RoutineDetailView extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 6, 20, 110),
+              padding: EdgeInsets.fromLTRB(20, 6, 20, 110),
               sliver: SliverList(
                 delegate: SliverChildListDelegate.fixed([
                   Text(
                     routine.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
@@ -66,12 +66,12 @@ class RoutineDetailView extends StatelessWidget {
                       _Pill(text: routine.durationLabel),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   _SurfaceSection(
                     title: 'Antes de iniciar',
                     child: Text(
                       routine.description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
                         height: 1.5,
@@ -89,8 +89,8 @@ class RoutineDetailView extends StatelessWidget {
                     ),
                   ),
                   if (routine.category == RoutineCategory.breathing) ...[
-                    const SizedBox(height: 16),
-                    const _SurfaceSection(
+                    SizedBox(height: 16),
+                    _SurfaceSection(
                       title: 'Cuidado',
                       child: Text(
                         'Si aparece mareo, incomodidad o ansiedad, detente y vuelve a tu respiracion natural.',
@@ -177,7 +177,7 @@ class _SurfaceSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
@@ -187,7 +187,7 @@ class _SurfaceSection extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -210,7 +210,7 @@ class _StepRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -218,24 +218,24 @@ class _StepRow extends StatelessWidget {
             width: 30,
             height: 30,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.warningBg,
               shape: BoxShape.circle,
             ),
             child: Text(
               '$number',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.lavender,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 16,
                 height: 1.45,
@@ -256,14 +256,14 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.warningBg,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.lavender,
           fontSize: 14,
           fontWeight: FontWeight.w600,

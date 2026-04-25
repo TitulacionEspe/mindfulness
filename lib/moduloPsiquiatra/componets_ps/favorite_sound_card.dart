@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../model_ps/favorite_model.dart';
@@ -28,17 +29,17 @@ class FavoriteSoundCard extends StatelessWidget {
               child: Image.network(
                 favorite.waveformUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.music_note),
+                errorBuilder: (_, __, ___) => Icon(Icons.music_note),
               ),
             ),
           ),
           ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.teal,
+              backgroundColor: AppColors.mint,
               child: IconButton(
                 icon: Icon(
                   isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: Colors.white,
+                  color: AppColors.surfaceLowest,
                 ),
                 onPressed: () => viewModel.togglePlay(favorite.previewUrl),
               ),
@@ -51,7 +52,7 @@ class FavoriteSoundCard extends StatelessWidget {
             subtitle: Text("Categoría: ${favorite.category}"),
             // EL CAMBIO: Botón para eliminar
             trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              icon: Icon(Icons.delete_outline, color: AppColors.error),
               onPressed: () => viewModel.removeFavorite(favorite.externalId),
             ),
           ),

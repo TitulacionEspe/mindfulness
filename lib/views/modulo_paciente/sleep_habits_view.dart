@@ -28,16 +28,16 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
       backgroundColor: AppColors.background,
       appBar: viewModel.hasCompletedOnboarding
           ? AppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppColors.background.withValues(alpha: 0),
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.arrow_back_ios_new_rounded,
                   color: AppColors.textPrimary,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const Text(
+              title: Text(
                 'Ajustes de Sueño',
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
               ),
@@ -45,9 +45,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
           : null,
       body: SafeArea(
         child: viewModel.isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.mint),
-              )
+            ? Center(child: CircularProgressIndicator(color: AppColors.mint))
             : CustomScrollView(
                 slivers: [
                   if (!viewModel.hasCompletedOnboarding)
@@ -88,10 +86,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                                 if (time != null) viewModel.setBedtime(time);
                               },
                             ),
-                            const Divider(
-                              color: AppColors.navBorder,
-                              height: 24,
-                            ),
+                            Divider(color: AppColors.navBorder, height: 24),
                             _buildTimeTile(
                               label: 'Hora de despertar',
                               icon: Icons.wb_sunny_outlined,
@@ -139,14 +134,14 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                         title: 'Preferencias',
                         child: SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text(
+                          title: Text(
                             'Forzar modo oscuro',
                             style: TextStyle(
                               fontSize: 16,
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          subtitle: const Text(
+                          subtitle: Text(
                             'Ideal para reducir la fatiga visual nocturna.',
                             style: TextStyle(
                               fontSize: 12,
@@ -158,14 +153,14 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                           onChanged: (val) => viewModel.setDarkMode(val),
                         ),
                       ),
-                      const SizedBox(height: 100),
+                      SizedBox(height: 100),
                     ]),
                   ),
                 ],
               ),
       ),
       bottomSheet: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         color: AppColors.background,
         child: ElevatedButton(
           onPressed: viewModel.isLoading
@@ -202,13 +197,13 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: AppColors.lavender,
@@ -232,23 +227,20 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
             Icon(icon, color: AppColors.mint, size: 24),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textPrimary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
               ),
             ),
             Text(
               time.format(context),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.mint,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/view_ps/favoritos_view.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/view_ps/recursos.dart';
 
@@ -36,17 +37,17 @@ class ActivityActionButtons extends StatelessWidget {
           child: _ActionButton(
             label: 'Buscar Recursos',
             icon: Icons.search,
-            color: const Color(0xFF4A90E2), // Un azul llamativo
+            color: AppColors.lavender, // Un azul llamativo
             onTap: () => _goToResources(context),
           ),
         ),
-        const SizedBox(width: 15),
+        SizedBox(width: 15),
         // Botón Favoritos
         Expanded(
           child: _ActionButton(
             label: 'Biblioteca',
             icon: Icons.collections_bookmark,
-            color: const Color(0xFFFF5A5F), // Un rojo suave
+            color: AppColors.error, // Un rojo suave
             onTap: () => _goToFavorites(context),
           ),
         ),

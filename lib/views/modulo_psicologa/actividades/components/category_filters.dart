@@ -9,10 +9,10 @@ class CategoryFilters extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Categorías',
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.surfaceLowest,
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
@@ -37,7 +37,7 @@ class CategoryFilters extends StatelessWidget {
 
   Widget _buildChip(String label, bool isActive) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: isActive ? AppColors.figmaBlack : AppColors.figmaGrayBg,
         borderRadius: BorderRadius.circular(20),
@@ -45,7 +45,7 @@ class CategoryFilters extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isActive ? Colors.white : AppColors.figmaBlack,
+          color: isActive ? AppColors.surfaceLowest : AppColors.figmaBlack,
           fontSize: 11.5,
           fontWeight: FontWeight.w500,
         ),
@@ -55,15 +55,15 @@ class CategoryFilters extends StatelessWidget {
 
   Widget _buildCreateButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 9),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: AppColors.textPrimary,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Text(
+      child: Text(
         'Crear',
         style: TextStyle(
-          color: Colors.white,
+          color: AppColors.surfaceLowest,
           fontSize: 13,
           fontWeight: FontWeight.w400,
         ),

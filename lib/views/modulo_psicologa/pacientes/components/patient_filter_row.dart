@@ -8,7 +8,7 @@ class PatientFilterRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Text(
+        Text(
           "Filtrar por",
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -17,7 +17,7 @@ class PatientFilterRow extends StatelessWidget {
         ),
         const SizedBox(width: 15),
         _buildFilterChip("Ultimos", true),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         _buildFilterChip("Nuevos", false),
       ],
     );
@@ -25,7 +25,7 @@ class PatientFilterRow extends StatelessWidget {
 
   Widget _buildFilterChip(String label, bool isSelected) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         color: isSelected ? AppColors.accent : AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),

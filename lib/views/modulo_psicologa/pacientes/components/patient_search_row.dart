@@ -10,28 +10,25 @@ class PatientSearchRow extends StatelessWidget {
       children: [
         // Botón de Filtro Circular
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.tune, color: AppColors.textPrimary, size: 20),
+          child: Icon(Icons.tune, color: AppColors.textPrimary, size: 20),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         // Buscador expandido
         Expanded(
           child: TextField(
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: TextStyle(color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: "Busca el nombre del paciente",
-              hintStyle: const TextStyle(
+              hintStyle: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 14,
               ),
-              suffixIcon: const Icon(
-                Icons.search,
-                color: AppColors.textSecondary,
-              ),
+              suffixIcon: Icon(Icons.search, color: AppColors.textSecondary),
               filled: true,
               fillColor: AppColors.cardBackground,
               contentPadding: const EdgeInsets.symmetric(

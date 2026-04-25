@@ -41,12 +41,12 @@ class _ConsentScreenState extends State<ConsentScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 40),
-              const Icon(Icons.gavel_rounded, size: 48, color: AppColors.mint),
+              SizedBox(height: 40),
+              Icon(Icons.gavel_rounded, size: 48, color: AppColors.mint),
               const SizedBox(height: 24),
               Text(
                 'Consentimiento Ético y Legal',
@@ -54,16 +54,16 @@ class _ConsentScreenState extends State<ConsentScreen> {
                   context,
                 ).textTheme.displayLarge?.copyWith(fontSize: 26),
               ),
-              const SizedBox(height: 12),
-              const Text(
+              SizedBox(height: 12),
+              Text(
                 'Por favor lee atentamente antes de continuar.',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(24),
@@ -90,7 +90,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               Row(
                 children: [
@@ -101,7 +101,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
                     activeColor: AppColors.mint,
                     checkColor: AppColors.buttonPrimaryText,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'He leído y acepto el aviso legal y el consentimiento ético.',
                       style: TextStyle(
@@ -130,7 +130,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
                           ? null
                           : () => _handleAccept(viewModel),
                       child: viewModel.isLoading
-                          ? const SizedBox(
+                          ? SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
@@ -153,22 +153,22 @@ class _ConsentScreenState extends State<ConsentScreen> {
 
   Widget _buildSection(String title, String content) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.lavender,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             content,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               height: 1.5,
               fontSize: 14,

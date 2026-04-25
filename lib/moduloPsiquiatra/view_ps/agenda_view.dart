@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
@@ -32,15 +33,15 @@ class _AgendaViewState extends State<AgendaView> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Escribe tus notas clínicas (privadas):"),
-            const SizedBox(height: 10),
+            Text("Escribe tus notas clínicas (privadas):"),
+            SizedBox(height: 10),
             TextField(
               controller: notesController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: "Resumen de la sesión...",
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: AppColors.surfaceLow,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

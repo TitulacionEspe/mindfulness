@@ -13,7 +13,7 @@ class AsignarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF003B5C), // Color azul oscuro del Figma
+      backgroundColor: AppColors.surface, // Color azul oscuro del Figma
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -30,20 +30,23 @@ class AsignarView extends StatelessWidget {
 
                   const CuestionarioStats(), // Los dos cuadros: Recientes y Pendientes
 
-                  const SizedBox(height: 25),
+                  SizedBox(height: 25),
 
                   // Botón de Filtrar (Negro como en el Figma)
                   Container(
                     width: double.infinity,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: AppColors.textPrimary,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Filtrar',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
+                        style: TextStyle(
+                          color: AppColors.surfaceLowest,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -55,7 +58,7 @@ class AsignarView extends StatelessWidget {
                     height: 240,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: const [
+                      children: [
                         CuestionarioCardPro(
                           statusLabel: "RESPONDIDO HOY",
                           emoji: "✅",
