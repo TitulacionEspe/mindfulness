@@ -6,6 +6,7 @@ import '../../models/assigned_activity_model.dart';
 import '../../models/routine_model.dart';
 import '../../viewmodels/routines_viewmodel.dart';
 import 'routine_detail_view.dart';
+import 'thought_entries_view.dart';
 
 class RoutinesLibraryView extends StatefulWidget {
   const RoutinesLibraryView({super.key});
@@ -40,6 +41,17 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               const SliverToBoxAdapter(child: _TasksHeader()),
+              SliverToBoxAdapter(
+                child: _EmotionalDumpCard(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ThoughtEntriesView(),
+                      ),
+                    );
+                  },
+                ),
+              ),
               if (viewModel.errorMessage != null)
                 SliverToBoxAdapter(
                   child: _InlineMessage(message: viewModel.errorMessage!),
@@ -208,6 +220,82 @@ class _SectionTitle extends StatelessWidget {
               fontSize: 24,
               fontWeight: FontWeight.w700,
               height: 1.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmotionalDumpCard extends StatelessWidget {
+  const _EmotionalDumpCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceLowest,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.outlineVariant),
+                ),
+                child: Icon(
+                  Icons.edit_note_rounded,
+                  color: AppColors.lavender,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Descarga emocional',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Registra pensamientos privados para reducir rumiacion nocturna.',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 15,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: onTap,
+              icon: const Icon(Icons.arrow_forward_rounded),
+              label: const Text('Abrir registro privado'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonPrimary,
+                foregroundColor: AppColors.buttonPrimaryText,
+              ),
             ),
           ),
         ],
