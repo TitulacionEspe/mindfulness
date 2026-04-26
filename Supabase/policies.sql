@@ -127,13 +127,46 @@ ON public.risk_flags FOR SELECT
 USING (public.is_assigned_professional(patient_id));
 
 -- ============================================
--- 7. Operational Triggers & Performance
+-- 7. Thought Entries Hardening (Private Emotional Discharge)
+-- ============================================
+ALTER TABLE public.thought_entries ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Privacidad inquebrantable de pensamientos" ON public.thought_entries;
+DROP POLICY IF EXISTS "thought_entries_select_own" ON public.thought_entries;
+DROP POLICY IF EXISTS "thought_entries_insert_own" ON public.thought_entries;
+DROP POLICY IF EXISTS "thought_entries_update_own" ON public.thought_entries;
+DROP POLICY IF EXISTS "thought_entries_delete_own" ON public.thought_entries;
+
+CREATE POLICY "thought_entries_select_own" ON public.thought_entries
+FOR SELECT TO authenticated
+USING (auth.uid() = patient_id);
+
+CREATE POLICY "thought_entries_insert_own" ON public.thought_entries
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() = patient_id);
+
+CREATE POLICY "thought_entries_update_own" ON public.thought_entries
+FOR UPDATE TO authenticated
+USING (auth.uid() = patient_id)
+WITH CHECK (auth.uid() = patient_id);
+
+CREATE POLICY "thought_entries_delete_own" ON public.thought_entries
+FOR DELETE TO authenticated
+USING (auth.uid() = patient_id);
+
+CREATE INDEX IF NOT EXISTS idx_thought_entries_patient_created_desc
+ON public.thought_entries(patient_id, created_at DESC);
+
+-- ============================================
+-- 8. Operational Triggers & Performance
 -- ============================================
 -- Ensure all tables have updated_at triggers (Idempotent)
 CREATE TRIGGER set_updated_at_profiles_p BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 CREATE TRIGGER set_updated_at_consents_p BEFORE UPDATE ON public.consents FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 CREATE TRIGGER set_updated_at_reminders_p BEFORE UPDATE ON public.reminders FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 CREATE TRIGGER set_updated_at_risk_flags_p BEFORE UPDATE ON public.risk_flags FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DROP TRIGGER IF EXISTS set_updated_at_thought_entries_p ON public.thought_entries;
+CREATE TRIGGER set_updated_at_thought_entries_p BEFORE UPDATE ON public.thought_entries FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- Ensure indexes for sensitive lookups
 CREATE INDEX IF NOT EXISTS idx_risk_flags_patient ON public.risk_flags(patient_id);
@@ -141,10 +174,11 @@ CREATE INDEX IF NOT EXISTS idx_reminders_patient ON public.reminders(patient_id)
 CREATE INDEX IF NOT EXISTS idx_consents_patient ON public.consents(patient_id);
 
 -- ============================================
--- 8. Permissions & Final Grants
+-- 9. Permissions & Final Grants
 -- ============================================
 GRANT ALL ON public.profiles TO authenticated;
 GRANT ALL ON public.consents TO authenticated;
 GRANT ALL ON public.reminders TO authenticated;
 GRANT ALL ON public.risk_flags TO authenticated;
+GRANT ALL ON public.thought_entries TO authenticated;
 GRANT USAGE ON SCHEMA public TO authenticated;

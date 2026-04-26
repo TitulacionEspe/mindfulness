@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
+import 'patient_home_view.dart';
 import 'profile_view.dart';
 import 'routines_library_view.dart';
 import 'sleep_habits_view.dart';
@@ -28,11 +29,9 @@ class _PatientWrapperState extends State<PatientWrapper> {
   }
 
   final List<Widget> _pages = [
-    Center(
-      child: Text('Home', style: TextStyle(color: AppColors.textPrimary)),
-    ),
-    RoutinesLibraryView(),
-    CitaCont(),
+    const PatientHomeView(),
+    const RoutinesLibraryView(),
+    const CitaCont(),
     Center(
       child: Text('Logros', style: TextStyle(color: AppColors.textPrimary)),
     ),
