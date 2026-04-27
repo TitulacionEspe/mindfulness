@@ -72,10 +72,6 @@ BEGIN
     IF NEW.raw_user_meta_data IS NOT NULL THEN
         metadata_full_name := NEW.raw_user_meta_data ->> 'full_name';
         
-        IF NEW.raw_user_meta_data ? 'role' THEN
-            default_role := (NEW.raw_user_meta_data ->> 'role')::public.user_role;
-        END IF;
-        
         IF NEW.raw_user_meta_data ? 'segment' THEN
             default_segment := (NEW.raw_user_meta_data ->> 'segment')::public.user_segment;
         END IF;

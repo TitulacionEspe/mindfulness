@@ -8,6 +8,8 @@ class UserEntity {
   final String? fullName;
   final DateTime createdAt;
   final UserRole role;
+  final bool isActive;
+  final String accountStatus;
 
   UserEntity({
     required this.id,
@@ -15,5 +17,9 @@ class UserEntity {
     this.fullName,
     required this.createdAt,
     this.role = UserRole.patient,
+    this.isActive = true,
+    this.accountStatus = 'active',
   });
+
+  bool get canAccessProtectedFeatures => isActive && accountStatus == 'active';
 }

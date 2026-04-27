@@ -14,6 +14,7 @@ import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
+import 'features/home/presentation/admin_home_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'viewmodels/patient_history_viewmodel.dart';
@@ -119,6 +120,7 @@ class MyApp extends StatelessWidget {
               '/login': (_) => const LoginScreen(),
               '/register': (_) => const RegisterScreen(),
               '/home': (_) => const HomeSwitcher(),
+              '/admin': (_) => const AdminHomeScreen(),
             },
           );
         },

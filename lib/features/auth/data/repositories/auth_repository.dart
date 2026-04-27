@@ -65,10 +65,24 @@ class AuthRepository implements IAuthRepository {
         throw Exception('Credenciales inválidas');
       }
 
-      // Fetch the role from the profiles table
-      final role = await _getUserRole(authResponse.user!.id);
+      // Fetch role and account state from the profiles table.
+      final profile = await _getUserProfile(authResponse.user!.id);
+      final userEntity = _mapSupabaseUserToEntity(
+        authResponse.user!,
+        profile.role,
+        fullName: profile.fullName,
+        isActive: profile.isActive,
+        accountStatus: profile.accountStatus,
+      );
 
-      return _mapSupabaseUserToEntity(authResponse.user!, role);
+      if (!userEntity.canAccessProtectedFeatures) {
+        await Supabase.instance.client.auth.signOut();
+        throw Exception(
+          'Tu cuenta esta desactivada o bloqueada. Contacta al administrador.',
+        );
+      }
+
+      return userEntity;
     } catch (e) {
       final message = e.toString();
       if (message.contains('Invalid login') ||
@@ -94,10 +108,22 @@ class AuthRepository implements IAuthRepository {
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) return null;
 
-      // Fetch the role from the profiles table
-      final role = await _getUserRole(user.id);
+      // Fetch role and account state from the profiles table.
+      final profile = await _getUserProfile(user.id);
+      final userEntity = _mapSupabaseUserToEntity(
+        user,
+        profile.role,
+        fullName: profile.fullName,
+        isActive: profile.isActive,
+        accountStatus: profile.accountStatus,
+      );
 
-      return _mapSupabaseUserToEntity(user, role);
+      if (!userEntity.canAccessProtectedFeatures) {
+        await Supabase.instance.client.auth.signOut();
+        return null;
+      }
+
+      return userEntity;
     } catch (e) {
       return null;
     }
@@ -133,31 +159,62 @@ class AuthRepository implements IAuthRepository {
     }
   }
 
-  /// Fetches the user role from the 'profiles' table.
-  /// Defaults to [UserRole.patient] if not found or on error.
-  Future<UserRole> _getUserRole(String userId) async {
+  /// Fetches role and account status from the 'profiles' table.
+  /// Defaults to a patient/active profile if legacy rows lack new fields.
+  Future<_ProfileAuthData> _getUserProfile(String userId) async {
     try {
       final data = await Supabase.instance.client
           .from('profiles')
-          .select('role')
+          .select('role,full_name,is_active,account_status')
           .eq('id', userId)
           .single();
 
-      return UserRole.fromString(data['role'] as String?);
-    } catch (e) {
-      // For safety, fallback to patient role if profile cannot be read
-      return UserRole.patient;
+      return _ProfileAuthData(
+        role: UserRole.fromString(data['role'] as String?),
+        fullName: data['full_name'] as String?,
+        isActive: data['is_active'] as bool? ?? true,
+        accountStatus: data['account_status'] as String? ?? 'active',
+      );
+    } catch (_) {
+      // Compatibility fallback for environments where account_status is not
+      // present yet in the profiles table.
+      try {
+        final data = await Supabase.instance.client
+            .from('profiles')
+            .select('role,full_name,is_active')
+            .eq('id', userId)
+            .single();
+
+        final isActive = data['is_active'] as bool? ?? true;
+        return _ProfileAuthData(
+          role: UserRole.fromString(data['role'] as String?),
+          fullName: data['full_name'] as String?,
+          isActive: isActive,
+          accountStatus: isActive ? 'active' : 'inactive',
+        );
+      } catch (_) {
+        // Last fallback: keep session safe with least-privilege role.
+        return const _ProfileAuthData(role: UserRole.patient);
+      }
     }
   }
 
   /// Convert Supabase User to domain UserEntity with explicitly provided role
-  UserEntity _mapSupabaseUserToEntity(User user, UserRole role) {
+  UserEntity _mapSupabaseUserToEntity(
+    User user,
+    UserRole role, {
+    String? fullName,
+    bool isActive = true,
+    String accountStatus = 'active',
+  }) {
     return UserEntity(
       id: user.id,
       email: user.email ?? '',
-      fullName: user.userMetadata?['full_name'],
+      fullName: fullName ?? user.userMetadata?['full_name'] as String?,
       createdAt: _parseDateTime(user.createdAt),
       role: role,
+      isActive: isActive,
+      accountStatus: accountStatus,
     );
   }
 
@@ -167,4 +224,18 @@ class AuthRepository implements IAuthRepository {
     if (value is DateTime) return value;
     return DateTime.tryParse(value.toString()) ?? DateTime.now();
   }
+}
+
+class _ProfileAuthData {
+  const _ProfileAuthData({
+    required this.role,
+    this.fullName,
+    this.isActive = true,
+    this.accountStatus = 'active',
+  });
+
+  final UserRole role;
+  final String? fullName;
+  final bool isActive;
+  final String accountStatus;
 }

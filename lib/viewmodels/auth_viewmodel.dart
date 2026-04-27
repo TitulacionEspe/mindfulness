@@ -54,7 +54,14 @@ class AuthViewModel extends ChangeNotifier {
         if (_currentUser != null) {
           // Fetch role for persisted session
           final userEntity = await _authRepository.getCurrentUser();
-          _userRole = userEntity?.role;
+          if (userEntity == null || !userEntity.canAccessProtectedFeatures) {
+            _currentUser = null;
+            _userRole = null;
+            _hasAcceptedConsent = false;
+            notifyListeners();
+            return;
+          }
+          _userRole = userEntity.role;
 
           // Check for consent acceptance
           _hasAcceptedConsent = await _authRepository.hasAcceptedConsent(
