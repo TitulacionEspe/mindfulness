@@ -126,14 +126,92 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
   }
 }
 
+// ─────────────────────────────────────────────
+// Modelo de estilo de ícono por categoría
+// ─────────────────────────────────────────────
+
+class _CategoryIconStyle {
+  const _CategoryIconStyle({
+    required this.icon,
+    required this.background,
+    required this.iconColor,
+  });
+
+  final IconData icon;
+  final Color background;
+  final Color iconColor;
+}
+
+/// Devuelve el estilo visual (ícono + colores) según la categoría.
+/// Inspirado en la referencia: fondos pastel con ícono del mismo tono.
+_CategoryIconStyle _styleForCategory(RoutineCategory category) {
+  return switch (category) {
+    RoutineCategory.breathing => const _CategoryIconStyle(
+      icon: Icons.air_rounded,
+      background: Color(0xFFCCF0EC), // teal claro
+      iconColor: Color(0xFF006B63), // teal oscuro (mint)
+    ),
+    RoutineCategory.relaxation => const _CategoryIconStyle(
+      icon: Icons.spa_outlined,
+      background: Color(0xFFD6EAD0), // verde claro
+      iconColor: Color(0xFF2E7D32), // verde oscuro
+    ),
+    RoutineCategory.sleepInduction => const _CategoryIconStyle(
+      icon: Icons.dark_mode_outlined,
+      background: Color(0xFFD5E8F5), // azul claro
+      iconColor: Color(0xFF1565C0), // azul oscuro
+    ),
+    RoutineCategory.soundscape => const _CategoryIconStyle(
+      icon: Icons.music_note_rounded,
+      background: Color(0xFFE8D5F5), // morado claro
+      iconColor: Color(0xFF6A1B9A), // morado oscuro
+    ),
+    RoutineCategory.all => const _CategoryIconStyle(
+      icon: Icons.checklist_rounded,
+      background: Color(0xFFFFF3CC), // amarillo claro
+      iconColor: Color(0xFFF57F17), // amarillo oscuro
+    ),
+  };
+}
+
+// ─────────────────────────────────────────────
+// Widget reutilizable: ícono de categoría con color
+// ─────────────────────────────────────────────
+
+class _CategoryIcon extends StatelessWidget {
+  const _CategoryIcon({required this.category, this.size = 44});
+
+  final RoutineCategory category;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = _styleForCategory(category);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: style.background,
+        borderRadius: BorderRadius.circular(size * 0.28),
+      ),
+      alignment: Alignment.center,
+      child: Icon(style.icon, color: style.iconColor, size: size * 0.50),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Widgets de la vista
+// ─────────────────────────────────────────────
+
 class _TasksHeader extends StatelessWidget {
   const _TasksHeader();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(20, 22, 20, 14),
-      padding: EdgeInsets.all(18),
+      margin: const EdgeInsets.fromLTRB(20, 22, 20, 14),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(20),
@@ -155,7 +233,7 @@ class _TasksHeader extends StatelessWidget {
                     height: 1.08,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Asignadas por tu psicologa y rutinas para tu descanso nocturno.',
                   style: TextStyle(
@@ -167,7 +245,7 @@ class _TasksHeader extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           SizedBox(
             width: 46,
             height: 46,
@@ -201,7 +279,7 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 6, 20, 10),
+      padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
       child: Row(
         children: [
           Container(
@@ -212,7 +290,7 @@ class _SectionTitle extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Text(
             title,
             style: TextStyle(
@@ -252,13 +330,12 @@ class _EmotionalDumpCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceLowest,
+                  color: const Color(0xFFFFF3CC),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.outlineVariant),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.edit_note_rounded,
-                  color: AppColors.lavender,
+                  color: Color(0xFFF57F17),
                   size: 22,
                 ),
               ),
@@ -358,25 +435,12 @@ class _AssignedActivityCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceLowest,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.outlineVariant),
-                ),
-                alignment: Alignment.center,
-                child: Icon(
-                  _iconForCategory(routine.category),
-                  color: AppColors.lavender,
-                  size: 22,
-                ),
-              ),
+              // ── Ícono con color de categoría ──
+              _CategoryIcon(category: routine.category, size: 46),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -410,7 +474,7 @@ class _AssignedActivityCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Icon(
@@ -418,7 +482,7 @@ class _AssignedActivityCard extends StatelessWidget {
                           size: 16,
                           color: AppColors.textSecondary,
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Text(
                           routine.durationLabel,
                           style: TextStyle(
@@ -426,7 +490,7 @@ class _AssignedActivityCard extends StatelessWidget {
                             fontSize: 14,
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           '|',
                           style: TextStyle(
@@ -434,7 +498,7 @@ class _AssignedActivityCard extends StatelessWidget {
                             fontSize: 14,
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           routine.category.label,
                           style: TextStyle(
@@ -497,8 +561,8 @@ class _QuestionnaireCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      padding: EdgeInsets.all(18),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(20),
@@ -515,7 +579,7 @@ class _QuestionnaireCard extends StatelessWidget {
               height: 1.35,
             ),
           ),
-          SizedBox(height: 14),
+          const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -531,8 +595,8 @@ class _QuestionnaireCard extends StatelessWidget {
                   ),
                 );
               },
-              icon: Icon(Icons.fact_check_outlined),
-              label: Text(
+              icon: const Icon(Icons.fact_check_outlined),
+              label: const Text(
                 'Iniciar cuestionario',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
@@ -572,10 +636,16 @@ class _CategoryFilters extends StatelessWidget {
         itemBuilder: (context, index) {
           final category = categories[index];
           final selected = category == selectedCategory;
+          final style = _styleForCategory(category);
           return ChoiceChip(
             label: Text(category.label),
             selected: selected,
             onSelected: (_) => onSelected(category),
+            avatar: Icon(
+              style.icon,
+              size: 16,
+              color: selected ? AppColors.buttonPrimaryText : style.iconColor,
+            ),
             backgroundColor: AppColors.surfaceLow,
             selectedColor: AppColors.mint,
             side: BorderSide(
@@ -617,24 +687,11 @@ class _LibraryRoutineCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceLowest,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.outlineVariant),
-                ),
-                alignment: Alignment.center,
-                child: Icon(
-                  _iconForCategory(routine.category),
-                  color: AppColors.lavender,
-                  size: 22,
-                ),
-              ),
+              // ── Ícono con color de categoría ──
+              _CategoryIcon(category: routine.category, size: 44),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -650,7 +707,7 @@ class _LibraryRoutineCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 6),
                     Text(
                       '${routine.durationLabel} | ${routine.category.label}',
                       style: TextStyle(
@@ -661,7 +718,7 @@ class _LibraryRoutineCard extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 color: AppColors.lavender,
@@ -675,6 +732,10 @@ class _LibraryRoutineCard extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────
+// Widgets de estado
+// ─────────────────────────────────────────────
+
 class _InlineMessage extends StatelessWidget {
   const _InlineMessage({required this.message});
 
@@ -683,9 +744,9 @@ class _InlineMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       child: Container(
-        padding: EdgeInsets.all(14),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.warningBg,
           borderRadius: BorderRadius.circular(16),
@@ -709,7 +770,7 @@ class _LoadingBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.symmetric(vertical: 40),
       child: Center(child: CircularProgressIndicator(color: AppColors.mint)),
     );
   }
@@ -721,8 +782,8 @@ class _EmptyAssignedState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      padding: EdgeInsets.all(18),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.surfaceHigh,
         borderRadius: BorderRadius.circular(20),
@@ -746,7 +807,7 @@ class _EmptyLibraryState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 14, 20, 26),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 26),
       child: Text(
         'No hay rutinas para el filtro seleccionado.',
         style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
@@ -755,15 +816,9 @@ class _EmptyLibraryState extends StatelessWidget {
   }
 }
 
-IconData _iconForCategory(RoutineCategory category) {
-  return switch (category) {
-    RoutineCategory.breathing => Icons.air_rounded,
-    RoutineCategory.relaxation => Icons.spa_outlined,
-    RoutineCategory.sleepInduction => Icons.dark_mode_outlined,
-    RoutineCategory.soundscape => Icons.music_note_rounded,
-    RoutineCategory.all => Icons.checklist_rounded,
-  };
-}
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
 
 class _StatusStyle {
   const _StatusStyle({required this.background, required this.foreground});
