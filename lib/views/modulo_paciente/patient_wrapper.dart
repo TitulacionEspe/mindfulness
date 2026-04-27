@@ -3,8 +3,10 @@ import 'package:mindfulness_app/views/modulo_paciente/conten_cita.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../viewmodels/patient_history_viewmodel.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
 import 'patient_home_view.dart';
+import 'patient_history_view.dart';
 import 'profile_view.dart';
 import 'routines_library_view.dart';
 import 'sleep_habits_view.dart';
@@ -25,6 +27,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<SleepHabitsViewModel>().loadSettings();
+      context.read<PatientHistoryViewModel>().loadHistory();
     });
   }
 
@@ -32,9 +35,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
     const PatientHomeView(),
     const RoutinesLibraryView(),
     const CitaCont(),
-    Center(
-      child: Text('Logros', style: TextStyle(color: AppColors.textPrimary)),
-    ),
+    const PatientHistoryView(),
     const ProfileView(),
   ];
 

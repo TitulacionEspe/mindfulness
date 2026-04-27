@@ -16,12 +16,13 @@ import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
+import 'viewmodels/patient_history_viewmodel.dart';
 import 'viewmodels/psicologa_nav_viewmodel.dart';
 import 'viewmodels/routines_viewmodel.dart';
+import 'viewmodels/self_assessments_viewmodel.dart';
 import 'viewmodels/sleep_habits_viewmodel.dart';
 import 'viewmodels/theme_viewmodel.dart';
 import 'viewmodels/thought_entries_viewmodel.dart';
-import 'viewmodels/self_assessments_viewmodel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,6 +75,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RemindersViewModel()),
         ChangeNotifierProvider(create: (_) => ThoughtEntriesViewModel()),
         ChangeNotifierProvider(create: (_) => SelfAssessmentsViewModel()),
+        ChangeNotifierProvider(create: (_) => PatientHistoryViewModel()),
       ],
       child: Consumer<ThemeViewModel>(
         builder: (context, themeViewModel, _) {
