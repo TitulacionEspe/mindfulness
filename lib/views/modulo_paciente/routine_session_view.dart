@@ -690,7 +690,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
             Text(
               '${remaining}s',
               style: TextStyle(
-                color: AppColors.mint ?? const Color(0xFF4DB6AC),
+                color: AppColors.mint,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -704,9 +704,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
             value: state.phaseProgress,
             minHeight: 6,
             backgroundColor: AppColors.surface,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              AppColors.mint ?? const Color(0xFF4DB6AC),
-            ),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.mint),
           ),
         ),
       ],
@@ -739,7 +737,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
         _CycleSegmentsBar(
           total: state.totalCycles,
           completed: state.cyclesCompleted,
-          activeColor: AppColors.mint ?? const Color(0xFF4DB6AC),
+          activeColor: AppColors.mint,
           inactiveColor: AppColors.surface,
         ),
       ],
