@@ -9,9 +9,14 @@ import '../../viewmodels/self_assessments_viewmodel.dart';
 import 'routine_session_view.dart';
 
 class PreSessionAssessmentView extends StatefulWidget {
-  const PreSessionAssessmentView({super.key, required this.routine});
+  const PreSessionAssessmentView({
+    super.key,
+    required this.routine,
+    this.assignmentId,
+  });
 
   final RoutineModel routine;
+  final String? assignmentId;
 
   @override
   State<PreSessionAssessmentView> createState() =>
@@ -150,8 +155,11 @@ class _PreSessionAssessmentViewState extends State<PreSessionAssessmentView> {
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) =>
-            RoutineSessionView(routine: widget.routine, sessionId: sessionId),
+        builder: (_) => RoutineSessionView(
+          routine: widget.routine,
+          sessionId: sessionId,
+          assignmentId: widget.assignmentId,
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/views/modulo_paciente/tareas_main_hub.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -72,13 +73,10 @@ class _PatientHomeViewState extends State<PatientHomeView> {
               accent: AppColors.mint,
               buttonLabel: 'Ir a Tareas',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Abre la pestana Tareas en la barra inferior para continuar.',
-                      style: TextStyle(color: AppColors.textPrimary),
-                    ),
-                    backgroundColor: AppColors.surfaceHigh,
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TareasMainHub(),
                   ),
                 );
               },

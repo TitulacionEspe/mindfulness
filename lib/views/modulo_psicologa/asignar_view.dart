@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:mindfulness_app/moduloPsiquiatra/componets_ps/psychiatrist_components.dart';
+import 'package:mindfulness_app/moduloPsiquiatra/view_ps/asignar_tarea_view.dart';
 
-// Componentes modulares
-import 'cuestionario/components/cuestio_banner.dart';
+import '../../core/theme/app_colors.dart';
+import 'cuestionario/components/cuestionario_card_pro.dart';
 import 'cuestionario/components/cuestionario_search.dart';
 import 'cuestionario/components/cuestionario_stats.dart';
-import 'cuestionario/components/cuestionario_card_pro.dart';
 
 class AsignarView extends StatelessWidget {
   const AsignarView({super.key});
@@ -17,8 +17,19 @@ class AsignarView extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const CuestioBanner(), // Invocas tu imagen superior
+            const SizedBox(height: 25),
+            PsychiatristActionCard(
+              title: "Asignar a Paciente",
+              subtitle: "Enviar tarea a un usuario",
+              icon: Icons.person_add,
+              color: Colors.orange,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AsignarTareaView()),
+              ),
+            ),
 
+            //const CuestioBanner(), // Invocas tu imagen superior
             Padding(
               padding: const EdgeInsets.all(25.0),
               child: Column(

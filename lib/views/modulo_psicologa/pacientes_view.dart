@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
 
-// Importación de componentes realmente utilizados
-import 'pacientes/components/pacient_bar.dart'; // Verifica si este es tu Banner
+import '../../core/theme/app_colors.dart';
+import 'pacientes/components/day_registry.dart';
+import 'pacientes/components/patient_card_white.dart';
 import 'pacientes/components/patient_search_row.dart';
 import 'pacientes/components/status_filters.dart';
-import 'pacientes/components/patient_card_white.dart';
-import 'pacientes/components/day_registry.dart';
 
 class PacientesView extends StatelessWidget {
   const PacientesView({super.key});
@@ -21,7 +19,7 @@ class PacientesView extends StatelessWidget {
           children: [
             // 1. BANNER SUPERIOR
             // Asegúrate que el componente se llame PacientBar o importa el correcto
-            const PacientBar(),
+            //const PacientBar(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(

@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mindfulness_app/moduloCitas/viewmodels/appointments_viewmodel.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/favorites_viewmodel.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/freesound_viewmodel.dart';
+import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/routines_viewmodel2.dart';
+import 'package:mindfulness_app/moduloTareas/viewmodels/tasks_viewmodel.dart';
 import 'package:mindfulness_app/services/notification_service.dart';
 import 'package:mindfulness_app/viewmodels/reminders_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -65,6 +67,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => RoutinesViewModel2()),
         ChangeNotifierProvider(create: (_) => ThemeViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
@@ -77,6 +80,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThoughtEntriesViewModel()),
         ChangeNotifierProvider(create: (_) => SelfAssessmentsViewModel()),
         ChangeNotifierProvider(create: (_) => PatientHistoryViewModel()),
+
+        ChangeNotifierProvider(create: (_) => TasksViewModel()),
       ],
       child: Consumer<ThemeViewModel>(
         builder: (context, themeViewModel, _) {

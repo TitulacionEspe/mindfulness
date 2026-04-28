@@ -5,9 +5,14 @@ import '../../models/routine_model.dart';
 import 'self_assessment_flow.dart';
 
 class RoutineDetailView extends StatelessWidget {
-  const RoutineDetailView({super.key, required this.routine});
+  const RoutineDetailView({
+    super.key,
+    required this.routine,
+    this.assignmentId,
+  });
 
   final RoutineModel routine;
+  final String? assignmentId;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,7 @@ class RoutineDetailView extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 8, 20, 12),
+                padding: const EdgeInsets.fromLTRB(8, 8, 20, 12),
                 child: Row(
                   children: [
                     IconButton(
@@ -31,7 +36,7 @@ class RoutineDetailView extends StatelessWidget {
                       ),
                       tooltip: 'Volver',
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       'Detalle',
                       style: TextStyle(
@@ -45,7 +50,7 @@ class RoutineDetailView extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(20, 6, 20, 110),
+              padding: const EdgeInsets.fromLTRB(20, 6, 20, 110),
               sliver: SliverList(
                 delegate: SliverChildListDelegate.fixed([
                   Text(
@@ -66,7 +71,7 @@ class RoutineDetailView extends StatelessWidget {
                       _Pill(text: routine.durationLabel),
                     ],
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   _SurfaceSection(
                     title: 'Antes de iniciar',
                     child: Text(
@@ -89,7 +94,7 @@ class RoutineDetailView extends StatelessWidget {
                     ),
                   ),
                   if (routine.category == RoutineCategory.breathing) ...[
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _SurfaceSection(
                       title: 'Cuidado',
                       child: Text(
@@ -118,7 +123,10 @@ class RoutineDetailView extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => PreSessionAssessmentView(routine: routine),
+                    builder: (_) => PreSessionAssessmentView(
+                      routine: routine,
+                      assignmentId: assignmentId,
+                    ),
                   ),
                 );
               },
@@ -177,7 +185,7 @@ class _SurfaceSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
@@ -210,7 +218,7 @@ class _StepRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -231,7 +239,7 @@ class _StepRow extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
@@ -256,7 +264,7 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.warningBg,
         borderRadius: BorderRadius.circular(999),

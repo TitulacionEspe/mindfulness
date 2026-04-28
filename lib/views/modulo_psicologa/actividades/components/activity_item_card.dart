@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../core/theme/app_colors.dart';
 
 class ActivityItemCard extends StatelessWidget {
@@ -20,35 +19,41 @@ class ActivityItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
-      margin: EdgeInsets.only(bottom: 15),
-      padding: EdgeInsets.all(15),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLowest,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.5),
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.textPrimary.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          // Cuadro del Icono (Fondo gris + Emoji)
+          // Cuadro del Icono (Fondo suave + Emoji)
           Container(
-            width: 60,
-            height: 60,
+            width: 56,
+            height: 56,
             decoration: BoxDecoration(
-              color: AppColors.surfaceHigh,
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Center(
-              child: Text(emoji, style: const TextStyle(fontSize: 28)),
+              child: Text(emoji, style: const TextStyle(fontSize: 26)),
             ),
           ),
-          SizedBox(width: 15),
+          const SizedBox(width: 16),
+
           // Info Central
           Expanded(
             child: Column(
@@ -56,42 +61,59 @@ class ActivityItemCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    color: AppColors.figmaBlack,
-                    fontSize: 15,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   category,
-                  style: TextStyle(color: AppColors.figmaMuted, fontSize: 11),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                SizedBox(height: 10),
-                // Fila de tiempo y reproducciones
+                const SizedBox(height: 10),
+
+                // Fila de tiempo y reproducciones con iconos modernos
                 Row(
                   children: [
+                    Icon(Icons.timer_outlined, size: 14, color: AppColors.mint),
+                    const SizedBox(width: 4),
                     Text(
-                      '⏱ $duration',
-                      style: TextStyle(
-                        color: AppColors.figmaMuted,
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w700,
+                      duration,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.bar_chart_rounded,
+                      size: 14,
+                      color: AppColors.lavender,
+                    ),
+                    const SizedBox(width: 4),
                     Text(
-                      stats,
-                      style: TextStyle(
-                        color: AppColors.figmaMuted,
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w700,
+                      stats.replaceAll('▶ ', '').replaceAll('👁 ', ''),
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 14,
+            color: AppColors.outlineVariant,
           ),
         ],
       ),

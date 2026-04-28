@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mindfulness_app/views/modulo_psicologa/citas/componet/baner_cita.dart';
 import 'package:mindfulness_app/views/modulo_psicologa/citas/componet/button_cita.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -17,7 +16,7 @@ class CitasView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BannerCita(),
+              //BannerCita(),
 
               // Título de la sección
               SizedBox(height: 5),
