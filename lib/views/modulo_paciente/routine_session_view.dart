@@ -166,16 +166,16 @@ class _RoutineSessionViewState extends State<RoutineSessionView>
 
     if (ok == true && mounted) {
       await context.read<RoutinesViewModel>().completeSession(
-            sessionId: widget.sessionId,
-          );
+        sessionId: widget.sessionId,
+      );
 
       if (!mounted) return;
 
       if (widget.assignmentId != null) {
         await context.read<TasksViewModel>().markAsDone(
-              widget.sessionId,
-              widget.assignmentId!,
-            );
+          widget.sessionId,
+          widget.assignmentId!,
+        );
       }
 
       if (mounted) Navigator.popUntil(context, (r) => r.isFirst);
