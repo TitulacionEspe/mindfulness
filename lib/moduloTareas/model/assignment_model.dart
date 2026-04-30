@@ -72,16 +72,6 @@ class Assignment {
     );
   }
 
-  static Map<String, dynamic> _defaultPattern() {
-    return {
-      'inhale_sec': 4,
-      'hold_in_sec': 2,
-      'exhale_sec': 6,
-      'hold_out_sec': 0,
-      'cycles_recommended': 5,
-    };
-  }
-
   /// Calcula la duración total teórica en segundos
   int get totalDuration {
     final int inhale = breathingPattern['inhale_sec'] ?? 4;
