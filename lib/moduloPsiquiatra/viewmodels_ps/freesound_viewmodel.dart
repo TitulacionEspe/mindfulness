@@ -115,6 +115,14 @@ class FreesoundViewModel extends ChangeNotifier {
     }
   }
 
+  void stopAudio({bool silent = false}) {
+    if (audioPlayer.playing) {
+      audioPlayer.stop();
+      currentlyPlayingUrl = null;
+      if (!silent) notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
     audioPlayer.dispose();

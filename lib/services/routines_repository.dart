@@ -125,9 +125,29 @@ class RoutinesRepository implements RoutinesDataSource {
     final routineRows = List<Map<String, dynamic>>.from(
       routinesResponse as List,
     );
+
+    // NUEVO: Cargar patrones de respiración para las rutinas asignadas
+    final patternsResponse = await _client
+        .from('breathing_patterns')
+        .select(
+          'routine_id,inhale_sec,hold_in_sec,exhale_sec,hold_out_sec,cycles_recommended',
+        )
+        .inFilter('routine_id', routineIds);
+
+    final patternRows = List<Map<String, dynamic>>.from(
+      patternsResponse as List,
+    );
+    final patternsByRoutine = {
+      for (final row in patternRows)
+        row['routine_id'] as String: BreathingPatternModel.fromMap(row),
+    };
+
     final routinesById = {
       for (final row in routineRows)
-        row['id'] as String: RoutineModel.fromMap(row),
+        row['id'] as String: RoutineModel.fromMap(
+          row,
+          breathingPattern: patternsByRoutine[row['id'] as String],
+        ),
     };
 
     final result = <AssignedActivityModel>[];

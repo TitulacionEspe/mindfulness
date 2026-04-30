@@ -13,13 +13,27 @@ class FavoritosView extends StatefulWidget {
 }
 
 class _FavoritosViewState extends State<FavoritosView> {
+  late FavoritesViewModel _viewModel;
+
   @override
   void initState() {
     super.initState();
     // Cargamos los datos de Supabase al entrar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FavoritesViewModel>().loadFavorites();
+      _viewModel.loadFavorites();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _viewModel = context.read<FavoritesViewModel>();
+  }
+
+  @override
+  void dispose() {
+    _viewModel.stopAudio(silent: true);
+    super.dispose();
   }
 
   @override

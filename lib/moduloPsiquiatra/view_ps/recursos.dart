@@ -13,6 +13,7 @@ class RecursosView extends StatefulWidget {
 
 class _RecursosViewState extends State<RecursosView> {
   final ScrollController _scrollController = ScrollController();
+  late FreesoundViewModel _viewModel;
 
   @override
   void initState() {
@@ -21,13 +22,21 @@ class _RecursosViewState extends State<RecursosView> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
-        context.read<FreesoundViewModel>().fetchNextPage();
+        _viewModel.fetchNextPage();
       }
     });
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Guardamos la referencia del ViewModel aquí de forma segura
+    _viewModel = context.read<FreesoundViewModel>();
+  }
+
+  @override
   void dispose() {
+    _viewModel.stopAudio(silent: true);
     _scrollController.dispose();
     super.dispose();
   }

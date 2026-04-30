@@ -71,7 +71,11 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                       final activity = assignedActivities[index];
                       return _AssignedActivityCard(
                         activity: activity,
-                        onTap: () => _openRoutine(context, activity.routine),
+                        onTap: () => _openRoutine(
+                          context,
+                          activity.routine,
+                          assignmentId: activity.id,
+                        ),
                       );
                     },
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
@@ -119,9 +123,16 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
     );
   }
 
-  void _openRoutine(BuildContext context, RoutineModel routine) {
+  void _openRoutine(
+    BuildContext context,
+    RoutineModel routine, {
+    String? assignmentId,
+  }) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => RoutineDetailView(routine: routine)),
+      MaterialPageRoute(
+        builder: (_) =>
+            RoutineDetailView(routine: routine, assignmentId: assignmentId),
+      ),
     );
   }
 }
