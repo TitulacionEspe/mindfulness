@@ -20,10 +20,13 @@ class _PatientHomeViewState extends State<PatientHomeView> {
   @override
   void initState() {
     super.initState();
+    final authViewModel = context.read<AuthViewModel>();
+    final historyViewModel = context.read<PatientHistoryViewModel>();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _lastUserId = context.read<AuthViewModel>().currentUser?.id;
-      context.read<PatientHistoryViewModel>().loadHomeMetrics();
+      _lastUserId = authViewModel.currentUser?.id;
+      historyViewModel.loadHomeMetrics();
     });
   }
 
