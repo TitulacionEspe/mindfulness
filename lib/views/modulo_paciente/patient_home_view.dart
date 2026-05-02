@@ -3,6 +3,7 @@ import 'package:mindfulness_app/views/modulo_paciente/tareas_main_hub.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/patient_history_viewmodel.dart';
 import 'thought_entries_view.dart';
 
@@ -14,13 +15,31 @@ class PatientHomeView extends StatefulWidget {
 }
 
 class _PatientHomeViewState extends State<PatientHomeView> {
+  String? _lastUserId;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      _lastUserId = context.read<AuthViewModel>().currentUser?.id;
       context.read<PatientHistoryViewModel>().loadHomeMetrics();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authViewModel = context.watch<AuthViewModel>();
+    final currentUserId = authViewModel.currentUser?.id;
+
+    if (currentUserId != null && currentUserId != _lastUserId) {
+      _lastUserId = currentUserId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<PatientHistoryViewModel>().loadHomeMetrics(force: true);
+      });
+    }
   }
 
   @override

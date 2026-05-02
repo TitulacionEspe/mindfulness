@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/assigned_activity_model.dart';
 import '../../models/routine_model.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/routines_viewmodel.dart';
 import 'routine_detail_view.dart';
 import 'thought_entries_view.dart';
@@ -16,13 +17,32 @@ class RoutinesLibraryView extends StatefulWidget {
 }
 
 class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
+  String? _lastUserId;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      _lastUserId = context.read<AuthViewModel>().currentUser?.id;
       context.read<RoutinesViewModel>().loadRoutines();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authViewModel = context.watch<AuthViewModel>();
+    final currentUserId = authViewModel.currentUser?.id;
+
+    // Si el ID del usuario cambió (por login de otro compañero), forzamos recarga
+    if (currentUserId != null && currentUserId != _lastUserId) {
+      _lastUserId = currentUserId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<RoutinesViewModel>().loadRoutines(force: true);
+      });
+    }
   }
 
   @override
@@ -176,6 +196,11 @@ _CategoryIconStyle _styleForCategory(RoutineCategory category) {
       icon: Icons.music_note_rounded,
       background: Color(0xFFE8D5F5), // morado claro
       iconColor: Color(0xFF6A1B9A), // morado oscuro
+    ),
+    RoutineCategory.terapiaSonido => const _CategoryIconStyle(
+      icon: Icons.graphic_eq_rounded,
+      background: Color(0xFFF5D5D5), // rojo/rosa claro
+      iconColor: Color(0xFFB71C1C), // rojo oscuro
     ),
     RoutineCategory.all => const _CategoryIconStyle(
       icon: Icons.checklist_rounded,

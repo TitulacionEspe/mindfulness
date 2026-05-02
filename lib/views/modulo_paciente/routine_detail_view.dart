@@ -170,6 +170,11 @@ class RoutineDetailView extends StatelessWidget {
         'Usa el temporizador como guia silenciosa.',
         'Vuelve a la respiracion cada vez que aparezcan distracciones.',
       ],
+      RoutineCategory.terapiaSonido => const [
+        'Usa audifonos para una mejor experiencia.',
+        'Cierra los ojos y concentrate en las vibraciones.',
+        'Deja que el sonido limpie tus pensamientos.',
+      ],
       RoutineCategory.all => const [],
     };
   }

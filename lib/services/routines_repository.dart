@@ -33,11 +33,15 @@ class RoutinesRepository implements RoutinesDataSource {
     final routines = List<Map<String, dynamic>>.from(routinesResponse as List);
     if (routines.isEmpty) return fallbackRoutines;
 
+    final routineIds = routines.map((r) => r['id'] as String).toList();
+
+    // 1. Obtener patrones de respiración
     final patternsResponse = await _client
         .from('breathing_patterns')
         .select(
           'routine_id,inhale_sec,hold_in_sec,exhale_sec,hold_out_sec,cycles_recommended',
-        );
+        )
+        .inFilter('routine_id', routineIds);
 
     final patternRows = List<Map<String, dynamic>>.from(
       patternsResponse as List,
@@ -47,11 +51,30 @@ class RoutinesRepository implements RoutinesDataSource {
         row['routine_id'] as String: BreathingPatternModel.fromMap(row),
     };
 
+    // 2. Obtener assets de audio
+    final assetsResponse = await _client
+        .from('routine_assets')
+        .select('routine_id,storage_path')
+        .eq('file_type', 'audio')
+        .eq('is_active', true)
+        .inFilter('routine_id', routineIds);
+
+    final assetRows = List<Map<String, dynamic>>.from(assetsResponse as List);
+    final audiosByRoutine = <String, String>{};
+    
+    for (final row in assetRows) {
+      final path = row['storage_path'] as String;
+      // Generamos la URL pública firmada o directa desde el Storage
+      final url = _client.storage.from('routine-assets').getPublicUrl(path);
+      audiosByRoutine[row['routine_id'] as String] = url;
+    }
+
     return routines
         .map(
           (row) => RoutineModel.fromMap(
             row,
             breathingPattern: patternsByRoutine[row['id'] as String],
+            audioUrl: audiosByRoutine[row['id'] as String],
           ),
         )
         .toList();
@@ -180,6 +203,11 @@ class RoutinesRepository implements RoutinesDataSource {
     return result;
   }
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // RUTINAS DE RESPALDO (OFFLINE FALLBACK)
+  // Estas rutinas tienen IDs estáticos fijos y solo se muestran si la app 
+  // no logra conectar con Supabase. No afectan la creación de nuevas rutinas.
+  // ────────────────────────────────────────────────────────────────────────────
   static const List<RoutineModel> fallbackRoutines = [
     RoutineModel(
       id: '11111111-1111-4111-8111-111111111111',

@@ -38,6 +38,14 @@ class TasksViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    pendingTasks = [];
+    completedTasks = [];
+    isLoading = false;
+    error = null;
+    notifyListeners();
+  }
+
   /// Inicia una sesión y retorna su ID
   Future<String?> startSession(String routineId) async {
     try {

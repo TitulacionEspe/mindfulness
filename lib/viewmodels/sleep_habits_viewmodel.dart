@@ -105,6 +105,18 @@ class SleepHabitsViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    _hasLoadedSettings = false;
+    _isLoading = false;
+    _errorMessage = null;
+    _hasCompletedOnboarding = false;
+    _bedtime = const TimeOfDay(hour: 22, minute: 0);
+    _wakeTime = const TimeOfDay(hour: 6, minute: 0);
+    _academicLoadDays = 0;
+    _darkModeEnforced = false;
+    notifyListeners();
+  }
+
   /// Guarda la configuración en Supabase
   Future<bool> saveSettings() async {
     _isLoading = true;

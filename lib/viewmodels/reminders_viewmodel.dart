@@ -53,6 +53,13 @@ class RemindersViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    _reminders = [];
+    _isLoading = false;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   /// Agrega un nuevo recordatorio
   Future<bool> addReminder(ReminderModel reminder) async {
     _isLoading = true;

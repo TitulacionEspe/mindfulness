@@ -46,6 +46,15 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    _entries = const [];
+    _isLoading = false;
+    _isSaving = false;
+    _errorMessage = null;
+    _successMessage = null;
+    notifyListeners();
+  }
+
   bool canEditOrDelete(ThoughtEntryModel entry, {DateTime? now}) {
     final reference = now ?? DateTime.now();
     return reference.difference(entry.createdAt) <= editableWindow;

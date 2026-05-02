@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../moduloTareas/viewmodels/tasks_viewmodel.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 import 'componet/tarea_card_widget.dart';
 import 'routine_detail_view.dart';
 
@@ -14,13 +15,31 @@ class TareasMainHub extends StatefulWidget {
 }
 
 class _TareasMainHubState extends State<TareasMainHub> {
+  String? _lastUserId;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       if (!mounted) return;
+      _lastUserId = context.read<AuthViewModel>().currentUser?.id;
       context.read<TasksViewModel>().loadTasks();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authViewModel = context.watch<AuthViewModel>();
+    final currentUserId = authViewModel.currentUser?.id;
+
+    if (currentUserId != null && currentUserId != _lastUserId) {
+      _lastUserId = currentUserId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<TasksViewModel>().loadTasks();
+      });
+    }
   }
 
   @override

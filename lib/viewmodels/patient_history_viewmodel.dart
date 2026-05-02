@@ -96,6 +96,20 @@ class PatientHistoryViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    _selectedRangeDays = 7;
+    _isLoading = false;
+    _errorMessage = null;
+    _sessions = const [];
+    _emotions = const [];
+    _thoughts = const [];
+    _historyMetrics = const ProgressMetrics.empty();
+    _homeMetrics = const ProgressMetrics.empty();
+    _isLoadingHomeMetrics = false;
+    _homeMetricsErrorMessage = null;
+    notifyListeners();
+  }
+
   Future<void> setRangeDays(int days) async {
     if (!allowedRanges.contains(days)) return;
     if (_selectedRangeDays == days) return;

@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/moduloCitas/viewmodels/appointments_viewmodel.dart';
+import 'package:mindfulness_app/moduloTareas/viewmodels/tasks_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/patient_history_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/reminders_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/routines_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/self_assessments_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/sleep_habits_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/thought_entries_viewmodel.dart';
 import 'package:mindfulness_app/views/modulo_paciente/reminders_view.dart';
 import 'package:provider/provider.dart';
 
@@ -47,6 +55,18 @@ class ProfileView extends StatelessWidget {
 
     if (confirm == true) {
       await authViewModel.signOut();
+
+      if (context.mounted) {
+        // Limpieza profunda del estado para evitar fugas de datos entre usuarios
+        context.read<RoutinesViewModel>().reset();
+        context.read<ThoughtEntriesViewModel>().reset();
+        context.read<TasksViewModel>().reset();
+        context.read<RemindersViewModel>().reset();
+        context.read<PatientHistoryViewModel>().reset();
+        context.read<SelfAssessmentsViewModel>().reset();
+        context.read<SleepHabitsViewModel>().reset();
+        context.read<AppointmentsViewModel>().reset();
+      }
     }
   }
 
