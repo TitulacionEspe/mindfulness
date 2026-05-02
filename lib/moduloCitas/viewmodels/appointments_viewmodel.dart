@@ -27,6 +27,12 @@ class AppointmentsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reset() {
+    allAppointments = [];
+    isLoading = false;
+    notifyListeners();
+  }
+
   // ACCIÓN DEL PACIENTE: Solicitar
   Future<void> createNewRequest(
     String proId,

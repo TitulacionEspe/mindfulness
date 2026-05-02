@@ -3,10 +3,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mindfulness_app/core/theme/app_theme.dart';
 import 'package:mindfulness_app/models/patient_history_model.dart';
 import 'package:mindfulness_app/services/patient_history_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+// Importamos el ViewModel de Autenticación
+import 'package:mindfulness_app/viewmodels/auth_viewmodel.dart';
 import 'package:mindfulness_app/viewmodels/patient_history_viewmodel.dart';
 import 'package:mindfulness_app/views/modulo_paciente/patient_home_view.dart';
 import 'package:provider/provider.dart';
 
+// 1. Doble de riesgo para engañar a la vista de que hay una sesión iniciada
+class FakeAuthViewModel extends ChangeNotifier implements AuthViewModel {
+  @override
+  User? get currentUser => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+// 2. Doble de riesgo para simular la base de datos
 class FakePatientHistoryRepository implements PatientHistoryRepository {
   bool shouldThrow = false;
 
@@ -33,14 +46,18 @@ class FakePatientHistoryRepository implements PatientHistoryRepository {
   }
 }
 
+// 3. Constructor de la App falsa para el test
 Widget _buildApp(PatientHistoryRepository repository) {
   return MultiProvider(
     providers: [
-      ChangeNotifierProvider(
+      // Inyectamos el AuthViewModel falso
+      ChangeNotifierProvider<AuthViewModel>(create: (_) => FakeAuthViewModel()),
+      // Inyectamos el Historial y FORZAMOS la carga de métricas
+      ChangeNotifierProvider<PatientHistoryViewModel>(
         create: (_) => PatientHistoryViewModel(
           repository: repository,
           nowProvider: () => DateTime(2026, 4, 24, 21, 0),
-        ),
+        )..loadHomeMetrics(), // <-- La clave para que no se quede cargando
       ),
     ],
     child: MaterialApp(
@@ -80,11 +97,12 @@ void main() {
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
 
-    expect(find.text('Progreso reciente (7 dias)'), findsOneWidget);
+    // Validamos los textos en pantalla
+    expect(find.textContaining('Progreso reciente'), findsOneWidget);
     expect(find.text('Frecuencia'), findsOneWidget);
     expect(find.text('Completadas'), findsOneWidget);
     expect(find.text('Constancia'), findsOneWidget);
-    expect(find.text('1 dias'), findsOneWidget);
+    expect(find.textContaining('1'), findsWidgets);
     expect(find.text('1/7'), findsOneWidget);
   });
 

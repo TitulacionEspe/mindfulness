@@ -82,6 +82,13 @@ class SelfAssessmentsViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    _isSaving = false;
+    _errorMessage = null;
+    _successMessage = null;
+    notifyListeners();
+  }
+
   void clearMessages() {
     _errorMessage = null;
     _successMessage = null;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/views/modulo_paciente/componet/audio_runner.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -88,13 +89,23 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
 
   Widget _buildRunner() {
     final pattern = widget.routine.breathingPattern;
+    final audioUrl = widget.routine.audioUrl;
 
-    // GUARDIA DE ARQUITECTURA: Aquí es donde inyectas nuevos Runners en el futuro
+    // 1. Prioridad: Respiración (si tiene patrón)
     if (pattern != null) {
       return BreathingRunner(pattern: pattern, onComplete: _onSessionFinished);
     }
 
-    // Runner para audios, sonidos o relajación genérica
+    // 2. Terapia de Sonido / Meditación (si tiene audio)
+    if (audioUrl != null && audioUrl.isNotEmpty) {
+      return AudioRunner(
+        audioUrl: audioUrl,
+        durationSeconds: widget.routine.durationSeconds,
+        onComplete: _onSessionFinished,
+      );
+    }
+
+    // 3. Temporizador Genérico (si no hay nada más)
     return TimedRunner(
       durationSeconds: widget.routine.durationSeconds,
       onComplete: _onSessionFinished,

@@ -6,6 +6,7 @@ class RoutineModel {
     required this.category,
     required this.durationSeconds,
     this.breathingPattern,
+    this.audioUrl,
   });
 
   final String id;
@@ -14,10 +15,12 @@ class RoutineModel {
   final RoutineCategory category;
   final int durationSeconds;
   final BreathingPatternModel? breathingPattern;
+  final String? audioUrl;
 
   factory RoutineModel.fromMap(
     Map<String, dynamic> map, {
     BreathingPatternModel? breathingPattern,
+    String? audioUrl,
   }) {
     return RoutineModel(
       id: map['id'] as String,
@@ -26,6 +29,7 @@ class RoutineModel {
       category: RoutineCategoryX.fromValue(map['category'] as String?),
       durationSeconds: map['duration_seconds'] as int? ?? 180,
       breathingPattern: breathingPattern,
+      audioUrl: audioUrl,
     );
   }
 
@@ -64,7 +68,14 @@ class BreathingPatternModel {
   }
 }
 
-enum RoutineCategory { all, breathing, relaxation, sleepInduction, soundscape }
+enum RoutineCategory {
+  all,
+  breathing,
+  relaxation,
+  sleepInduction,
+  soundscape,
+  terapiaSonido,
+}
 
 extension RoutineCategoryX on RoutineCategory {
   static RoutineCategory fromValue(String? value) {
@@ -73,6 +84,7 @@ extension RoutineCategoryX on RoutineCategory {
       'relaxation' => RoutineCategory.relaxation,
       'sleep_induction' => RoutineCategory.sleepInduction,
       'soundscape' => RoutineCategory.soundscape,
+      'terapia_sonido' => RoutineCategory.terapiaSonido,
       _ => RoutineCategory.relaxation,
     };
   }
@@ -84,6 +96,7 @@ extension RoutineCategoryX on RoutineCategory {
       RoutineCategory.relaxation => 'relaxation',
       RoutineCategory.sleepInduction => 'sleep_induction',
       RoutineCategory.soundscape => 'soundscape',
+      RoutineCategory.terapiaSonido => 'terapia_sonido',
     };
   }
 
@@ -94,6 +107,7 @@ extension RoutineCategoryX on RoutineCategory {
       RoutineCategory.relaxation => 'Relajacion',
       RoutineCategory.sleepInduction => 'Descanso',
       RoutineCategory.soundscape => 'Ambiente',
+      RoutineCategory.terapiaSonido => 'Terapia de Sonido',
     };
   }
 }

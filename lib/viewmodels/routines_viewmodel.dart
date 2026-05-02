@@ -64,6 +64,17 @@ class RoutinesViewModel extends ChangeNotifier {
     }
   }
 
+  void reset() {
+    _hasLoadedData = false;
+    _isLoading = false;
+    _isCompleting = false;
+    _errorMessage = null;
+    _selectedCategory = RoutineCategory.all;
+    _routines = const [];
+    _assignedActivities = const [];
+    notifyListeners();
+  }
+
   void selectCategory(RoutineCategory category) {
     _selectedCategory = category;
     notifyListeners();
