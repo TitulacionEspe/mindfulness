@@ -11,7 +11,7 @@ class DashboardTareasView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Gestión de Terapias")),
+      appBar: AppBar(title: const Text("Resumenes ")),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
