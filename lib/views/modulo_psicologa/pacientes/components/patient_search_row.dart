@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../viewmodels/viewmodels_psicologa/patients_viewmodel.dart';
 
 class PatientSearchRow extends StatelessWidget {
   const PatientSearchRow({super.key});
@@ -10,17 +12,20 @@ class PatientSearchRow extends StatelessWidget {
       children: [
         // Botón de Filtro Circular
         Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
             shape: BoxShape.circle,
           ),
           child: Icon(Icons.tune, color: AppColors.textPrimary, size: 20),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         // Buscador expandido
         Expanded(
           child: TextField(
+            onChanged: (value) {
+              context.read<PatientsViewModel>().updateSearchQuery(value);
+            },
             style: TextStyle(color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: "Busca el nombre del paciente",
@@ -36,9 +41,7 @@ class PatientSearchRow extends StatelessWidget {
                 vertical: 15,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  30,
-                ), // Muy redondeado como la imagen
+                borderRadius: BorderRadius.circular(30),
                 borderSide: BorderSide.none,
               ),
             ),

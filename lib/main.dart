@@ -8,6 +8,9 @@ import 'package:mindfulness_app/moduloPsiquiatra/viewmodels_ps/routines_viewmode
 import 'package:mindfulness_app/moduloTareas/viewmodels/tasks_viewmodel.dart';
 import 'package:mindfulness_app/services/notification_service.dart';
 import 'package:mindfulness_app/viewmodels/reminders_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/viewmodels_psicologa/patient_details_viewmodel.dart';
+import 'package:mindfulness_app/viewmodels/viewmodels_psicologa/patients_viewmodel.dart';
+import 'package:mindfulness_app/services/services_psicologa/psychologist_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -82,6 +85,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PatientHistoryViewModel()),
 
         ChangeNotifierProvider(create: (_) => TasksViewModel()),
+        ChangeNotifierProvider(
+          create: (_) =>
+              PatientsViewModel(repository: PsychologistRepository()),
+        ),
+        ChangeNotifierProvider(create: (_) => PatientDetailsViewModel()),
       ],
       child: Consumer<ThemeViewModel>(
         builder: (context, themeViewModel, _) {
