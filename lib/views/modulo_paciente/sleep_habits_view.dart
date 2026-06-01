@@ -4,7 +4,8 @@ import '../../core/theme/app_colors.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
 
 class SleepHabitsView extends StatefulWidget {
-  const SleepHabitsView({super.key});
+  final bool showBackButton;
+  const SleepHabitsView({super.key, this.showBackButton = false});
 
   @override
   State<SleepHabitsView> createState() => _SleepHabitsViewState();
@@ -30,13 +31,16 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
           ? AppBar(
               backgroundColor: AppColors.background.withValues(alpha: 0),
               elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: AppColors.textPrimary,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+              automaticallyImplyLeading: false,
+              leading: widget.showBackButton
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppColors.textPrimary,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  : null,
               title: Text(
                 'Ajustes de Sueño',
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
