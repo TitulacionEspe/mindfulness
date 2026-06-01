@@ -163,12 +163,14 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
               completedCount: completedCount,
             ),
             const SizedBox(height: 14),
-            _buildCalendar(eventsByDay),
-            const SizedBox(height: 10),
-            _buildLegend(eventsByDay),
-            const SizedBox(height: 12),
             _buildTabSelector(),
             const SizedBox(height: 12),
+            if (_tab == PatientAppointmentsTab.agenda) ...[
+              _buildCalendar(eventsByDay),
+              const SizedBox(height: 10),
+              _buildLegend(eventsByDay),
+              const SizedBox(height: 12),
+            ],
             if (vm.isLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 22),
@@ -284,8 +286,11 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
         eventLoader: (day) =>
             eventsByDay[_normalizeDate(day)]?.toList() ?? const [],
-        calendarFormat: CalendarFormat.month,
-        availableCalendarFormats: const {CalendarFormat.month: 'Mes'},
+        calendarFormat: CalendarFormat.twoWeeks,
+        availableCalendarFormats: const {
+          CalendarFormat.twoWeeks: '2 Semanas',
+          CalendarFormat.month: 'Mes',
+        },
         headerStyle: HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
@@ -788,6 +793,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
   final _motiveController = TextEditingController();
   String? _selectedProfessionalId;
   String _appointmentType = 'Primera vez';
+  DateTime? _suggestedDate;
 
   @override
   void dispose() {
@@ -845,7 +851,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: ['Primera vez', 'Seguimiento', 'Urgencia'].map((type) {
+              children: ['Primera vez', 'Seguimiento', 'Otro'].map((type) {
                 final selected = _appointmentType == type;
                 return ChoiceChip(
                   label: Text(type),
@@ -872,7 +878,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
               minLines: 3,
               maxLines: 5,
               decoration: const InputDecoration(
-                labelText: 'Motivo',
+                labelText: 'Describeme lo que sucede',
                 hintText:
                     'Ej: Necesito apoyo para regular ansiedad por exámenes.',
               ),
@@ -886,6 +892,47 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                 return null;
               },
             ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _suggestedDate == null
+                        ? '¿Tienes alguna fecha en mente? (Opcional)'
+                        : 'Fecha sugerida: ${DateFormat('dd/MM/yyyy').format(_suggestedDate!)}',
+                    style: TextStyle(
+                      color: _suggestedDate == null
+                          ? AppColors.textSecondary
+                          : AppColors.mint,
+                      fontSize: 14,
+                      fontWeight: _suggestedDate == null
+                          ? FontWeight.normal
+                          : FontWeight.w600,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now().add(const Duration(days: 1)),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 60)),
+                    );
+                    if (date != null) {
+                      setState(() => _suggestedDate = date);
+                    }
+                  },
+                  child: Text(_suggestedDate == null ? 'Elegir' : 'Cambiar'),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -895,10 +942,20 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                       _selectedProfessionalId == null) {
                     return;
                   }
+
+                  String finalMotive = _motiveController.text.trim();
+                  if (_suggestedDate != null) {
+                    final dateStr = DateFormat(
+                      'dd/MM/yyyy',
+                    ).format(_suggestedDate!);
+                    finalMotive +=
+                        '\n\n(Fecha sugerida por el paciente: $dateStr)';
+                  }
+
                   await vm.createNewRequest(
                     _selectedProfessionalId!,
                     _appointmentType,
-                    _motiveController.text.trim(),
+                    finalMotive,
                   );
                   if (!context.mounted) return;
                   Navigator.of(context).pop();

@@ -57,7 +57,7 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<RoutinesViewModel>();
-    final assignedActivities = viewModel.assignedActivities;
+    final pendingActivities = viewModel.pendingAssignedActivities;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -88,16 +88,16 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
               const SliverToBoxAdapter(
                 child: SectionTitle(title: 'Mis actividades asignadas'),
               ),
-              if (viewModel.isLoading && assignedActivities.isEmpty)
+              if (viewModel.isLoading && pendingActivities.isEmpty)
                 const SliverToBoxAdapter(child: _LoadingBlock())
-              else if (assignedActivities.isEmpty)
+              else if (pendingActivities.isEmpty)
                 const SliverToBoxAdapter(child: _EmptyAssignedState())
               else
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverList.separated(
                     itemBuilder: (context, index) {
-                      final activity = assignedActivities[index];
+                      final activity = pendingActivities[index];
                       return AssignedActivityCard(
                         activity: activity,
                         onTap: () => _openRoutine(
@@ -108,7 +108,7 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                       );
                     },
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemCount: assignedActivities.length,
+                    itemCount: pendingActivities.length,
                   ),
                 ),
               const SliverToBoxAdapter(child: SizedBox(height: 14)),
