@@ -186,6 +186,7 @@ class _CitasViewState extends State<CitasView> {
                             setState(() {
                               _selectedDay = _normalizeDate(newDate);
                               _focusedDay = _normalizeDate(newDate);
+                              _currentTab = CitasTab.agenda;
                             });
                           },
                         ),
@@ -196,42 +197,45 @@ class _CitasViewState extends State<CitasView> {
                       ),
                     ),
 
-                  const SizedBox(height: 25),
-                  const Divider(),
-                  const SizedBox(height: 15),
+                  if (_currentTab == CitasTab.agenda ||
+                      _currentTab == CitasTab.historial) ...[
+                    const SizedBox(height: 25),
+                    const Divider(),
+                    const SizedBox(height: 15),
 
-                  Text(
-                    'Vista de calendario',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                    Text(
+                      'Vista de calendario',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                  // PIEZA: Calendario (Ahora al final)
-                  CitasCalendarCard(
-                    selectedDay: _selectedDay,
-                    focusedDay: _focusedDay,
-                    eventsByDay: eventsByDay,
-                    onDaySelected: (selectedDay, focusedDay) {
-                      setState(() {
-                        _selectedDay = _normalizeDate(selectedDay);
-                        _focusedDay = _normalizeDate(focusedDay);
-                      });
-                    },
-                    onPageChanged: (focusedDay) {
-                      setState(() {
-                        _focusedDay = _normalizeDate(focusedDay);
-                      });
-                    },
-                  ),
+                    // PIEZA: Calendario (Ahora al final)
+                    CitasCalendarCard(
+                      selectedDay: _selectedDay,
+                      focusedDay: _focusedDay,
+                      eventsByDay: eventsByDay,
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = _normalizeDate(selectedDay);
+                          _focusedDay = _normalizeDate(focusedDay);
+                        });
+                      },
+                      onPageChanged: (focusedDay) {
+                        setState(() {
+                          _focusedDay = _normalizeDate(focusedDay);
+                        });
+                      },
+                    ),
 
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
-                  // PIEZA: Leyenda
-                  CitasCalendarLegend(eventsByDay: eventsByDay),
+                    // PIEZA: Leyenda
+                    CitasCalendarLegend(eventsByDay: eventsByDay),
+                  ],
                 ],
               ),
             ),

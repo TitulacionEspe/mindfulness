@@ -49,6 +49,17 @@ class AppointmentCardItem extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
+              appointment.patientName ?? 'Paciente Desconocido',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
               appointment.motive,
               style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
             ),

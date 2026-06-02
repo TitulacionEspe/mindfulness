@@ -29,19 +29,40 @@ class AppointmentRequestCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.tertiaryBg,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    appointment.type.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.tertiary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        appointment.patientName ?? 'Paciente Desconocido',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.tertiaryBg,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          appointment.type.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.tertiary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 ElevatedButton(

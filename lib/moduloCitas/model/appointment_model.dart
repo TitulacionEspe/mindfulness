@@ -8,6 +8,10 @@ class Appointment {
   final DateTime? scheduledDate; // La Pro lo define
   final int? durationMinutes; // La Pro lo define
   final String? professionalNotes;
+  final String?
+  patientName; // Agregado para mostrar en la vista del profesional
+  final String?
+  professionalName; // Nombre de la profesional para mostrar al paciente
 
   Appointment({
     this.id,
@@ -19,6 +23,8 @@ class Appointment {
     this.scheduledDate,
     this.durationMinutes,
     this.professionalNotes,
+    this.patientName,
+    this.professionalName,
   });
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +50,12 @@ class Appointment {
         : null,
     durationMinutes: json['duration_minutes'],
     professionalNotes: json['professional_notes'],
+    // Extraemos el nombre si viene en el join de Supabase (profiles(full_name))
+    patientName: json['profiles'] != null
+        ? json['profiles']['full_name']
+        : null,
+    professionalName: json['professional'] != null
+        ? json['professional']['full_name']
+        : null,
   );
 }

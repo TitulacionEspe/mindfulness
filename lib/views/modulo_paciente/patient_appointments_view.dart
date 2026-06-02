@@ -163,12 +163,14 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
               completedCount: completedCount,
             ),
             const SizedBox(height: 14),
-            _buildCalendar(eventsByDay),
-            const SizedBox(height: 10),
-            _buildLegend(eventsByDay),
-            const SizedBox(height: 12),
             _buildTabSelector(),
             const SizedBox(height: 12),
+            if (_tab == PatientAppointmentsTab.agenda) ...[
+              _buildCalendar(eventsByDay),
+              const SizedBox(height: 10),
+              _buildLegend(eventsByDay),
+              const SizedBox(height: 12),
+            ],
             if (vm.isLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 22),
@@ -284,8 +286,11 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
         eventLoader: (day) =>
             eventsByDay[_normalizeDate(day)]?.toList() ?? const [],
-        calendarFormat: CalendarFormat.month,
-        availableCalendarFormats: const {CalendarFormat.month: 'Mes'},
+        calendarFormat: CalendarFormat.twoWeeks,
+        availableCalendarFormats: const {
+          CalendarFormat.twoWeeks: '2 Semanas',
+          CalendarFormat.month: 'Mes',
+        },
         headerStyle: HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
@@ -517,6 +522,28 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
                 ),
               ],
             ),
+            if (appointment.professionalName != null &&
+                appointment.professionalName!.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: AppColors.lavender,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    appointment.professionalName!,
+                    style: TextStyle(
+                      color: AppColors.lavender,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 8),
             Text(
               appointment.motive,
@@ -596,9 +623,34 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
     }
 
     if (appointment.status == 'SOLICITADA') {
-      return Text(
-        'Tu solicitud fue enviada. Te notificaremos cuando haya una propuesta.',
-        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tu solicitud fue enviada. Te notificaremos cuando haya una propuesta.',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () =>
+                  _updateStatus(vm, appointment.id!, 'CANCELADA', false),
+              icon: Icon(
+                Icons.cancel_outlined,
+                size: 18,
+                color: AppColors.error,
+              ),
+              label: Text(
+                'Cancelar solicitud',
+                style: TextStyle(color: AppColors.error),
+              ),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
+              ),
+            ),
+          ),
+        ],
       );
     }
 
@@ -622,17 +674,30 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
     String status,
     bool accepted,
   ) async {
-    await vm.updateStatusFromPatient(appointmentId, status);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          accepted
-              ? 'Horario confirmado correctamente.'
-              : 'Propuesta rechazada.',
+    try {
+      await vm.updateStatusFromPatient(appointmentId, status);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            accepted
+                ? 'Horario confirmado correctamente.'
+                : 'Propuesta rechazada.',
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e.toString().replaceAll('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: AppColors.error,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+      await vm.loadAll();
+    }
   }
 
   Widget _statusChip(String status) {
@@ -646,6 +711,11 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         'Completada',
       ),
       'RECHAZADA' => (AppColors.tertiaryBg, AppColors.error, 'Rechazada'),
+      'CANCELADA' => (
+        AppColors.surfaceHighest,
+        AppColors.textSecondary,
+        'Cancelada',
+      ),
       _ => (AppColors.surfaceHighest, AppColors.textSecondary, status),
     };
 
@@ -788,6 +858,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
   final _motiveController = TextEditingController();
   String? _selectedProfessionalId;
   String _appointmentType = 'Primera vez';
+  DateTime? _suggestedDate;
 
   @override
   void dispose() {
@@ -845,7 +916,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: ['Primera vez', 'Seguimiento', 'Urgencia'].map((type) {
+              children: ['Primera vez', 'Seguimiento', 'Otro'].map((type) {
                 final selected = _appointmentType == type;
                 return ChoiceChip(
                   label: Text(type),
@@ -872,7 +943,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
               minLines: 3,
               maxLines: 5,
               decoration: const InputDecoration(
-                labelText: 'Motivo',
+                labelText: 'Describeme lo que sucede',
                 hintText:
                     'Ej: Necesito apoyo para regular ansiedad por exámenes.',
               ),
@@ -886,6 +957,47 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                 return null;
               },
             ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _suggestedDate == null
+                        ? '¿Tienes alguna fecha en mente? (Opcional)'
+                        : 'Fecha sugerida: ${DateFormat('dd/MM/yyyy').format(_suggestedDate!)}',
+                    style: TextStyle(
+                      color: _suggestedDate == null
+                          ? AppColors.textSecondary
+                          : AppColors.mint,
+                      fontSize: 14,
+                      fontWeight: _suggestedDate == null
+                          ? FontWeight.normal
+                          : FontWeight.w600,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now().add(const Duration(days: 1)),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 60)),
+                    );
+                    if (date != null) {
+                      setState(() => _suggestedDate = date);
+                    }
+                  },
+                  child: Text(_suggestedDate == null ? 'Elegir' : 'Cambiar'),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -895,18 +1007,46 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                       _selectedProfessionalId == null) {
                     return;
                   }
-                  await vm.createNewRequest(
-                    _selectedProfessionalId!,
-                    _appointmentType,
-                    _motiveController.text.trim(),
-                  );
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Solicitud enviada con éxito.'),
-                    ),
-                  );
+
+                  String finalMotive = _motiveController.text.trim();
+                  if (_suggestedDate != null) {
+                    final dateStr = DateFormat(
+                      'dd/MM/yyyy',
+                    ).format(_suggestedDate!);
+                    finalMotive +=
+                        '\n\n(Fecha sugerida por el paciente: $dateStr)';
+                  }
+
+                  try {
+                    await vm.createNewRequest(
+                      _selectedProfessionalId!,
+                      _appointmentType,
+                      finalMotive,
+                    );
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Solicitud enviada con éxito.'),
+                      ),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    final msg = e.toString().replaceAll('Exception: ', '');
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Aviso'),
+                        content: Text(msg),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Entendido'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 icon: const Icon(Icons.send_outlined),
                 label: const Text('Enviar solicitud'),

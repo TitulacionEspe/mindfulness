@@ -28,6 +28,18 @@ class RoutinesViewModel extends ChangeNotifier {
   List<AssignedActivityModel> _assignedActivities = const [];
   List<AssignedActivityModel> get assignedActivities => _assignedActivities;
 
+  List<AssignedActivityModel> get pendingAssignedActivities {
+    final now = DateTime.now();
+    return _assignedActivities.where((activity) {
+      if (activity.status != AssignmentStatus.pending) return false;
+      if (activity.targetCompletion != null &&
+          activity.targetCompletion!.isBefore(now)) {
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+
   List<RoutineModel> get filteredRoutines {
     // Filtrar primero por creador (solo default/null)
     final baseRoutines = _routines.where(

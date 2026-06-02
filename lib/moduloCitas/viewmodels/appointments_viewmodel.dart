@@ -39,6 +39,19 @@ class AppointmentsViewModel extends ChangeNotifier {
     String type,
     String motive,
   ) async {
+    // Refrescar datos antes de validar para evitar solicitudes duplicadas
+    allAppointments = await _service.getAppointments();
+
+    // Validar límite de solicitudes (máximo 1 activa en proceso)
+    final pendingCount = allAppointments
+        .where((a) => a.status == 'SOLICITADA' || a.status == 'PROPUESTA')
+        .length;
+    if (pendingCount >= 1) {
+      throw Exception(
+        'Ya tienes una solicitud en proceso. Espera a que se resuelva o cancélala antes de enviar otra.',
+      );
+    }
+
     final appointment = Appointment(
       patientId: '', // El servicio lo llenará con el Auth.uid
       professionalId: proId,
@@ -51,6 +64,31 @@ class AppointmentsViewModel extends ChangeNotifier {
 
   // ACCIÓN DE LA PROFESIONAL: Proponer Horario
   Future<void> proposeFromPro(String id, DateTime date, int minutes) async {
+    // Refrescar datos antes de validar para evitar condiciones de carrera
+    allAppointments = await _service.getAppointments();
+
+    // Validación de conflictos (Double-booking)
+    final limitDate = date.add(Duration(minutes: minutes));
+    for (var app in allAppointments) {
+      if ((app.status == 'CONFIRMADA' || app.status == 'PROPUESTA') &&
+          app.scheduledDate != null &&
+          app.durationMinutes != null &&
+          app.id != id) {
+        // Ignorar la cita actual que se está modificando
+        final existingStart = app.scheduledDate!;
+        final existingEnd = existingStart.add(
+          Duration(minutes: app.durationMinutes!),
+        );
+
+        // Verifica si los intervalos de tiempo se solapan
+        if (date.isBefore(existingEnd) && limitDate.isAfter(existingStart)) {
+          throw Exception(
+            'Ya tienes una cita agendada o propuesta en este horario.',
+          );
+        }
+      }
+    }
+
     await _service.updateByProfessional(
       appointmentId: id,
       data: {
@@ -61,11 +99,31 @@ class AppointmentsViewModel extends ChangeNotifier {
     );
     await loadAll();
   }
+
+  // ACCIÓN DE LA PROFESIONAL: Rechazar Solicitud
+  Future<void> rejectFromPro(String id) async {
+    await _service.updateByProfessional(
+      appointmentId: id,
+      data: {'status': 'RECHAZADA'},
+    );
+    await loadAll();
+  }
   // En lib/moduloCitas/viewmodels/appointments_viewmodel.dart
 
   Future<void> updateStatusFromPatient(String id, String newStatus) async {
-    await _service.updateByPatient(appointmentId: id, newStatus: newStatus);
-    await loadAll(); // Refrescar lista local
+    try {
+      await _service.updateByPatient(appointmentId: id, newStatus: newStatus);
+      await loadAll(); // Refrescar lista local
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('Conflicto de horario')) {
+        throw Exception(
+          'Este horario ya fue confirmado por otro paciente. '
+          'Por favor, contacta a tu profesional para reagendar.',
+        );
+      }
+      rethrow;
+    }
   }
 
   // --- ACCIÓN: FINALIZAR CITA ---
