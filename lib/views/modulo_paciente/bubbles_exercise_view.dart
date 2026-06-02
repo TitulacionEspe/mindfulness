@@ -265,9 +265,7 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                       title: Row(
                         children: [
                           Icon(
-                            _soundEnabled
-                                ? Icons.volume_up
-                                : Icons.volume_off,
+                            _soundEnabled ? Icons.volume_up : Icons.volume_off,
                             size: 20,
                             color: _soundEnabled
                                 ? const Color(0xFF1AAA7A)

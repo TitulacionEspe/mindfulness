@@ -174,8 +174,9 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
                 backgroundColor: AppColors.buttonPrimary,
                 foregroundColor: AppColors.buttonPrimaryText,
                 disabledBackgroundColor: AppColors.surfaceHigh,
-                disabledForegroundColor:
-                    AppColors.textSecondary.withValues(alpha: 0.4),
+                disabledForegroundColor: AppColors.textSecondary.withValues(
+                  alpha: 0.4,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -191,8 +192,10 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
                     )
                   : const Text(
                       'Iniciar sesión',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
             ),
           ),

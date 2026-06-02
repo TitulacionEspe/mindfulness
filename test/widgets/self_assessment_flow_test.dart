@@ -49,7 +49,6 @@ class FakeSelfAssessmentsRepository implements SelfAssessmentsRepository {
   }
 }
 
-
 Widget _wrapWithProviders(Widget child) {
   return MultiProvider(
     providers: [

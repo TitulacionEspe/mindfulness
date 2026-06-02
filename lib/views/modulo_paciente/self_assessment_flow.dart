@@ -20,18 +20,17 @@ class PostSessionLikertSheet extends StatefulWidget {
   final String routineTitle;
 
   @override
-  State<PostSessionLikertSheet> createState() =>
-      _PostSessionLikertSheetState();
+  State<PostSessionLikertSheet> createState() => _PostSessionLikertSheetState();
 }
 
 class _PostSessionLikertSheetState extends State<PostSessionLikertSheet> {
   int? _selectedScore;
 
   static const _faces = [
-    _LikertFace(emoji: '😞', label: 'Muy mal',  score: 1, semantic: 'muy_mal'),
-    _LikertFace(emoji: '😟', label: 'Mal',      score: 2, semantic: 'mal'),
-    _LikertFace(emoji: '😐', label: 'Regular',  score: 3, semantic: 'regular'),
-    _LikertFace(emoji: '😊', label: 'Bien',     score: 4, semantic: 'bien'),
+    _LikertFace(emoji: '😞', label: 'Muy mal', score: 1, semantic: 'muy_mal'),
+    _LikertFace(emoji: '😟', label: 'Mal', score: 2, semantic: 'mal'),
+    _LikertFace(emoji: '😐', label: 'Regular', score: 3, semantic: 'regular'),
+    _LikertFace(emoji: '😊', label: 'Bien', score: 4, semantic: 'bien'),
     _LikertFace(emoji: '😍', label: 'Muy bien', score: 5, semantic: 'muy_bien'),
   ];
 
@@ -129,17 +128,16 @@ class _PostSessionLikertSheetState extends State<PostSessionLikertSheet> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed:
-                      _selectedScore != null && !vm.isSaving
-                          ? _saveLikert
-                          : null,
+                  onPressed: _selectedScore != null && !vm.isSaving
+                      ? _saveLikert
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.buttonPrimary,
                     foregroundColor: AppColors.buttonPrimaryText,
-                    disabledBackgroundColor:
-                        AppColors.surfaceHigh,
-                    disabledForegroundColor:
-                        AppColors.textSecondary.withValues(alpha: 0.4),
+                    disabledBackgroundColor: AppColors.surfaceHigh,
+                    disabledForegroundColor: AppColors.textSecondary.withValues(
+                      alpha: 0.4,
+                    ),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -266,9 +264,7 @@ class _LikertFaceButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  color: isSelected
-                      ? AppColors.mint
-                      : AppColors.textSecondary,
+                  color: isSelected ? AppColors.mint : AppColors.textSecondary,
                 ),
               ),
             ],

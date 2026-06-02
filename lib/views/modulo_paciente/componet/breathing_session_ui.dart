@@ -87,7 +87,9 @@ class _SoundToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: enabled ? 'Sonido activado. Toca para silenciar.' : 'Sonido desactivado. Vibración activa.',
+      label: enabled
+          ? 'Sonido activado. Toca para silenciar.'
+          : 'Sonido desactivado. Vibración activa.',
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
@@ -96,9 +98,7 @@ class _SoundToggle extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: enabled
-                ? AppColors.surfaceLow
-                : AppColors.warningBg,
+            color: enabled ? AppColors.surfaceLow : AppColors.warningBg,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: enabled
