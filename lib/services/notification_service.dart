@@ -5,6 +5,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../core/constants/app_brand.dart';
 import '../models/reminder_model.dart';
 
 class NotificationPermissionState {
@@ -129,7 +130,7 @@ class NotificationService {
 
         await _scheduleWeekly(
           id: baseId + weekDay,
-          title: 'Mindfulness',
+          title: AppBrand.name,
           body: _getReminderMessage(reminder.type),
           time: reminder.triggerTime,
           day: weekDay,
@@ -143,9 +144,9 @@ class NotificationService {
       case ReminderType.sleepInduction:
         return 'Es momento de tu inducción al sueño. Descansa.';
       case ReminderType.routineStart:
-        return 'Tu rutina nocturna esta por comenzar. Preparate.';
+        return 'Tu rutina nocturna está por comenzar. Prepárate.';
       case ReminderType.briefRelaxation:
-        return 'Tomate un momento para una relajacion breve.';
+        return 'Tómate un momento para una relajación breve.';
     }
   }
 

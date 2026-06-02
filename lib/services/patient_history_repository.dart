@@ -28,6 +28,32 @@ class SupabasePatientHistoryRepository implements PatientHistoryRepository {
     return 1;
   }
 
+  bool _isSchemaCompatibilityError(Object error) {
+    if (error is! PostgrestException) return false;
+
+    final code = error.code;
+    final message = error.message.toLowerCase();
+    return code == '42P01' ||
+        code == '42703' ||
+        code == 'PGRST204' ||
+        message.contains('could not find') ||
+        message.contains('does not exist') ||
+        message.contains('schema cache') ||
+        message.contains('column');
+  }
+
+  Future<T> _emptyOnSchemaCompatibilityError<T>(
+    Future<T> Function() action,
+    T fallback,
+  ) async {
+    try {
+      return await action();
+    } catch (error) {
+      if (_isSchemaCompatibilityError(error)) return fallback;
+      rethrow;
+    }
+  }
+
   @override
   Future<List<HistorySessionItem>> getSessions(int rangeDays) async {
     final user = _client.auth.currentUser;
@@ -37,16 +63,17 @@ class SupabasePatientHistoryRepository implements PatientHistoryRepository {
 
     final fromDate = _fromDate(rangeDays);
 
-    final sessionsResponse = await _client
-        .from('activity_sessions')
-        .select('id,routine_id,started_at,completed_at,status')
-        .eq('patient_id', user.id)
-        .gte('started_at', _toIsoUtc(fromDate))
-        .order('started_at', ascending: false);
-
-    final sessionRows = List<Map<String, dynamic>>.from(
-      sessionsResponse as List,
+    final sessionsResponse = await _emptyOnSchemaCompatibilityError(
+      () => _client
+          .from('activity_sessions')
+          .select('id,routine_id,started_at,completed_at,status')
+          .eq('patient_id', user.id)
+          .gte('started_at', _toIsoUtc(fromDate))
+          .order('started_at', ascending: false),
+      const <dynamic>[],
     );
+
+    final sessionRows = List<Map<String, dynamic>>.from(sessionsResponse);
     if (sessionRows.isEmpty) return const [];
 
     final routineIds = sessionRows
@@ -55,25 +82,27 @@ class SupabasePatientHistoryRepository implements PatientHistoryRepository {
         .toSet()
         .toList();
 
-    final routinesResponse = await _client
-        .from('routines')
-        .select('id,title')
-        .inFilter('id', routineIds);
-    final routineRows = List<Map<String, dynamic>>.from(
-      routinesResponse as List,
+    final routinesResponse = await _emptyOnSchemaCompatibilityError(
+      () => _client
+          .from('routines')
+          .select('id,title')
+          .inFilter('id', routineIds),
+      const <dynamic>[],
     );
+    final routineRows = List<Map<String, dynamic>>.from(routinesResponse);
     final routineTitles = {
       for (final row in routineRows)
         row['id'] as String: (row['title'] as String?) ?? 'Rutina',
     };
 
-    final assignmentsResponse = await _client
-        .from('assignments')
-        .select('routine_id')
-        .eq('patient_id', user.id);
-    final assignmentRows = List<Map<String, dynamic>>.from(
-      assignmentsResponse as List,
+    final assignmentsResponse = await _emptyOnSchemaCompatibilityError(
+      () => _client
+          .from('assignments')
+          .select('routine_id')
+          .eq('patient_id', user.id),
+      const <dynamic>[],
     );
+    final assignmentRows = List<Map<String, dynamic>>.from(assignmentsResponse);
     final assignedRoutineIds = assignmentRows
         .map((row) => row['routine_id'] as String?)
         .whereType<String>()
@@ -106,14 +135,17 @@ class SupabasePatientHistoryRepository implements PatientHistoryRepository {
     }
 
     final fromDate = _fromDate(rangeDays);
-    final response = await _client
-        .from('self_assessments')
-        .select('id,session_id,context,emotion_id,intensity,recorded_at')
-        .eq('patient_id', user.id)
-        .gte('recorded_at', _toIsoUtc(fromDate))
-        .order('recorded_at', ascending: false);
+    final response = await _emptyOnSchemaCompatibilityError(
+      () => _client
+          .from('self_assessments')
+          .select('id,session_id,context,emotion_id,intensity,recorded_at')
+          .eq('patient_id', user.id)
+          .gte('recorded_at', _toIsoUtc(fromDate))
+          .order('recorded_at', ascending: false),
+      const <dynamic>[],
+    );
 
-    final rows = List<Map<String, dynamic>>.from(response as List);
+    final rows = List<Map<String, dynamic>>.from(response);
     if (rows.isEmpty) return const [];
 
     final grouped = <String, List<Map<String, dynamic>>>{};
@@ -161,14 +193,17 @@ class SupabasePatientHistoryRepository implements PatientHistoryRepository {
     }
 
     final fromDate = _fromDate(rangeDays);
-    final response = await _client
-        .from('thought_entries')
-        .select('id,content_ciphertext,created_at')
-        .eq('patient_id', user.id)
-        .gte('created_at', _toIsoUtc(fromDate))
-        .order('created_at', ascending: false);
+    final response = await _emptyOnSchemaCompatibilityError(
+      () => _client
+          .from('thought_entries')
+          .select('id,content_ciphertext,created_at')
+          .eq('patient_id', user.id)
+          .gte('created_at', _toIsoUtc(fromDate))
+          .order('created_at', ascending: false),
+      const <dynamic>[],
+    );
 
-    final rows = List<Map<String, dynamic>>.from(response as List);
+    final rows = List<Map<String, dynamic>>.from(response);
     return rows.map((row) {
       final createdAt = DateTime.tryParse(row['created_at'] as String? ?? '');
       final content = (row['content_ciphertext'] as String? ?? '').trim();

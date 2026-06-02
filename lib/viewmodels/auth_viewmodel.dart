@@ -20,6 +20,7 @@ class AuthViewModel extends ChangeNotifier {
   User? _currentUser;
   UserRole? _userRole;
   bool _hasAcceptedConsent = false;
+  bool _justAcceptedConsent = false;
   bool _isLoading = false;
   String? _errorMessage;
   bool _isSigningUp = false;
@@ -31,6 +32,7 @@ class AuthViewModel extends ChangeNotifier {
   User? get currentUser => _currentUser;
   UserRole? get userRole => _userRole;
   bool get hasAcceptedConsent => _hasAcceptedConsent;
+  bool get justAcceptedConsent => _justAcceptedConsent;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _currentUser != null;
@@ -58,6 +60,7 @@ class AuthViewModel extends ChangeNotifier {
             _currentUser = null;
             _userRole = null;
             _hasAcceptedConsent = false;
+            _justAcceptedConsent = false;
             notifyListeners();
             return;
           }
@@ -74,6 +77,7 @@ class AuthViewModel extends ChangeNotifier {
         _currentUser = null;
         _userRole = null;
         _hasAcceptedConsent = false;
+        _justAcceptedConsent = false;
       }
     }
 
@@ -110,6 +114,7 @@ class AuthViewModel extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     _hasAcceptedConsent = false;
+    _justAcceptedConsent = false;
     notifyListeners();
 
     try {
@@ -127,6 +132,7 @@ class AuthViewModel extends ChangeNotifier {
         _currentUser!.id,
         currentConsentVersion,
       );
+      _justAcceptedConsent = false;
 
       _errorMessage = null;
     } catch (e) {
@@ -135,6 +141,7 @@ class AuthViewModel extends ChangeNotifier {
       _currentUser = null;
       _userRole = null;
       _hasAcceptedConsent = false;
+      _justAcceptedConsent = false;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -145,16 +152,36 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> acceptConsent() async {
     if (_currentUser == null) return;
 
+    if (_hasAcceptedConsent) {
+      _justAcceptedConsent = false;
+      _errorMessage = null;
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
+      final alreadyAccepted = await _authRepository.hasAcceptedConsent(
+        _currentUser!.id,
+        currentConsentVersion,
+      );
+
+      if (alreadyAccepted) {
+        _hasAcceptedConsent = true;
+        _justAcceptedConsent = false;
+        _errorMessage = null;
+        return;
+      }
+
       await _authRepository.saveConsent(
         _currentUser!.id,
         currentConsentVersion,
       );
       _hasAcceptedConsent = true;
+      _justAcceptedConsent = true;
       _errorMessage = null;
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -174,6 +201,7 @@ class AuthViewModel extends ChangeNotifier {
       _currentUser = null;
       _userRole = null;
       _hasAcceptedConsent = false;
+      _justAcceptedConsent = false;
       _errorMessage = null;
     } catch (e) {
       _errorMessage = e.toString();
@@ -186,6 +214,11 @@ class AuthViewModel extends ChangeNotifier {
   /// Clears error message (call after user dismisses feedback).
   void clearError() {
     _errorMessage = null;
+    notifyListeners();
+  }
+
+  void clearConsentIntroFlag() {
+    _justAcceptedConsent = false;
     notifyListeners();
   }
 }

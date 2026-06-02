@@ -1,11 +1,11 @@
 {
-    "name": "mindfulness_app",
-    "short_name": "mindfulness_app",
+    "name": "Nidara",
+    "short_name": "Nidara",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#141315",
+    "theme_color": "#141315",
+    "description": "Nidara: mindfulness e higiene del sueño.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

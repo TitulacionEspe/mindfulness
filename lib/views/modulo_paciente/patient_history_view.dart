@@ -241,7 +241,7 @@ class _ProgressMetricsCard extends StatelessWidget {
           if (hasPerceptionData)
             _MetricProgressRow(
               icon: Icons.psychology_alt_outlined,
-              title: 'Percepcion general',
+              title: 'Percepción general',
               value:
                   '${(metrics.improvementRate * 100).round()}% de sesiones con mejora',
               progress: metrics.improvementRate.clamp(0.0, 1.0),
@@ -266,7 +266,7 @@ class _ProgressMetricsCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Percepcion general: Sin datos suficientes',
+                      'Percepción general: sin datos suficientes',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
@@ -364,7 +364,7 @@ class _SessionsTab extends StatelessWidget {
       errorMessage: viewModel.errorMessage,
       isEmpty: viewModel.sessions.isEmpty,
       emptyMessage:
-          'No hay sesiones registradas en este rango. Completa una actividad desde Tareas para verla aqui.',
+          'No hay sesiones registradas en este rango. Completa una actividad desde Tareas para verla aquí.',
       onRefresh: () => viewModel.loadHistory(force: true),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),

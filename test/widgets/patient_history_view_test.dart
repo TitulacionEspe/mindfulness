@@ -135,6 +135,27 @@ void main() {
     expect(repository.lastRangeDays, 30);
   });
 
+  testWidgets('shows empty history state without error for new accounts', (
+    tester,
+  ) async {
+    final repository = FakePatientHistoryRepository();
+
+    await tester.pumpWidget(_buildApp(repository));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Historial personal'), findsOneWidget);
+    expect(
+      find.text(
+        'No hay sesiones registradas en este rango. Completa una actividad desde Tareas para verla aquí.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('No se pudo cargar el historial personal. Intenta nuevamente.'),
+      findsNothing,
+    );
+  });
+
   testWidgets('shows visible error state when repository fails', (
     tester,
   ) async {
