@@ -33,8 +33,9 @@ class RoutinesViewModel extends ChangeNotifier {
     return _assignedActivities.where((activity) {
       if (activity.status != AssignmentStatus.pending) return false;
       if (activity.targetCompletion != null &&
-          activity.targetCompletion!.isBefore(now))
+          activity.targetCompletion!.isBefore(now)) {
         return false;
+      }
       return true;
     }).toList();
   }
