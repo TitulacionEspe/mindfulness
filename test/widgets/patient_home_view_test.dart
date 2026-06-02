@@ -106,15 +106,34 @@ void main() {
     expect(find.text('1/7'), findsOneWidget);
   });
 
-  testWidgets('shows error state when home metrics fail', (tester) async {
-    final repository = FakePatientHistoryRepository()..shouldThrow = true;
+  testWidgets('shows empty progress hint when there is no recent activity', (
+    tester,
+  ) async {
+    final repository = FakePatientHistoryRepository();
 
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
 
     expect(
-      find.text('No se pudo cargar tu progreso reciente. Intenta nuevamente.'),
+      find.text(
+        'Aún no tienes progreso registrado. Cuando completes rutinas, verás tu avance aquí.',
+      ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('keeps progress cards aligned on compact width', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(390, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final repository = FakePatientHistoryRepository();
+
+    await tester.pumpWidget(_buildApp(repository));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Frecuencia'), findsOneWidget);
+    expect(find.text('Completadas'), findsOneWidget);
+    expect(find.text('Constancia'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

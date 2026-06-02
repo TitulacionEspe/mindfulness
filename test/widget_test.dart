@@ -8,13 +8,11 @@ void main() {
     ) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: Center(child: Text('Mindfulness - Gestión del Sueño')),
-          ),
+          home: Scaffold(body: Center(child: Text('Nidara'))),
         ),
       );
 
-      expect(find.text('Mindfulness - Gestión del Sueño'), findsOneWidget);
+      expect(find.text('Nidara'), findsOneWidget);
     });
   });
 }

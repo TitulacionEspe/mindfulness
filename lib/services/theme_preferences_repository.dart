@@ -6,9 +6,11 @@ class ThemePreferencesRepository {
   ThemePreferencesRepository({
     SupabaseClient? supabaseClient,
     Future<SharedPreferences> Function()? preferencesFactory,
+    bool enableRemoteSync = false,
   }) : _supabaseClient = supabaseClient,
        _preferencesFactory =
-           preferencesFactory ?? SharedPreferences.getInstance;
+           preferencesFactory ?? SharedPreferences.getInstance,
+       _enableRemoteSync = enableRemoteSync;
 
   static const String themeModeKey = 'theme_mode';
   static const String lightValue = 'light';
@@ -16,12 +18,18 @@ class ThemePreferencesRepository {
 
   final SupabaseClient? _supabaseClient;
   final Future<SharedPreferences> Function() _preferencesFactory;
+  final bool _enableRemoteSync;
 
   SupabaseClient get _client => _supabaseClient ?? Supabase.instance.client;
 
   Future<ThemeMode> loadThemeMode() async {
     final localTheme = await loadLocalThemeMode();
     if (localTheme != null) return localTheme;
+
+    if (!_enableRemoteSync) {
+      await saveLocalThemeMode(ThemeMode.light);
+      return ThemeMode.light;
+    }
 
     final remoteTheme = await loadRemoteThemeMode();
     if (remoteTheme != null) {
@@ -60,6 +68,8 @@ class ThemePreferencesRepository {
   }
 
   Future<void> saveRemoteThemeMode(ThemeMode mode) async {
+    if (!_enableRemoteSync) return;
+
     try {
       final user = _client.auth.currentUser;
       if (user == null) return;
@@ -69,7 +79,7 @@ class ThemePreferencesRepository {
           .update({'theme_mode': serializeThemeMode(mode)})
           .eq('id', user.id);
     } catch (_) {
-      // La preferencia local ya quedó guardada; la sincronización remota es best-effort.
+      // La preferencia local ya quedó guardada; la sincronización remota es opcional.
     }
   }
 

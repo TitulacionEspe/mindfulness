@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_brand.dart';
+import '../../../../core/presentation/widgets/nidara_brand_mark.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
 import 'register_screen.dart';
@@ -44,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor completa todos los campos')),
+        const SnackBar(content: Text('Por favor, completa todos los campos.')),
       );
       return;
     }
@@ -65,42 +67,36 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Icono/Logo minimalista
-                Icon(
-                  Icons.nights_stay_rounded,
-                  size: 80,
-                  color: AppColors.mint,
+                const NidaraBrandMark(
+                  iconSize: 104,
+                  subtitle: AppBrand.tagline,
                 ),
                 const SizedBox(height: 24),
-
-                // Título
                 Text(
-                  'Bienvenido',
+                  'Bienvenido a ${AppBrand.name}',
                   style: Theme.of(context).textTheme.displayLarge,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Gestiona tu bienestar y sueño de forma segura.',
+                  AppBrand.description,
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
-
-                // Formulario
                 _buildInputField(
                   controller: _emailController,
                   focusNode: _emailFocus,
-                  label: 'Correo Institucional',
+                  label: 'Correo institucional',
                   hint: 'usuario@espe.edu.ec',
                   icon: Icons.email_outlined,
                   onSubmitted: (_) => _passwordFocus.requestFocus(),
                 ),
                 const SizedBox(height: 20),
-
                 _buildInputField(
                   controller: _passwordController,
                   focusNode: _passwordFocus,
@@ -119,9 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 12),
-
+                const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -135,10 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 32),
-
-                // Botón Principal
                 Consumer<AuthViewModel>(
                   builder: (context, viewModel, _) => ElevatedButton(
                     onPressed: viewModel.isLoading
@@ -153,13 +144,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: AppColors.buttonPrimaryText,
                             ),
                           )
-                        : const Text('Entrar al Sistema'),
+                        : const Text('Entrar a Nidara'),
                   ),
                 ),
-
-                SizedBox(height: 24),
-
-                // Link a Registro
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -169,7 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => RegisterScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                        ),
                       ),
                       child: Text(
                         'Regístrate aquí',
@@ -211,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           focusNode: focusNode,

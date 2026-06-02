@@ -110,6 +110,24 @@ void main() {
       expect(repository.lastRangeDays, 30);
     });
 
+    test('treats empty history as a valid new-account state', () async {
+      final repository = FakePatientHistoryRepository();
+      final viewModel = PatientHistoryViewModel(
+        repository: repository,
+        nowProvider: () => fixedNow,
+      );
+
+      await viewModel.loadHistory();
+
+      expect(viewModel.errorMessage, isNull);
+      expect(viewModel.sessions, isEmpty);
+      expect(viewModel.emotions, isEmpty);
+      expect(viewModel.thoughts, isEmpty);
+      expect(viewModel.historyMetrics.activeDaysInRange, 0);
+      expect(viewModel.historyMetrics.completedSessionsInRange, 0);
+      expect(viewModel.historyMetrics.weeklyActiveDays, 0);
+    });
+
     test('handles repository errors', () async {
       final repository = FakePatientHistoryRepository()..shouldThrow = true;
       final viewModel = PatientHistoryViewModel(

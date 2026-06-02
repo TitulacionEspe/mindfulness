@@ -68,9 +68,15 @@ class PatientHistoryViewModel extends ChangeNotifier {
         _repository.getThoughtEntries(_selectedRangeDays),
       ]);
 
-      _sessions = results[0] as List<HistorySessionItem>;
-      _emotions = results[1] as List<HistoryEmotionItem>;
-      _thoughts = results[2] as List<HistoryThoughtItem>;
+      _sessions = List<HistorySessionItem>.from(
+        results[0] as Iterable<dynamic>,
+      );
+      _emotions = List<HistoryEmotionItem>.from(
+        results[1] as Iterable<dynamic>,
+      );
+      _thoughts = List<HistoryThoughtItem>.from(
+        results[2] as Iterable<dynamic>,
+      );
       _sessions.sort((a, b) => b.startedAt.compareTo(a.startedAt));
       _emotions.sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
       _thoughts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -131,10 +137,12 @@ class PatientHistoryViewModel extends ChangeNotifier {
         _repository.getAssessments(7),
       ]);
 
-      final sessions = (results[0] as List<HistorySessionItem>)
-        ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
-      final emotions = (results[1] as List<HistoryEmotionItem>)
-        ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+      final sessions = List<HistorySessionItem>.from(
+        results[0] as Iterable<dynamic>,
+      )..sort((a, b) => b.startedAt.compareTo(a.startedAt));
+      final emotions = List<HistoryEmotionItem>.from(
+        results[1] as Iterable<dynamic>,
+      )..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
 
       _homeMetrics = _buildMetrics(
         sessions: sessions,

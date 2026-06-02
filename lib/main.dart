@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/supabase_config.dart';
+import 'core/constants/app_brand.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
@@ -101,7 +102,7 @@ class MyApp extends StatelessWidget {
 
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Mindfulness - Gestión del Sueño',
+            title: AppBrand.name,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeViewModel.themeMode,
@@ -114,7 +115,7 @@ class MyApp extends StatelessWidget {
                         padding: const EdgeInsets.all(24),
                         child: Text(
                           'Configuración faltante en el archivo .env\n\n'
-                          'Por favor, asegurate de tener SUPABASE_URL y '
+                          'Por favor, asegúrate de tener SUPABASE_URL y '
                           'SUPABASE_ANON_KEY configurados.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
