@@ -8,6 +8,7 @@ import '../../features/auth/presentation/consent_screen.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/patient_history_viewmodel.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
+import 'chat_view.dart';
 import 'patient_history_view.dart';
 import 'patient_home_view.dart';
 import 'patient_support_view.dart';
@@ -84,6 +85,27 @@ class _PatientWrapperState extends State<PatientWrapper> {
           await context.read<AuthViewModel>().signOut();
         },
         menuItems: [
+          ListTile(
+            leading: Icon(
+              Icons.chat_bubble_outline_rounded,
+              color: AppColors.lavender,
+            ),
+            title: Text(
+              'Hablar con Calma',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+            subtitle: Text(
+              'Acompañamiento emocional',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ChatView()),
+              );
+            },
+          ),
           ListTile(
             leading: Icon(Icons.person_outline, color: AppColors.textPrimary),
             title: Text(

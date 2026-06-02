@@ -224,6 +224,15 @@ CREATE POLICY "Visualiza sus propias sesiones"
 - Agregar tabla de `audit_logs` para registrar accesos sensibles (lecturas de `thought_entries`).
 - Automatizar migrations con herramienta (sqitch, flyway, migrate) y agregar CI que aplique migraciones a staging.
 
+## 8. Chatbot de acompañamiento emocional (`chat_messages`)
+
+Migración: `Supabase/migrations/008_PGS_xx_chat_messages.sql`.
+
+- `chat_messages` guarda el historial del chat empático "Calma" (rol `user`/`assistant`).
+- Columnas: `id`, `patient_id` (FK a `profiles`), `role`, `content`, `risk_level` (`none`/`low`/`high`), `created_at`.
+- **Privacidad total (igual que `thought_entries`)**: RLS solo permite `SELECT/INSERT/DELETE` al dueño (`auth.uid() = patient_id`). Sin política de `UPDATE` (mensajes inmutables). Ni profesionales ni admins acceden.
+- Las respuestas las genera la Edge Function `emotional-chat`, que llama a Google Gemini Flash con la `GEMINI_API_KEY` guardada como **secret del servidor** (nunca en la app). La función aplica además una capa de detección de riesgo por patrones.
+
 ---
 
 Referencia: ver `Supabase/shema.sql` para la definición completa y `docs/` para requisitos y planificación.

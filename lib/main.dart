@@ -23,6 +23,7 @@ import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/admin_home_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
+import 'viewmodels/chat_viewmodel.dart';
 import 'viewmodels/patient_history_viewmodel.dart';
 import 'viewmodels/psicologa_nav_viewmodel.dart';
 import 'viewmodels/routines_viewmodel.dart';
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThoughtEntriesViewModel()),
         ChangeNotifierProvider(create: (_) => SelfAssessmentsViewModel()),
         ChangeNotifierProvider(create: (_) => PatientHistoryViewModel()),
+        ChangeNotifierProvider(create: (_) => ChatViewModel()),
 
         ChangeNotifierProvider(create: (_) => TasksViewModel()),
         ChangeNotifierProvider(
