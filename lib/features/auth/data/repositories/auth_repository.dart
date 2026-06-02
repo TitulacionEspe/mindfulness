@@ -149,11 +149,21 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<void> saveConsent(String userId, String documentVersion) async {
     try {
+      final alreadyAccepted = await hasAcceptedConsent(userId, documentVersion);
+      if (alreadyAccepted) return;
+
       await Supabase.instance.client.from('consents').insert({
         'patient_id': userId,
         'document_version': documentVersion,
         'terms_accepted': true,
       });
+    } on PostgrestException catch (e) {
+      final isDuplicateConsent =
+          e.code == '23505' ||
+          e.message.toLowerCase().contains('duplicate key');
+      if (isDuplicateConsent) return;
+
+      throw Exception('Error al guardar el consentimiento: ${e.message}');
     } catch (e) {
       throw Exception('Error al guardar el consentimiento: ${e.toString()}');
     }

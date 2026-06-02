@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_brand.dart';
+import '../../../../core/presentation/widgets/nidara_brand_mark.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
 
@@ -42,14 +44,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password.isEmpty ||
         confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor completa todos los campos')),
+        const SnackBar(content: Text('Por favor, completa todos los campos.')),
       );
       return;
     }
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Las contraseñas no coinciden')),
+        const SnackBar(content: Text('Las contraseñas no coinciden.')),
       );
       return;
     }
@@ -87,41 +89,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              Icon(Icons.person_add_rounded, size: 60, color: AppColors.mint),
+              const NidaraBrandMark(iconSize: 72, showName: false),
               const SizedBox(height: 16),
               Text(
-                'Crea tu Cuenta',
+                'Crea tu cuenta en ${AppBrand.name}',
                 style: Theme.of(
                   context,
                 ).textTheme.displayLarge?.copyWith(fontSize: 28),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
-                'Únete para mejorar tu higiene del sueño.',
+                'Únete para cuidar tu higiene del sueño y bienestar.',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-
               _buildInputField(
                 controller: _fullNameController,
-                label: 'Nombre Completo',
+                label: 'Nombre completo',
                 hint: 'Ej. Juan Pérez',
                 icon: Icons.person_outline,
               ),
               const SizedBox(height: 20),
-
               _buildInputField(
                 controller: _emailController,
-                label: 'Correo Institucional',
+                label: 'Correo institucional',
                 hint: 'usuario@espe.edu.ec',
                 icon: Icons.email_outlined,
               ),
               const SizedBox(height: 20),
-
               _buildInputField(
                 controller: _passwordController,
                 label: 'Contraseña',
@@ -138,10 +138,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               _buildInputField(
                 controller: _confirmPasswordController,
-                label: 'Confirmar Contraseña',
+                label: 'Confirmar contraseña',
                 hint: '••••••••',
                 icon: Icons.lock_outlined,
                 obscureText: _obscureConfirm,
@@ -155,7 +154,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-
               Consumer<AuthViewModel>(
                 builder: (context, viewModel, _) => ElevatedButton(
                   onPressed: viewModel.isLoading
@@ -200,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: obscureText,

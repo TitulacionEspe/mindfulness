@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../constants/app_brand.dart';
 import '../../theme/app_colors.dart';
+import 'nidara_brand_mark.dart';
 
 class NocturneDrawer extends StatelessWidget {
   const NocturneDrawer({
@@ -37,21 +39,34 @@ class NocturneDrawer extends StatelessWidget {
                 ),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: AppColors.accent.withValues(alpha: 0.2),
-                    child: Icon(
-                      Icons.person,
-                      size: 32,
-                      color: AppColors.accent,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
+                  const NidaraBrandMark(iconSize: 46, showName: false),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          AppBrand.name,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          AppBrand.tagline,
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
                         Text(
                           userName,
                           style: TextStyle(

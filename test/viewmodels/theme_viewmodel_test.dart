@@ -31,6 +31,18 @@ void main() {
       expect(await repository.loadThemeMode(), ThemeMode.light);
     });
 
+    test('stores light mode locally on first load', () async {
+      final repository = ThemePreferencesRepository();
+
+      await repository.loadThemeMode();
+
+      final preferences = await SharedPreferences.getInstance();
+      expect(
+        preferences.getString(ThemePreferencesRepository.themeModeKey),
+        ThemePreferencesRepository.lightValue,
+      );
+    });
+
     test('persists and reads dark mode locally', () async {
       final repository = ThemePreferencesRepository();
 

@@ -9,7 +9,9 @@ import 'patient_appointments_view.dart';
 import 'thought_entries_view.dart';
 
 class PatientHomeView extends StatefulWidget {
-  const PatientHomeView({super.key});
+  const PatientHomeView({super.key, this.onShowFeatureGuide});
+
+  final VoidCallback? onShowFeatureGuide;
 
   @override
   State<PatientHomeView> createState() => _PatientHomeViewState();
@@ -37,7 +39,6 @@ class _PatientHomeViewState extends State<PatientHomeView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Solo recargar si el usuario cambia (logout/login sin reiniciar app)
     final currentUserId = context.read<AuthViewModel>().currentUser?.id;
 
     if (currentUserId != null && currentUserId != _lastUserId) {
@@ -77,6 +78,10 @@ class _PatientHomeViewState extends State<PatientHomeView> {
               ),
             ),
             const SizedBox(height: 14),
+            if (widget.onShowFeatureGuide != null) ...[
+              _GuidePromptCard(onTap: widget.onShowFeatureGuide),
+              const SizedBox(height: 14),
+            ],
             _HomeProgressSummaryCard(viewModel: historyViewModel),
             const SizedBox(height: 16),
             _HomeQuickCard(
@@ -97,7 +102,7 @@ class _PatientHomeViewState extends State<PatientHomeView> {
               title: 'Tareas de bienestar',
               subtitle: 'Revisa actividades asignadas y rutinas disponibles.',
               accent: AppColors.mint,
-              buttonLabel: 'Ir a Tareas',
+              buttonLabel: 'Ir a tareas',
               onTap: () {
                 Navigator.push(
                   context,
@@ -125,6 +130,75 @@ class _PatientHomeViewState extends State<PatientHomeView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _GuidePromptCard extends StatelessWidget {
+  const _GuidePromptCard({required this.onTap});
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (onTap == null) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceHigh,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLowest,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.outlineVariant),
+            ),
+            child: Icon(Icons.help_outline_rounded, color: AppColors.mint),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '¿Qué puedo hacer en la app?',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Revisa una guía breve con accesos directos a las funciones principales.',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 14,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onTap,
+                    icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                    label: const Text('Ver instrucciones básicas'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -161,38 +235,11 @@ class _HomeProgressSummaryCard extends StatelessWidget {
           if (viewModel.isLoadingHomeMetrics)
             Center(child: CircularProgressIndicator(color: AppColors.mint))
           else ...[
-            if (viewModel.homeMetricsErrorMessage != null) ...[
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.tertiaryBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.error.withValues(alpha: 0.35),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 18,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        viewModel.homeMetricsErrorMessage!,
-                        style: TextStyle(
-                          color: AppColors.error,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            if (_shouldShowEmptyProgressHint(viewModel)) ...[
+              const _HomeProgressHint(),
+              const SizedBox(height: 10),
+            ] else if (viewModel.homeMetricsErrorMessage != null) ...[
+              _HomeProgressError(message: viewModel.homeMetricsErrorMessage!),
               const SizedBox(height: 10),
             ],
             Row(
@@ -230,6 +277,83 @@ class _HomeProgressSummaryCard extends StatelessWidget {
       ),
     );
   }
+
+  bool _shouldShowEmptyProgressHint(PatientHistoryViewModel viewModel) {
+    final metrics = viewModel.homeMetrics;
+    return metrics.activeDaysInRange == 0 &&
+        metrics.completedSessionsInRange == 0 &&
+        metrics.weeklyActiveDays == 0;
+  }
+}
+
+class _HomeProgressHint extends StatelessWidget {
+  const _HomeProgressHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.successBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.mint.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, size: 18, color: AppColors.mint),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Aún no tienes progreso registrado. Cuando completes rutinas, verás tu avance aquí.',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                height: 1.25,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeProgressError extends StatelessWidget {
+  const _HomeProgressError({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.tertiaryBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline_rounded, size: 18, color: AppColors.error),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: AppColors.error,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                height: 1.25,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _HomeMetricPill extends StatelessWidget {
@@ -247,37 +371,48 @@ class _HomeMetricPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 72),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+    return SizedBox(
+      height: 100,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: double.infinity,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+            const Spacer(),
+            Text(
+              value,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -346,7 +481,7 @@ class _HomeQuickCard extends StatelessWidget {
             height: 50,
             child: ElevatedButton.icon(
               onPressed: onTap,
-              icon: Icon(Icons.arrow_forward_rounded, size: 18),
+              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
               label: Text(buttonLabel),
               style: ElevatedButton.styleFrom(
                 backgroundColor: accent,
