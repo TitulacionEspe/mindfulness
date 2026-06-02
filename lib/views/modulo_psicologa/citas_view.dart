@@ -197,7 +197,8 @@ class _CitasViewState extends State<CitasView> {
                       ),
                     ),
 
-                  if (_currentTab == CitasTab.agenda || _currentTab == CitasTab.historial) ...[
+                  if (_currentTab == CitasTab.agenda ||
+                      _currentTab == CitasTab.historial) ...[
                     const SizedBox(height: 25),
                     const Divider(),
                     const SizedBox(height: 15),

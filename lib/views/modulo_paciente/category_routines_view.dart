@@ -15,11 +15,14 @@ class CategoryRoutinesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<RoutinesViewModel>();
-    
+
     // Filter the routines locally based on the passed category
-    final categoryRoutines = viewModel.routines.where(
-      (routine) => routine.category == category && routine.createdBy == null,
-    ).toList();
+    final categoryRoutines = viewModel.routines
+        .where(
+          (routine) =>
+              routine.category == category && routine.createdBy == null,
+        )
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -27,12 +30,19 @@ class CategoryRoutinesView extends StatelessWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           category.label,
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
@@ -40,11 +50,17 @@ class CategoryRoutinesView extends StatelessWidget {
             ? Center(
                 child: Text(
                   'No hay rutinas disponibles en esta categoría.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 15,
+                  ),
                 ),
               )
             : ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 itemBuilder: (context, index) {
                   final routine = categoryRoutines[index];
                   return LibraryRoutineCard(
@@ -61,9 +77,7 @@ class CategoryRoutinesView extends StatelessWidget {
 
   void _openRoutine(BuildContext context, RoutineModel routine) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => RoutineDetailView(routine: routine),
-      ),
+      MaterialPageRoute(builder: (_) => RoutineDetailView(routine: routine)),
     );
   }
 }

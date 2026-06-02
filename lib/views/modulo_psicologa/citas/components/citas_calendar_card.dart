@@ -38,7 +38,7 @@ class CitasCalendarCard extends StatelessWidget {
         calendarFormat: CalendarFormat.twoWeeks,
         availableCalendarFormats: const {
           CalendarFormat.twoWeeks: '2 Semanas',
-          CalendarFormat.month: 'Mes'
+          CalendarFormat.month: 'Mes',
         },
         headerStyle: HeaderStyle(
           titleCentered: true,

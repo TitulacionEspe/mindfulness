@@ -634,9 +634,17 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () => _updateStatus(vm, appointment.id!, 'CANCELADA', false),
-              icon: Icon(Icons.cancel_outlined, size: 18, color: AppColors.error),
-              label: Text('Cancelar solicitud', style: TextStyle(color: AppColors.error)),
+              onPressed: () =>
+                  _updateStatus(vm, appointment.id!, 'CANCELADA', false),
+              icon: Icon(
+                Icons.cancel_outlined,
+                size: 18,
+                color: AppColors.error,
+              ),
+              label: Text(
+                'Cancelar solicitud',
+                style: TextStyle(color: AppColors.error),
+              ),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
               ),
@@ -703,7 +711,11 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         'Completada',
       ),
       'RECHAZADA' => (AppColors.tertiaryBg, AppColors.error, 'Rechazada'),
-      'CANCELADA' => (AppColors.surfaceHighest, AppColors.textSecondary, 'Cancelada'),
+      'CANCELADA' => (
+        AppColors.surfaceHighest,
+        AppColors.textSecondary,
+        'Cancelada',
+      ),
       _ => (AppColors.surfaceHighest, AppColors.textSecondary, status),
     };
 

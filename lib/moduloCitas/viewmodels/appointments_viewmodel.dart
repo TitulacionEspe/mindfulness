@@ -43,9 +43,13 @@ class AppointmentsViewModel extends ChangeNotifier {
     allAppointments = await _service.getAppointments();
 
     // Validar límite de solicitudes (máximo 1 activa en proceso)
-    final pendingCount = allAppointments.where((a) => a.status == 'SOLICITADA' || a.status == 'PROPUESTA').length;
+    final pendingCount = allAppointments
+        .where((a) => a.status == 'SOLICITADA' || a.status == 'PROPUESTA')
+        .length;
     if (pendingCount >= 1) {
-      throw Exception('Ya tienes una solicitud en proceso. Espera a que se resuelva o cancélala antes de enviar otra.');
+      throw Exception(
+        'Ya tienes una solicitud en proceso. Espera a que se resuelva o cancélala antes de enviar otra.',
+      );
     }
 
     final appointment = Appointment(
@@ -66,16 +70,21 @@ class AppointmentsViewModel extends ChangeNotifier {
     // Validación de conflictos (Double-booking)
     final limitDate = date.add(Duration(minutes: minutes));
     for (var app in allAppointments) {
-      if ((app.status == 'CONFIRMADA' || app.status == 'PROPUESTA') && 
-          app.scheduledDate != null && 
+      if ((app.status == 'CONFIRMADA' || app.status == 'PROPUESTA') &&
+          app.scheduledDate != null &&
           app.durationMinutes != null &&
-          app.id != id) { // Ignorar la cita actual que se está modificando
+          app.id != id) {
+        // Ignorar la cita actual que se está modificando
         final existingStart = app.scheduledDate!;
-        final existingEnd = existingStart.add(Duration(minutes: app.durationMinutes!));
-        
+        final existingEnd = existingStart.add(
+          Duration(minutes: app.durationMinutes!),
+        );
+
         // Verifica si los intervalos de tiempo se solapan
         if (date.isBefore(existingEnd) && limitDate.isAfter(existingStart)) {
-          throw Exception('Ya tienes una cita agendada o propuesta en este horario.');
+          throw Exception(
+            'Ya tienes una cita agendada o propuesta en este horario.',
+          );
         }
       }
     }
@@ -95,9 +104,7 @@ class AppointmentsViewModel extends ChangeNotifier {
   Future<void> rejectFromPro(String id) async {
     await _service.updateByProfessional(
       appointmentId: id,
-      data: {
-        'status': 'RECHAZADA',
-      },
+      data: {'status': 'RECHAZADA'},
     );
     await loadAll();
   }

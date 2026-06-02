@@ -12,7 +12,9 @@ class AppointmentsService {
   Future<List<Appointment>> getAppointments() async {
     final response = await _supabase
         .from('appointments')
-        .select('*, profiles!patient_id(full_name), professional:profiles!professional_id(full_name)')
+        .select(
+          '*, profiles!patient_id(full_name), professional:profiles!professional_id(full_name)',
+        )
         .order('created_at', ascending: false);
 
     return (response as List)

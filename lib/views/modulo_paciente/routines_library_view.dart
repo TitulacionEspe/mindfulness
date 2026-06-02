@@ -124,15 +124,19 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                     decoration: BoxDecoration(
                       color: AppColors.surfaceHigh,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.mint.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: AppColors.mint.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: IconButton(
                       icon: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, animation) => 
+                        transitionBuilder: (child, animation) =>
                             ScaleTransition(scale: animation, child: child),
                         child: Icon(
-                          _showAsGrid ? Icons.view_list_rounded : Icons.grid_view_rounded,
+                          _showAsGrid
+                              ? Icons.view_list_rounded
+                              : Icons.grid_view_rounded,
                           key: ValueKey(_showAsGrid),
                           color: AppColors.mint,
                           size: 26,
@@ -143,7 +147,9 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                           _showAsGrid = !_showAsGrid;
                         });
                       },
-                      tooltip: _showAsGrid ? 'Ver como lista' : 'Ver como categorías',
+                      tooltip: _showAsGrid
+                          ? 'Ver como lista'
+                          : 'Ver como categorías',
                     ),
                   ),
                 ),
@@ -162,68 +168,70 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.1,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final categories = RoutineCategory.values
-                            .where((c) => c != RoutineCategory.all)
-                            .toList();
-                        final category = categories[index];
-                        final count = viewModel.routines
-                            .where((r) => r.category == category && r.createdBy == null)
-                            .length;
-                            
-                        return InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => CategoryRoutinesView(category: category),
-                              ),
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: AppColors.outlineVariant),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.1,
+                        ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final categories = RoutineCategory.values
+                          .where((c) => c != RoutineCategory.all)
+                          .toList();
+                      final category = categories[index];
+                      final count = viewModel.routines
+                          .where(
+                            (r) =>
+                                r.category == category && r.createdBy == null,
+                          )
+                          .length;
+
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CategoryRoutinesView(category: category),
                             ),
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CategoryIcon(category: category, size: 40),
-                                const Spacer(),
-                                Text(
-                                  category.label,
-                                  style: TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '$count rutinas',
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.outlineVariant),
                           ),
-                        );
-                      },
-                      childCount: RoutineCategory.values.length - 1,
-                    ),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CategoryIcon(category: category, size: 40),
+                              const Spacer(),
+                              Text(
+                                category.label,
+                                style: TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$count rutinas',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }, childCount: RoutineCategory.values.length - 1),
                   ),
                 )
               else if (viewModel.filteredRoutines.isEmpty)

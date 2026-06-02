@@ -103,7 +103,9 @@ class ProfileView extends StatelessWidget {
               subtitle: 'Horarios y carga académica',
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SleepHabitsView(showBackButton: true)),
+                  MaterialPageRoute(
+                    builder: (_) => const SleepHabitsView(showBackButton: true),
+                  ),
                 );
               },
             ),
