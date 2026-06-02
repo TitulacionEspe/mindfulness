@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../models/routine_model.dart';
+import '../../viewmodels/routines_viewmodel.dart';
 import 'componet/patient_navigation_helper.dart';
-import 'self_assessment_flow.dart';
+import 'routine_session_view.dart';
 
-class RoutineDetailView extends StatelessWidget {
+class RoutineDetailView extends StatefulWidget {
   const RoutineDetailView({
     super.key,
     required this.routine,
@@ -16,8 +18,43 @@ class RoutineDetailView extends StatelessWidget {
   final String? assignmentId;
 
   @override
+  State<RoutineDetailView> createState() => _RoutineDetailViewState();
+}
+
+class _RoutineDetailViewState extends State<RoutineDetailView> {
+  bool _isStarting = false;
+
+  Future<void> _startAndNavigate() async {
+    if (_isStarting) return;
+    setState(() => _isStarting = true);
+
+    final vm = context.read<RoutinesViewModel>();
+    final sessionId = await vm.startSession(
+      routine: widget.routine,
+      startedAt: DateTime.now(),
+    );
+
+    if (!mounted) return;
+    setState(() => _isStarting = false);
+
+    if (sessionId == null) {
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RoutineSessionView(
+          routine: widget.routine,
+          sessionId: sessionId,
+          assignmentId: widget.assignmentId,
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final steps = _stepsFor(routine);
+    final steps = _stepsFor(widget.routine);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -66,7 +103,7 @@ class RoutineDetailView extends StatelessWidget {
               sliver: SliverList(
                 delegate: SliverChildListDelegate.fixed([
                   Text(
-                    routine.title,
+                    widget.routine.title,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 30,
@@ -79,15 +116,15 @@ class RoutineDetailView extends StatelessWidget {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      _Pill(text: routine.category.label),
-                      _Pill(text: routine.durationLabel),
+                      _Pill(text: widget.routine.category.label),
+                      _Pill(text: widget.routine.durationLabel),
                     ],
                   ),
                   const SizedBox(height: 24),
                   _SurfaceSection(
                     title: 'Antes de iniciar',
                     child: Text(
-                      routine.description,
+                      widget.routine.description,
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
@@ -105,7 +142,7 @@ class RoutineDetailView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (routine.category == RoutineCategory.breathing) ...[
+                  if (widget.routine.category == RoutineCategory.breathing) ...[
                     const SizedBox(height: 16),
                     _SurfaceSection(
                       title: 'Cuidado',
@@ -132,27 +169,34 @@ class RoutineDetailView extends StatelessWidget {
           child: SizedBox(
             height: 54,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => PreSessionAssessmentView(
-                      routine: routine,
-                      assignmentId: assignmentId,
-                    ),
-                  ),
-                );
-              },
+              onPressed: _isStarting ? null : _startAndNavigate,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.buttonPrimary,
                 foregroundColor: AppColors.buttonPrimaryText,
+                disabledBackgroundColor: AppColors.surfaceHigh,
+                disabledForegroundColor: AppColors.textSecondary.withValues(
+                  alpha: 0.4,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),
-              child: const Text(
-                'Iniciar sesión',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
+              child: _isStarting
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: AppColors.buttonPrimaryText,
+                      ),
+                    )
+                  : const Text(
+                      'Iniciar sesión',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
             ),
           ),
         ),

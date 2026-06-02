@@ -41,7 +41,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isDismissible: false,
-      builder: (_) => PostSessionAssessmentSheet(
+      builder: (_) => PostSessionLikertSheet(
         sessionId: widget.sessionId,
         routineTitle: widget.routine.title,
       ),
@@ -62,7 +62,6 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
       if (mounted) Navigator.popUntil(context, (r) => r.isFirst);
     } else {
       _finishRequested = false;
-      // Si el usuario cancela, podrías reanudar o simplemente dejarlo ahí
     }
   }
 
@@ -71,8 +70,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
     if (!_countdownDone) return _buildCountdown();
 
     return Scaffold(
-      backgroundColor:
-          Colors.white, // Cambiado de azul oscuro a blanco para ser "bello"
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -98,12 +96,10 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
     final pattern = widget.routine.breathingPattern;
     final audioUrl = widget.routine.audioUrl;
 
-    // 1. Prioridad: Respiración (si tiene patrón)
     if (pattern != null) {
       return BreathingRunner(pattern: pattern, onComplete: _onSessionFinished);
     }
 
-    // 2. Terapia de Sonido / Meditación (si tiene audio)
     if (audioUrl != null && audioUrl.isNotEmpty) {
       return AudioRunner(
         audioUrl: audioUrl,
@@ -113,7 +109,6 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
       );
     }
 
-    // 3. Temporizador Genérico (si no hay nada más)
     return TimedRunner(
       durationSeconds: widget.routine.durationSeconds,
       onComplete: _onSessionFinished,
@@ -143,7 +138,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
             ),
           ),
         ),
-        const SizedBox(width: 48), // Balance para el botón de cerrar
+        const SizedBox(width: 48),
       ],
     );
   }
@@ -193,7 +188,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
               onPressed: _startSession,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.mint,
-                foregroundColor: Colors.black,
+                foregroundColor: AppColors.buttonPrimaryText,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 16,

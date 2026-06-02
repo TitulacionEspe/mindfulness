@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class BubbleData {
   final int id;
@@ -30,20 +31,24 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
   final int _cols = 5;
   final int _rows = 6;
 
-  // [SONIDO] final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  // ── Controles de experiencia ──────────────────────────────────────────
+  bool _soundEnabled = true;
+  bool _regenerativeMode = false;
 
   @override
   void initState() {
     super.initState();
     _generateBubbles();
 
-    // [SONIDO] Precarga el sonido para evitar delay en la primera explosión:
-    // _audioPlayer.setSource(AssetSource('sounds/pop.mp3'));
+    // Precarga el sonido para evitar delay en la primera explosión
+    _audioPlayer.setSource(AssetSource('sounds/burbuja.wav'));
   }
 
   @override
   void dispose() {
-    // [SONIDO] _audioPlayer.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -65,17 +70,19 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
     }
   }
 
+  // ── Sonido (respeta el toggle) ────────────────────────────────────────
   Future<void> _playPopSound() async {
-    // [SONIDO] Descomenta las siguientes líneas:
-    // await _audioPlayer.stop();
-    // await _audioPlayer.play(AssetSource('sounds/pop.mp3'));
+    if (!_soundEnabled) return;
+    await _audioPlayer.stop();
+    await _audioPlayer.play(AssetSource('sounds/burbuja.wav'));
   }
 
+  // ── Explotar burbuja ──────────────────────────────────────────────────
   void _popBubble(int index) {
     if (_bubbles[index].isPopped) return;
 
-    HapticFeedback.lightImpact();
-    _playPopSound(); // ← sonido listo, solo activa las líneas [SONIDO]
+    HapticFeedback.heavyImpact();
+    _playPopSound();
 
     setState(() {
       _bubbles[index].isPopped = true;
@@ -88,8 +95,20 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
         _bubbles[index].scale = 0.86;
       });
     });
+
+    // Modo regenerativo: la burbuja reaparece sola
+    if (_regenerativeMode) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        setState(() {
+          _bubbles[index].isPopped = false;
+          _bubbles[index].scale = 1.0;
+        });
+      });
+    }
   }
 
+  // ── Reiniciar todas las burbujas ──────────────────────────────────────
   void _resetBubbles() {
     HapticFeedback.mediumImpact();
     setState(() {
@@ -224,6 +243,90 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                     ),
                     elevation: 0,
                   ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // ── Toggles: Sonido y Regenerativo ───────────────────────
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    // Toggle Sonido
+                    SwitchListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      dense: true,
+                      title: Row(
+                        children: [
+                          Icon(
+                            _soundEnabled ? Icons.volume_up : Icons.volume_off,
+                            size: 20,
+                            color: _soundEnabled
+                                ? const Color(0xFF1AAA7A)
+                                : const Color(0xFF999999),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Sonido de explosión',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: _soundEnabled
+                                  ? const Color(0xFF1A1A2E)
+                                  : const Color(0xFF999999),
+                            ),
+                          ),
+                        ],
+                      ),
+                      value: _soundEnabled,
+                      activeThumbColor: const Color(0xFF1AAA7A),
+                      onChanged: (val) {
+                        setState(() {
+                          _soundEnabled = val;
+                        });
+                      },
+                    ),
+                    // Toggle Regenerativo
+                    SwitchListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      dense: true,
+                      title: Row(
+                        children: [
+                          Icon(
+                            Icons.autorenew,
+                            size: 20,
+                            color: _regenerativeMode
+                                ? const Color(0xFF1AAA7A)
+                                : const Color(0xFF999999),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Burbujas infinitas',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: _regenerativeMode
+                                  ? const Color(0xFF1A1A2E)
+                                  : const Color(0xFF999999),
+                            ),
+                          ),
+                        ],
+                      ),
+                      value: _regenerativeMode,
+                      activeThumbColor: const Color(0xFF1AAA7A),
+                      onChanged: (val) {
+                        setState(() {
+                          _regenerativeMode = val;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

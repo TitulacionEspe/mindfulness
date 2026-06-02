@@ -2,171 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../models/routine_model.dart';
 import '../../models/self_assessment_model.dart';
-import '../../viewmodels/routines_viewmodel.dart';
 import '../../viewmodels/self_assessments_viewmodel.dart';
-import 'routine_session_view.dart';
 
-class PreSessionAssessmentView extends StatefulWidget {
-  const PreSessionAssessmentView({
-    super.key,
-    required this.routine,
-    this.assignmentId,
-  });
-
-  final RoutineModel routine;
-  final String? assignmentId;
-
-  @override
-  State<PreSessionAssessmentView> createState() =>
-      _PreSessionAssessmentViewState();
-}
-
-class _PreSessionAssessmentViewState extends State<PreSessionAssessmentView> {
-  String? _emotionId;
-  int _intensity = 5;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      context.read<SelfAssessmentsViewModel>().clearMessages();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final routinesViewModel = context.watch<RoutinesViewModel>();
-    final assessmentsViewModel = context.watch<SelfAssessmentsViewModel>();
-    final isBusy =
-        routinesViewModel.isCompleting || assessmentsViewModel.isSaving;
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
-          children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 48,
-                  height: 48,
-                  child: OutlinedButton(
-                    onPressed: isBusy
-                        ? null
-                        : () => Navigator.of(context).pop(),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      side: BorderSide(color: AppColors.outlineVariant),
-                      backgroundColor: AppColors.surfaceLow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: AppColors.textPrimary,
-                      size: 18,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Autopercepcion previa',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              widget.routine.title,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 14),
-            SelfAssessmentFormCard(
-              title: 'Como te sientes antes de iniciar?',
-              selectedEmotion: _emotionId,
-              intensity: _intensity,
-              isSaving: isBusy,
-              buttonLabel: 'Iniciar sesión',
-              onEmotionSelected: (value) => setState(() => _emotionId = value),
-              onIntensityChanged: (value) => setState(() => _intensity = value),
-              onSubmit: _canSubmit && !isBusy ? _startSession : null,
-            ),
-            if (assessmentsViewModel.errorMessage != null) ...[
-              const SizedBox(height: 12),
-              _InlineMessage(
-                text: assessmentsViewModel.errorMessage!,
-                icon: Icons.error_outline_rounded,
-                color: AppColors.error,
-                background: AppColors.tertiaryBg,
-              ),
-            ],
-            if (routinesViewModel.errorMessage != null) ...[
-              const SizedBox(height: 12),
-              _InlineMessage(
-                text: routinesViewModel.errorMessage!,
-                icon: Icons.error_outline_rounded,
-                color: AppColors.error,
-                background: AppColors.tertiaryBg,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  bool get _canSubmit => _emotionId != null && _emotionId!.trim().isNotEmpty;
-
-  Future<void> _startSession() async {
-    if (!_canSubmit) return;
-
-    final startedAt = DateTime.now();
-    final routinesViewModel = context.read<RoutinesViewModel>();
-    final assessmentsViewModel = context.read<SelfAssessmentsViewModel>();
-
-    final sessionId = await routinesViewModel.startSession(
-      routine: widget.routine,
-      startedAt: startedAt,
-    );
-    if (!mounted || sessionId == null) return;
-
-    final savedPre = await assessmentsViewModel.createAssessment(
-      sessionId: sessionId,
-      context: AssessmentContext.preSession,
-      emotionId: _emotionId!,
-      intensity: _intensity,
-    );
-    if (!mounted || !savedPre) return;
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => RoutineSessionView(
-          routine: widget.routine,
-          sessionId: sessionId,
-          assignmentId: widget.assignmentId,
-        ),
-      ),
-    );
-  }
-}
-
-class PostSessionAssessmentSheet extends StatefulWidget {
-  const PostSessionAssessmentSheet({
+/// ─── PostSessionLikertSheet ───────────────────────────────────────────
+/// Bottom sheet minimalista con escala Likert de 5 caritas.
+/// Reemplaza la antigua autopercepción densa (12 emociones + slider).
+/// El usuario elige UNA carita → se guarda → se completa la sesión.
+class PostSessionLikertSheet extends StatefulWidget {
+  const PostSessionLikertSheet({
     super.key,
     required this.sessionId,
     required this.routineTitle,
@@ -176,14 +20,19 @@ class PostSessionAssessmentSheet extends StatefulWidget {
   final String routineTitle;
 
   @override
-  State<PostSessionAssessmentSheet> createState() =>
-      _PostSessionAssessmentSheetState();
+  State<PostSessionLikertSheet> createState() => _PostSessionLikertSheetState();
 }
 
-class _PostSessionAssessmentSheetState
-    extends State<PostSessionAssessmentSheet> {
-  String? _emotionId;
-  int _intensity = 5;
+class _PostSessionLikertSheetState extends State<PostSessionLikertSheet> {
+  int? _selectedScore;
+
+  static const _faces = [
+    _LikertFace(emoji: '😞', label: 'Muy mal', score: 1, semantic: 'muy_mal'),
+    _LikertFace(emoji: '😟', label: 'Mal', score: 2, semantic: 'mal'),
+    _LikertFace(emoji: '😐', label: 'Regular', score: 3, semantic: 'regular'),
+    _LikertFace(emoji: '😊', label: 'Bien', score: 4, semantic: 'bien'),
+    _LikertFace(emoji: '😍', label: 'Muy bien', score: 5, semantic: 'muy_bien'),
+  ];
 
   @override
   void initState() {
@@ -196,76 +45,149 @@ class _PostSessionAssessmentSheetState
 
   @override
   Widget build(BuildContext context) {
-    final assessmentsViewModel = context.watch<SelfAssessmentsViewModel>();
+    final vm = context.watch<SelfAssessmentsViewModel>();
 
     return PopScope(
       canPop: false,
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Autopercepcion posterior',
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Drag handle ──
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: AppColors.outlineVariant,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // ── Título ──
+              Text(
+                '¿Cómo te sientes después de la práctica?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                widget.routineTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── 5 Caritas Likert ──
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _faces.map((face) {
+                  final isSelected = _selectedScore == face.score;
+                  return _LikertFaceButton(
+                    face: face,
+                    isSelected: isSelected,
+                    enabled: !vm.isSaving,
+                    onTap: () => setState(() => _selectedScore = face.score),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Label de la cara seleccionada ──
+              AnimatedOpacity(
+                opacity: _selectedScore != null ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: Text(
+                  _selectedScore != null
+                      ? _faces[_selectedScore! - 1].label
+                      : '',
                   style: TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.routineTitle,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SelfAssessmentFormCard(
-                  title: 'Como te sientes despues de la actividad?',
-                  selectedEmotion: _emotionId,
-                  intensity: _intensity,
-                  isSaving: assessmentsViewModel.isSaving,
-                  buttonLabel: 'Guardar y finalizar',
-                  onEmotionSelected: (value) =>
-                      setState(() => _emotionId = value),
-                  onIntensityChanged: (value) =>
-                      setState(() => _intensity = value),
-                  onSubmit: _canSubmit && !assessmentsViewModel.isSaving
-                      ? _savePostAssessment
+              ),
+              const SizedBox(height: 24),
+
+              // ── Botón Guardar ──
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: _selectedScore != null && !vm.isSaving
+                      ? _saveLikert
                       : null,
-                ),
-                if (assessmentsViewModel.errorMessage != null) ...[
-                  const SizedBox(height: 12),
-                  _InlineMessage(
-                    text: assessmentsViewModel.errorMessage!,
-                    icon: Icons.error_outline_rounded,
-                    color: AppColors.error,
-                    background: AppColors.tertiaryBg,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonPrimary,
+                    foregroundColor: AppColors.buttonPrimaryText,
+                    disabledBackgroundColor: AppColors.surfaceHigh,
+                    disabledForegroundColor: AppColors.textSecondary.withValues(
+                      alpha: 0.4,
+                    ),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
-                ],
+                  child: vm.isSaving
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: AppColors.buttonPrimaryText,
+                          ),
+                        )
+                      : const Text(
+                          'Guardar y finalizar',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                ),
+              ),
+
+              // ── Mensaje de error ──
+              if (vm.errorMessage != null) ...[
+                const SizedBox(height: 12),
+                _InlineMessage(
+                  text: vm.errorMessage!,
+                  icon: Icons.error_outline_rounded,
+                  color: AppColors.error,
+                  background: AppColors.tertiaryBg,
+                ),
               ],
-            ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  bool get _canSubmit => _emotionId != null && _emotionId!.trim().isNotEmpty;
+  Future<void> _saveLikert() async {
+    if (_selectedScore == null) return;
 
-  Future<void> _savePostAssessment() async {
-    if (!_canSubmit) return;
-
-    final assessmentsViewModel = context.read<SelfAssessmentsViewModel>();
-    final success = await assessmentsViewModel.createAssessment(
+    final vm = context.read<SelfAssessmentsViewModel>();
+    final success = await vm.createAssessment(
       sessionId: widget.sessionId,
       context: AssessmentContext.postSession,
-      emotionId: _emotionId!,
-      intensity: _intensity,
+      emotionId: 'likert_scale',
+      intensity: _selectedScore!,
     );
 
     if (!mounted || !success) return;
@@ -273,130 +195,87 @@ class _PostSessionAssessmentSheetState
   }
 }
 
-class SelfAssessmentFormCard extends StatelessWidget {
-  const SelfAssessmentFormCard({
-    super.key,
-    required this.title,
-    required this.selectedEmotion,
-    required this.intensity,
-    required this.isSaving,
-    required this.buttonLabel,
-    required this.onEmotionSelected,
-    required this.onIntensityChanged,
-    required this.onSubmit,
+// ─── Helpers privados ──────────────────────────────────────────────────
+
+class _LikertFace {
+  const _LikertFace({
+    required this.emoji,
+    required this.label,
+    required this.score,
+    required this.semantic,
   });
 
-  final String title;
-  final String? selectedEmotion;
-  final int intensity;
-  final bool isSaving;
-  final String buttonLabel;
-  final ValueChanged<String> onEmotionSelected;
-  final ValueChanged<int> onIntensityChanged;
-  final VoidCallback? onSubmit;
+  final String emoji;
+  final String label;
+  final int score;
+  final String semantic;
+}
+
+class _LikertFaceButton extends StatelessWidget {
+  const _LikertFaceButton({
+    required this.face,
+    required this.isSelected,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final _LikertFace face;
+  final bool isSelected;
+  final bool enabled;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final emotions = SelfAssessmentsViewModel.emotionCatalog;
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
+    return Semantics(
+      button: true,
+      label: '${face.label}: ${face.semantic}',
+      enabled: enabled,
+      selected: isSelected,
+      child: GestureDetector(
+        onTap: enabled ? onTap : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          width: 60,
+          height: 84,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.mint.withValues(alpha: 0.15)
+                : AppColors.surfaceLow,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isSelected
+                  ? AppColors.mint
+                  : AppColors.outlineVariant.withValues(alpha: 0.5),
+              width: isSelected ? 2 : 1,
             ),
           ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: emotions.map((emotion) {
-              final selected = selectedEmotion == emotion;
-              return ChoiceChip(
-                label: Text(_capitalize(emotion)),
-                selected: selected,
-                onSelected: isSaving ? null : (_) => onEmotionSelected(emotion),
-                backgroundColor: AppColors.surfaceLow,
-                selectedColor: AppColors.mint,
-                side: BorderSide(
-                  color: selected ? AppColors.mint : AppColors.outlineVariant,
-                ),
-                labelStyle: TextStyle(
-                  color: selected
-                      ? AppColors.buttonPrimaryText
-                      : AppColors.textPrimary,
-                  fontSize: 14,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                face.emoji,
+                style: TextStyle(fontSize: 30),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                face.label,
+                style: TextStyle(
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
+                  color: isSelected ? AppColors.mint : AppColors.textSecondary,
                 ),
-                showCheckmark: false,
-              );
-            }).toList(),
+              ),
+            ],
           ),
-          const SizedBox(height: 18),
-          Text(
-            'Intensidad: $intensity/10',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Slider(
-            value: intensity.toDouble(),
-            min: 1,
-            max: 10,
-            divisions: 9,
-            label: '$intensity',
-            onChanged: isSaving
-                ? null
-                : (value) => onIntensityChanged(value.round()),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '1 leve - 10 muy intensa',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: ElevatedButton.icon(
-              onPressed: onSubmit,
-              icon: isSaving
-                  ? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.buttonPrimaryText,
-                      ),
-                    )
-                  : const Icon(Icons.check_rounded),
-              label: Text(buttonLabel),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-
-  String _capitalize(String value) {
-    if (value.isEmpty) return value;
-    return '${value[0].toUpperCase()}${value.substring(1)}';
-  }
 }
+
+// ─── _InlineMessage (conservado del original) ─────────────────────────
 
 class _InlineMessage extends StatelessWidget {
   const _InlineMessage({
