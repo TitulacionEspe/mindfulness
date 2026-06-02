@@ -35,8 +35,11 @@ class CitasCalendarCard extends StatelessWidget {
         focusedDay: focusedDay,
         selectedDayPredicate: (day) => isSameDay(day, selectedDay),
         eventLoader: (day) => eventsByDay[_normalizeDate(day)]?.toList() ?? [],
-        calendarFormat: CalendarFormat.month,
-        availableCalendarFormats: const {CalendarFormat.month: 'Mes'},
+        calendarFormat: CalendarFormat.twoWeeks,
+        availableCalendarFormats: const {
+          CalendarFormat.twoWeeks: '2 Semanas',
+          CalendarFormat.month: 'Mes'
+        },
         headerStyle: HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,

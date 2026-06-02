@@ -14,16 +14,42 @@ class CitasDialogs {
     required Function(DateTime) onSuccess,
   }) async {
     DateTime selectedDate = initialDate;
-    TimeOfDay selectedTime = const TimeOfDay(hour: 10, minute: 0);
-    int selectedDuration = 45;
+    int? selectedHour;
+    const int fixedDuration = 60; // Fija a 1 hora
+    final vm = context.read<AppointmentsViewModel>();
+
+    String getSlotStatus(int hour, DateTime date) {
+      final slotStart = DateTime(date.year, date.month, date.day, hour, 0);
+      final slotEnd = slotStart.add(const Duration(minutes: fixedDuration));
+
+      for (var app in vm.allAppointments) {
+        if (app.scheduledDate != null &&
+            app.durationMinutes != null &&
+            app.id != appointment.id) {
+          final existingUtc = app.scheduledDate!;
+          final existingStart = existingUtc.toLocal();
+          final existingEnd = existingStart.add(
+            Duration(minutes: app.durationMinutes!),
+          );
+          if (slotStart.isBefore(existingEnd) &&
+              slotEnd.isAfter(existingStart)) {
+            if (app.status == 'CONFIRMADA') return 'occupied';
+            if (app.status == 'PROPUESTA') return 'proposed';
+          }
+        }
+      }
+      return 'free';
+    }
 
     await showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (dialogContext, setDialogState) {
+            final workingHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+
             return AlertDialog(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -35,67 +61,107 @@ class CitasDialogs {
                   fontSize: 20,
                 ),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildOptionTile(
-                    icon: Icons.calendar_month_outlined,
-                    label: DateFormat('dd/MM/yyyy').format(selectedDate),
-                    color: const Color(0xFFB2EBF2),
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: dialogContext,
-                        initialDate: selectedDate,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 90)),
-                      );
-                      if (picked != null) {
-                        setDialogState(() => selectedDate = picked);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  _buildOptionTile(
-                    icon: Icons.schedule_outlined,
-                    label: selectedTime.format(dialogContext),
-                    color: const Color(0xFFE1BEE7),
-                    onTap: () async {
-                      final picked = await showTimePicker(
-                        context: dialogContext,
-                        initialTime: selectedTime,
-                      );
-                      if (picked != null) {
-                        setDialogState(() => selectedTime = picked);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<int>(
-                    initialValue: selectedDuration,
-                    decoration: InputDecoration(
-                      labelText: 'Duración',
-                      filled: true,
-                      fillColor: AppColors.surfaceLow,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildOptionTile(
+                      icon: Icons.calendar_month_outlined,
+                      label: DateFormat('dd/MM/yyyy').format(selectedDate),
+                      color: const Color(0xFFB2EBF2),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: dialogContext,
+                          initialDate: selectedDate,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 90),
+                          ),
+                        );
+                        if (picked != null) {
+                          setDialogState(() {
+                            selectedDate = picked;
+                            selectedHour = null; // Resetear hora al cambiar día
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Horarios disponibles ;) (1h)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                    items: const [30, 45, 60, 90]
-                        .map(
-                          (minutes) => DropdownMenuItem<int>(
-                            value: minutes,
-                            child: Text('$minutes min'),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: workingHours.map((hour) {
+                        final status = getSlotStatus(hour, selectedDate);
+                        final isSelected = selectedHour == hour;
+                        final isFree = status == 'free';
+                        final isProposed = status == 'proposed';
+
+                        return InkWell(
+                          onTap: isFree
+                              ? () => setDialogState(() => selectedHour = hour)
+                              : null,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isFree
+                                  ? (isSelected
+                                        ? AppColors.mint
+                                        : AppColors.successBg)
+                                  : AppColors.error.withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isFree
+                                    ? AppColors.mint
+                                    : AppColors.error.withValues(alpha: 0.60),
+                                width: isSelected ? 2 : 1,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${hour.toString().padLeft(2, '0')}:00',
+                                  style: TextStyle(
+                                    color: isFree
+                                        ? (isSelected
+                                              ? AppColors.surfaceLowest
+                                              : AppColors.textPrimary)
+                                        : AppColors.error,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: isFree
+                                        ? TextDecoration.none
+                                        : TextDecoration.lineThrough,
+                                  ),
+                                ),
+                                if (isProposed)
+                                  Text(
+                                    'Propuesta',
+                                    style: TextStyle(
+                                      color: AppColors.error,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() => selectedDuration = value);
-                      }
-                    },
-                  ),
-                ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -105,43 +171,79 @@ class CitasDialogs {
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 ),
-                ElevatedButton(
+                TextButton(
                   onPressed: () async {
                     FocusManager.instance.primaryFocus?.unfocus();
-                    final scheduled = DateTime(
-                      selectedDate.year,
-                      selectedDate.month,
-                      selectedDate.day,
-                      selectedTime.hour,
-                      selectedTime.minute,
-                    );
                     Navigator.pop(dialogContext);
                     try {
-                      await context
-                          .read<AppointmentsViewModel>()
-                          .proposeFromPro(
-                            appointment.id!,
-                            scheduled,
-                            selectedDuration,
-                          );
-                      onSuccess(selectedDate);
+                      await vm.rejectFromPro(appointment.id!);
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Horario propuesto correctamente.'),
-                          backgroundColor: Colors.green,
-                        ),
+                        const SnackBar(content: Text('Solicitud rechazada.')),
                       );
                     } catch (e) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Error al proponer: $e'),
+                          content: Text('Error al rechazar: $e'),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
                   },
+                  style: TextButton.styleFrom(foregroundColor: Colors.red),
+                  child: const Text('Rechazar'),
+                ),
+                ElevatedButton(
+                  onPressed: selectedHour == null
+                      ? null
+                      : () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          final scheduled = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedHour!,
+                            0,
+                          );
+                          Navigator.pop(dialogContext);
+                          try {
+                            await vm.proposeFromPro(
+                              appointment.id!,
+                              scheduled,
+                              fixedDuration,
+                            );
+                            onSuccess(selectedDate);
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Horario propuesto correctamente.',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            final msg = e.toString().replaceAll(
+                              'Exception: ',
+                              '',
+                            );
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Cruce de horarios'),
+                                content: Text(msg),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: const Text('Entendido'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFB2EBF2),
                     foregroundColor: Colors.black87,
@@ -169,7 +271,7 @@ class CitasDialogs {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),

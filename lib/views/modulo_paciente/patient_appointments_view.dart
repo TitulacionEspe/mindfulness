@@ -522,6 +522,28 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
                 ),
               ],
             ),
+            if (appointment.professionalName != null &&
+                appointment.professionalName!.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: AppColors.lavender,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    appointment.professionalName!,
+                    style: TextStyle(
+                      color: AppColors.lavender,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 8),
             Text(
               appointment.motive,
@@ -601,9 +623,26 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
     }
 
     if (appointment.status == 'SOLICITADA') {
-      return Text(
-        'Tu solicitud fue enviada. Te notificaremos cuando haya una propuesta.',
-        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tu solicitud fue enviada. Te notificaremos cuando haya una propuesta.',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _updateStatus(vm, appointment.id!, 'CANCELADA', false),
+              icon: Icon(Icons.cancel_outlined, size: 18, color: AppColors.error),
+              label: Text('Cancelar solicitud', style: TextStyle(color: AppColors.error)),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
+              ),
+            ),
+          ),
+        ],
       );
     }
 
@@ -627,17 +666,30 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
     String status,
     bool accepted,
   ) async {
-    await vm.updateStatusFromPatient(appointmentId, status);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          accepted
-              ? 'Horario confirmado correctamente.'
-              : 'Propuesta rechazada.',
+    try {
+      await vm.updateStatusFromPatient(appointmentId, status);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            accepted
+                ? 'Horario confirmado correctamente.'
+                : 'Propuesta rechazada.',
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e.toString().replaceAll('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: AppColors.error,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+      await vm.loadAll();
+    }
   }
 
   Widget _statusChip(String status) {
@@ -651,6 +703,7 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         'Completada',
       ),
       'RECHAZADA' => (AppColors.tertiaryBg, AppColors.error, 'Rechazada'),
+      'CANCELADA' => (AppColors.surfaceHighest, AppColors.textSecondary, 'Cancelada'),
       _ => (AppColors.surfaceHighest, AppColors.textSecondary, status),
     };
 
@@ -952,18 +1005,36 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                         '\n\n(Fecha sugerida por el paciente: $dateStr)';
                   }
 
-                  await vm.createNewRequest(
-                    _selectedProfessionalId!,
-                    _appointmentType,
-                    finalMotive,
-                  );
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Solicitud enviada con éxito.'),
-                    ),
-                  );
+                  try {
+                    await vm.createNewRequest(
+                      _selectedProfessionalId!,
+                      _appointmentType,
+                      finalMotive,
+                    );
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Solicitud enviada con éxito.'),
+                      ),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    final msg = e.toString().replaceAll('Exception: ', '');
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Aviso'),
+                        content: Text(msg),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Entendido'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 icon: const Icon(Icons.send_outlined),
                 label: const Text('Enviar solicitud'),

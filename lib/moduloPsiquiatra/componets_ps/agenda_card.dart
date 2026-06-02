@@ -46,6 +46,17 @@ class AgendaCard extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            Text(
+              appointment.patientName ?? 'Paciente Desconocido',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             Divider(height: 25),
             Text(
               "Motivo: ${appointment.motive}",
