@@ -7,6 +7,7 @@ import '../../models/routine_model.dart';
 import '../../moduloTareas/viewmodels/tasks_viewmodel.dart';
 import '../../viewmodels/routines_viewmodel.dart';
 import 'componet/breathing_runner.dart';
+import 'componet/relaxation_runner.dart';
 import 'componet/viewtimed_runner.dart';
 import 'self_assessment_flow.dart';
 
@@ -105,6 +106,13 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
         audioUrl: audioUrl,
         durationSeconds: widget.routine.durationSeconds,
         category: widget.routine.category,
+        onComplete: _onSessionFinished,
+      );
+    }
+
+    if (widget.routine.category == RoutineCategory.relaxation) {
+      return RelaxationRunner(
+        durationSeconds: widget.routine.durationSeconds,
         onComplete: _onSessionFinished,
       );
     }
