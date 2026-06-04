@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/views/modulo_paciente/RmpScreen.dart';
 
 import '../bubbles_exercise_view.dart';
 import '../spinner_view.dart';
@@ -55,6 +56,15 @@ final List<QuickExerciseMock> mockExercises = [
     subtitle: 'Gira y concentra',
     icon: Icons.rotate_right_rounded,
     accentColor: Color(0xFF5B6CF5),
+    accentDark: Color(0xFF3A47C9),
+    iconBg: Color(0xFFEEF0FE),
+  ),
+  const QuickExerciseMock(
+    id: '4',
+    title: 'RMP',
+    subtitle: 'Mueve tu cuerpo',
+    icon: Icons.rotate_right_rounded,
+    accentColor: Color.fromARGB(255, 35, 152, 30),
     accentDark: Color(0xFF3A47C9),
     iconBg: Color(0xFFEEF0FE),
   ),
@@ -134,6 +144,10 @@ class _QuickExerciseCard extends StatelessWidget {
       case '3':
         nextView = const SpinnerView();
         break;
+
+      case '4':
+        nextView = const RmpScreen();
+
       default:
         return;
     }
