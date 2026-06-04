@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 import 'breathing_sphere.dart';
 import 'session_progress_widgets.dart';
@@ -53,21 +54,58 @@ class _TimedRunnerState extends State<TimedRunner>
     final progress = (_elapsed / widget.durationSeconds).clamp(0.0, 1.0);
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Spacer(),
-        SizedBox(
-          height: 300,
-          child: BreathingSphere(animation: _animationController, label: ''),
+        // ── Área visual principal ──
+        Expanded(
+          child: Center(
+            child: SizedBox(
+              height: 300,
+              child: BreathingSphere(animation: _animationController, label: ''),
+            ),
+          ),
         ),
-        const Spacer(),
-        PhaseProgressBar(
-          label: 'Sesión en curso elementos nulos',
-          time: '$minutes:${seconds.toString().padLeft(2, '0')}',
-          progress: progress,
+
+        // ── Panel inferior de controles y progreso ──
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PhaseProgressBar(
+                label: 'Sesión en curso',
+                time: '$minutes:${seconds.toString().padLeft(2, '0')}',
+                progress: progress,
+              ),
+              const SizedBox(height: 32),
+              _buildFinishButton(),
+            ],
+          ),
         ),
-        const SizedBox(height: 20),
       ],
+    );
+  }
+
+  Widget _buildFinishButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton.icon(
+        onPressed: widget.onComplete,
+        icon: const Icon(Icons.check_circle_outline_rounded),
+        label: const Text(
+          "FINALIZAR SESIÓN",
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.lavender.withValues(alpha: 0.15),
+          foregroundColor: AppColors.lavender,
+          elevation: 0,
+          side: BorderSide(color: AppColors.lavender.withValues(alpha: 0.4)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
     );
   }
 

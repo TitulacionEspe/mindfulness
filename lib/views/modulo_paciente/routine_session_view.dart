@@ -73,21 +73,16 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 20),
-                  child: _buildRunner(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              _buildFinishButton(),
-            ],
-          ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: _buildHeader(),
+            ),
+            Expanded(
+              child: _buildRunner(),
+            ),
+          ],
         ),
       ),
     );
