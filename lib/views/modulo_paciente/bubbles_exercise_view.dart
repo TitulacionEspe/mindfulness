@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -35,6 +39,7 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
 
   // ── Controles de experiencia ──────────────────────────────────────────
   bool _soundEnabled = true;
+  bool _classicSoundEnabled = false; // Audio WAV como secundario
   bool _regenerativeMode = false;
 
   @override
@@ -70,11 +75,80 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
     }
   }
 
+  // ── Generador de sonido sintético rápido ──────────────────────────────
+  String _generatePopSound() {
+    const sampleRate = 44100;
+    const duration = 0.08; // Muy corto (80ms) para respuesta ultra rápida
+    const numSamples = (sampleRate * duration);
+    // Para el "pop", iniciamos con una frecuencia media que sube bruscamente (efecto burbuja rápida)
+    const startFrequency = 400.0;
+    const endFrequency = 800.0;
+
+    final dataSize = (numSamples * 2).toInt();
+    final bytes = BytesBuilder();
+
+    // RIFF header
+    bytes.add(utf8.encode('RIFF'));
+    bytes.add(_int32ToBytes(36 + dataSize));
+    bytes.add(utf8.encode('WAVE'));
+
+    // fmt subchunk
+    bytes.add(utf8.encode('fmt '));
+    bytes.add(_int32ToBytes(16));
+    bytes.add(_int16ToBytes(1));
+    bytes.add(_int16ToBytes(1)); // Mono
+    bytes.add(_int32ToBytes(sampleRate));
+    bytes.add(_int32ToBytes(sampleRate * 2));
+    bytes.add(_int16ToBytes(2));
+    bytes.add(_int16ToBytes(16));
+
+    // data subchunk
+    bytes.add(utf8.encode('data'));
+    bytes.add(_int32ToBytes(dataSize));
+
+    for (int i = 0; i < numSamples; i++) {
+      final t = i / sampleRate;
+      // Barrido de frecuencia ascendente
+      final freq = startFrequency + ((endFrequency - startFrequency) * (t / duration));
+      // Envolvente rápida para el "click"
+      final envelope = math.exp(-30.0 * t);
+      
+      final wave = math.sin(2 * math.pi * freq * t);
+      
+      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(-32768, 32767);
+      bytes.add(_int16ToBytes(sample));
+    }
+
+    final base64String = base64Encode(bytes.toBytes());
+    return 'data:audio/wav;base64,$base64String';
+  }
+
+  List<int> _int32ToBytes(int value) =>
+      [value & 0xFF, (value >> 8) & 0xFF, (value >> 16) & 0xFF, (value >> 24) & 0xFF];
+
+  List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
+
   // ── Sonido (respeta el toggle) ────────────────────────────────────────
   Future<void> _playPopSound() async {
     if (!_soundEnabled) return;
-    await _audioPlayer.stop();
-    await _audioPlayer.play(AssetSource('sounds/burbuja.wav'));
+    
+    try {
+      await _audioPlayer.stop();
+      if (!_classicSoundEnabled) {
+        // En Android/iOS AudioPlayer de audioplayers a veces tarda con data URIs grandes.
+        // Pero para muestras muy cortas funciona bien, o se puede alternar la fuente.
+        // Si el usuario exije velocidad pura, la generación en tiempo real puede introducir un lag mínimo por la decodificación.
+        // Lo generamos:
+        final uri = _generatePopSound();
+        await _audioPlayer.setSource(UrlSource(uri));
+      } else {
+        await _audioPlayer.setSource(AssetSource('sounds/burbuja.wav'));
+      }
+      // Pequeña variación de pitch aleatoria para que no suenen todas idénticas
+      final pitch = 0.9 + (math.Random().nextDouble() * 0.3); // 0.9 a 1.2
+      await _audioPlayer.setPlaybackRate(pitch);
+      await _audioPlayer.resume();
+    } catch (_) {}
   }
 
   // ── Explotar burbuja ──────────────────────────────────────────────────
@@ -326,6 +400,43 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                         });
                       },
                     ),
+                    // Toggle Sonido Clásico (Solo si el sonido general está activo)
+                    if (_soundEnabled)
+                      SwitchListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                        dense: true,
+                        title: Row(
+                          children: [
+                            Icon(
+                              Icons.slow_motion_video_rounded,
+                              size: 20,
+                              color: _classicSoundEnabled
+                                  ? const Color(0xFF1AAA7A)
+                                  : const Color(0xFF999999),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Usar audio clásico (Lento)',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: _classicSoundEnabled
+                                      ? const Color(0xFF1A1A2E)
+                                      : const Color(0xFF999999),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        value: _classicSoundEnabled,
+                        activeThumbColor: const Color(0xFF1AAA7A),
+                        onChanged: (val) {
+                          setState(() {
+                            _classicSoundEnabled = val;
+                          });
+                        },
+                      ),
                   ],
                 ),
               ),

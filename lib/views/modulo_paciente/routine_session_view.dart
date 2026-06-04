@@ -146,30 +146,6 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
     );
   }
 
-  Widget _buildFinishButton() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _onSessionFinished,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.lavender.withValues(alpha: 0.1),
-          foregroundColor: AppColors.lavender,
-          elevation: 0,
-          side: BorderSide(color: AppColors.lavender.withValues(alpha: 0.3)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: const Text(
-          "FINALIZAR SESIÓN",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5),
-        ),
-      ),
-    );
-  }
-
   Widget _buildCountdown() {
     return Scaffold(
       backgroundColor: AppColors.background,

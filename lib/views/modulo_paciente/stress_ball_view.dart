@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:just_audio/just_audio.dart';
 
 class StressBallView extends StatefulWidget {
   const StressBallView({super.key});
@@ -10,7 +15,7 @@ class StressBallView extends StatefulWidget {
 }
 
 class _StressBallViewState extends State<StressBallView>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   // ── Física ────────────────────────────────────────────────────────────────
   static const double _ballRadius = 70.0;
   static const double _gravity = 980.0;
@@ -25,17 +30,27 @@ class _StressBallViewState extends State<StressBallView>
   Offset _velocity = Offset.zero;
 
   bool _isDragging = false;
+  bool _hasDragged = false; // Para ocultar la instrucción de onboarding
+  bool _audioEnabled = true; // Sonido activado por defecto
   late Ticker _ticker;
+  late AnimationController _onboardingController;
   DateTime _lastTickTime = DateTime.now();
   int _bounceCount = 0;
   Size _screenSize = Size.zero;
 
-  // [SONIDO] final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
-    // [SONIDO] _audioPlayer.setSource(AssetSource('sounds/bounce.mp3'));
+
+    _initAudio();
+
+    // Animación del onboarding flotante (mano que indica arrastrar)
+    _onboardingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
 
     _ticker = createTicker(_onTick)..start();
 
@@ -47,10 +62,75 @@ class _StressBallViewState extends State<StressBallView>
     });
   }
 
+  void _toggleAudio() {
+    HapticFeedback.selectionClick();
+    setState(() => _audioEnabled = !_audioEnabled);
+  }
+
+  Future<void> _initAudio() async {
+    final audioUri = _generateBounceSound();
+    await _audioPlayer.setUrl(audioUri);
+  }
+
+  // ── Generador Sintético de Sonido de Rebote (Goma/Percusión) ─────────────
+  String _generateBounceSound() {
+    const sampleRate = 44100;
+    const duration = 0.2; // 200ms
+    const numSamples = (sampleRate * duration);
+    const startFrequency = 200.0;
+    const endFrequency = 40.0;
+
+    final dataSize = (numSamples * 2).toInt();
+    final bytes = BytesBuilder();
+
+    // RIFF header
+    bytes.add(utf8.encode('RIFF'));
+    bytes.add(_int32ToBytes(36 + dataSize));
+    bytes.add(utf8.encode('WAVE'));
+
+    // fmt subchunk
+    bytes.add(utf8.encode('fmt '));
+    bytes.add(_int32ToBytes(16));
+    bytes.add(_int16ToBytes(1));
+    bytes.add(_int16ToBytes(1)); // Mono
+    bytes.add(_int32ToBytes(sampleRate));
+    bytes.add(_int32ToBytes(sampleRate * 2));
+    bytes.add(_int16ToBytes(2));
+    bytes.add(_int16ToBytes(16));
+
+    // data subchunk
+    bytes.add(utf8.encode('data'));
+    bytes.add(_int32ToBytes(dataSize));
+
+    for (int i = 0; i < numSamples; i++) {
+      final t = i / sampleRate;
+      // Frecuencia que decae rápidamente (efecto de percusión / golpe)
+      final freq = startFrequency * math.pow(endFrequency / startFrequency, t / duration);
+      // Envolvente de decaimiento rápido
+      final envelope = math.exp(-15.0 * t);
+      // Mezcla con un poco de ruido para simular la textura de goma impactando
+      final noise = (math.Random().nextDouble() * 2 - 1) * 0.2;
+      
+      final wave = math.sin(2 * math.pi * freq * t) + noise;
+      
+      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(-32768, 32767);
+      bytes.add(_int16ToBytes(sample));
+    }
+
+    final base64String = base64Encode(bytes.toBytes());
+    return 'data:audio/wav;base64,$base64String';
+  }
+
+  List<int> _int32ToBytes(int value) =>
+      [value & 0xFF, (value >> 8) & 0xFF, (value >> 16) & 0xFF, (value >> 24) & 0xFF];
+
+  List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
+
   @override
   void dispose() {
     _ticker.dispose();
-    // [SONIDO] _audioPlayer.dispose();
+    _onboardingController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -110,12 +190,26 @@ class _StressBallViewState extends State<StressBallView>
   Future<void> _onBounce() async {
     HapticFeedback.mediumImpact();
     setState(() => _bounceCount++);
-    // [SONIDO] Descomenta:
-    // await _audioPlayer.stop();
-    // await _audioPlayer.play(AssetSource('sounds/bounce.mp3'));
+
+    if (!_audioEnabled) return;
+
+    // Dinamismo del sonido basado en la velocidad de impacto
+    final speed = _velocity.distance;
+    final volume = (speed / 1200.0).clamp(0.2, 1.0);
+    final pitch = (speed / 800.0).clamp(0.8, 1.5);
+    
+    try {
+      await _audioPlayer.setVolume(volume);
+      await _audioPlayer.setPitch(pitch);
+      await _audioPlayer.seek(Duration.zero);
+      _audioPlayer.play();
+    } catch (_) {}
   }
 
   void _onDragStart(DragStartDetails d) {
+    if (!_hasDragged) {
+      setState(() => _hasDragged = true);
+    }
     _isDragging = true;
     _velocity = Offset.zero;
     _lastTickTime = DateTime.now();
@@ -186,18 +280,6 @@ class _StressBallViewState extends State<StressBallView>
           ),
           body: Stack(
             children: [
-              // Instrucción
-              const Positioned(
-                top: 12,
-                left: 0,
-                right: 0,
-                child: Text(
-                  'Arrastra y suelta para lanzar',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color(0xFF888899), fontSize: 15),
-                ),
-              ),
-
               // Área de gestos (toda la zona de juego)
               GestureDetector(
                 onPanStart: _onDragStart,
@@ -209,6 +291,43 @@ class _StressBallViewState extends State<StressBallView>
                   height: double.infinity,
                 ),
               ),
+
+              // Animación de Instrucción Flotante (Onboarding)
+              if (!_hasDragged)
+                Positioned(
+                  top: _screenSize.height * 0.15,
+                  left: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    child: AnimatedBuilder(
+                      animation: _onboardingController,
+                      builder: (context, child) {
+                        return Transform.translate(
+                          offset: Offset(0, _onboardingController.value * 25),
+                          child: Opacity(
+                            opacity: 1.0 - (_onboardingController.value * 0.3),
+                            child: Column(
+                              children: const [
+                                Icon(Icons.touch_app_rounded, size: 56, color: Color(0xFFE8622A)),
+                                SizedBox(height: 12),
+                                Text(
+                                  'Arrastra la pelota hacia abajo\ny suelta para lanzar',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color(0xFFE8622A),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
 
               // Sombra proyectada
               Positioned(
@@ -289,29 +408,68 @@ class _StressBallViewState extends State<StressBallView>
 
                     const SizedBox(height: 10),
 
-                    // Botón reiniciar
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _resetCounter,
-                        icon: const Icon(Icons.refresh, color: Colors.white),
-                        label: const Text(
-                          'Reiniciar Contador',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                    // Botones: Audio y Reiniciar
+                    Row(
+                      children: [
+                        // Audio Toggle
+                        Expanded(
+                          flex: 1,
+                          child: OutlinedButton.icon(
+                            onPressed: _toggleAudio,
+                            icon: Icon(
+                              _audioEnabled
+                                  ? Icons.volume_up_rounded
+                                  : Icons.volume_off_rounded,
+                              size: 20,
+                              color: const Color(0xFF1A1A2E),
+                            ),
+                            label: Text(
+                              _audioEnabled ? 'Sonido' : 'Mudo',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1A1A2E),
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              side: const BorderSide(
+                                color: Color(0xFFCCCCDD),
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              backgroundColor: Colors.white,
+                            ),
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE8622A),
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                        const SizedBox(width: 12),
+                        // Botón reiniciar
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton.icon(
+                            onPressed: _resetCounter,
+                            icon: const Icon(Icons.refresh, color: Colors.white),
+                            label: const Text(
+                              'Reiniciar Contador',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE8622A),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
                           ),
-                          elevation: 0,
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
