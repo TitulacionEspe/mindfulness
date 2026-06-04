@@ -112,54 +112,95 @@ class _AudioRunnerState extends State<AudioRunner>
     final progress = (_elapsed / widget.durationSeconds).clamp(0.0, 1.0);
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (_isBuffering)
-          const CircularProgressIndicator(color: Color(0xFFB2EBF2))
-        else
-          _CategoryVisualizer(
-            category: widget.category ?? RoutineCategory.terapiaSonido,
-            animation: _animationController,
-          ),
-        const SizedBox(height: 40),
-
-        Text(
-          widget.category?.label.toUpperCase() ?? 'SESIÓN DE AUDIO',
-          style: TextStyle(
-            color: AppColors.textPrimary.withValues(alpha: 0.5),
-            fontSize: 14,
-            letterSpacing: 4,
-            fontWeight: FontWeight.w300,
+        // ── Área visual principal ──
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_isBuffering)
+                const CircularProgressIndicator(color: Color(0xFFB2EBF2))
+              else
+                _CategoryVisualizer(
+                  category: widget.category ?? RoutineCategory.terapiaSonido,
+                  animation: _animationController,
+                ),
+              const SizedBox(height: 40),
+              Text(
+                widget.category?.label.toUpperCase() ?? 'SESIÓN DE AUDIO',
+                style: TextStyle(
+                  color: AppColors.textPrimary.withValues(alpha: 0.5),
+                  fontSize: 14,
+                  letterSpacing: 4,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Controles de reproducción de audio
+              IconButton(
+                icon: Icon(
+                  _isPlaying
+                      ? Icons.pause_circle_filled_rounded
+                      : Icons.play_circle_filled_rounded,
+                ),
+                iconSize: 90,
+                color: const Color(0xFFE1BEE7), // Lavanda pastel
+                onPressed: () {
+                  if (_isPlaying) {
+                    _player.pause();
+                  } else {
+                    _player.play();
+                  }
+                },
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 30),
 
-        // Controles de audio
-        IconButton(
-          icon: Icon(
-            _isPlaying
-                ? Icons.pause_circle_filled_rounded
-                : Icons.play_circle_filled_rounded,
+        // ── Panel inferior de controles y progreso ──
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PhaseProgressBar(
+                label: _isBuffering ? 'Cargando audio...' : 'Tiempo restante',
+                time: '$minutes:${seconds.toString().padLeft(2, '0')}',
+                progress: progress,
+              ),
+              const SizedBox(height: 32),
+              _buildFinishButton(),
+            ],
           ),
-          iconSize: 90,
-          color: const Color(0xFFE1BEE7), // Lavanda pastel
-          onPressed: () {
-            if (_isPlaying) {
-              _player.pause();
-            } else {
-              _player.play();
-            }
-          },
-        ),
-
-        const SizedBox(height: 50),
-
-        PhaseProgressBar(
-          label: _isBuffering ? 'Cargando audio...' : 'Tiempo restante',
-          time: '$minutes:${seconds.toString().padLeft(2, '0')}',
-          progress: progress,
         ),
       ],
+    );
+  }
+
+  Widget _buildFinishButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          _player.stop();
+          widget.onComplete();
+        },
+        icon: const Icon(Icons.check_circle_outline_rounded),
+        label: const Text(
+          "FINALIZAR SESIÓN",
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.lavender.withValues(alpha: 0.15),
+          foregroundColor: AppColors.lavender,
+          elevation: 0,
+          side: BorderSide(color: AppColors.lavender.withValues(alpha: 0.4)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
     );
   }
 

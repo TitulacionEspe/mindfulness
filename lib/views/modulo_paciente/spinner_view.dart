@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:just_audio/just_audio.dart';
 
 class SpinnerView extends StatefulWidget {
   const SpinnerView({super.key});
@@ -18,17 +21,15 @@ class _SpinnerViewState extends State<SpinnerView>
   double _angularVelocity = 0.0;
   final GlobalKey _spinnerKey = GlobalKey();
 
-  bool _audioEnabled = false; // Audio Off por defecto
-  bool _wasSpinning = false;
+  bool _audioEnabled = false;
 
-  // [SONIDO] final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
 
-    // [SONIDO] Configurar loop de audio:
-    // _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    _initAudio();
 
     _ticker = createTicker((_) {
       if (_angularVelocity.abs() > 0.001) {
@@ -36,47 +37,115 @@ class _SpinnerViewState extends State<SpinnerView>
           _angle += _angularVelocity;
           _angularVelocity *= 0.982; // fricción suave
         });
-        _onSpinning();
+        _updateAudio();
       } else if (_angularVelocity != 0.0) {
         setState(() => _angularVelocity = 0.0);
-        _onSpinStopped();
+        _updateAudio();
       }
     });
     _ticker.start();
   }
 
+  Future<void> _initAudio() async {
+    // Generar el zumbido dinámico en base64
+    final audioUri = _generateSpinnerSound();
+    await _audioPlayer.setUrl(audioUri);
+    await _audioPlayer.setLoopMode(LoopMode.one);
+  }
+
   @override
   void dispose() {
     _ticker.dispose();
-    // [SONIDO] _audioPlayer.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
-  // ── Audio helpers ─────────────────────────────────────────────────────────
-  void _onSpinning() {
-    if (!_wasSpinning) {
-      _wasSpinning = true;
-      if (_audioEnabled) {
-        // [SONIDO] _audioPlayer.play(AssetSource('sounds/spin_loop.mp3'));
-      }
+  // ── Generador de Onda Sintética (Hz) ──────────────────────────────────────
+  String _generateSpinnerSound() {
+    const sampleRate = 44100;
+    const duration = 1.0;
+    const numSamples = (sampleRate * duration);
+    const frequency = 120.0; // Frecuencia base del zumbido (Hz)
+
+    final dataSize = (numSamples * 2).toInt();
+    final bytes = BytesBuilder();
+
+    // RIFF header
+    bytes.add(utf8.encode('RIFF'));
+    bytes.add(_int32ToBytes(36 + dataSize));
+    bytes.add(utf8.encode('WAVE'));
+
+    // fmt subchunk
+    bytes.add(utf8.encode('fmt '));
+    bytes.add(_int32ToBytes(16));
+    bytes.add(_int16ToBytes(1));
+    bytes.add(_int16ToBytes(1)); // Mono
+    bytes.add(_int32ToBytes(sampleRate));
+    bytes.add(_int32ToBytes(sampleRate * 2));
+    bytes.add(_int16ToBytes(2));
+    bytes.add(_int16ToBytes(16));
+
+    // data subchunk
+    bytes.add(utf8.encode('data'));
+    bytes.add(_int32ToBytes(dataSize));
+
+    final random = math.Random();
+
+    for (int i = 0; i < numSamples; i++) {
+      final t = i / sampleRate;
+      // Mezcla de ondas para sonido de rodamiento hueco
+      final wave1 = math.sin(2 * math.pi * frequency * t);
+      final wave2 = math.sin(2 * math.pi * frequency * 2 * t) * 0.3;
+      // Ruido para la fricción metálica
+      final noise = (random.nextDouble() * 2 - 1) * 0.15;
+
+      final sample = ((wave1 + wave2 + noise) * 0.4 * 32767).toInt().clamp(
+        -32768,
+        32767,
+      );
+      bytes.add(_int16ToBytes(sample));
     }
+
+    final base64String = base64Encode(bytes.toBytes());
+    return 'data:audio/wav;base64,$base64String';
   }
 
-  void _onSpinStopped() {
-    if (_wasSpinning) {
-      _wasSpinning = false;
-      // [SONIDO] _audioPlayer.stop();
+  List<int> _int32ToBytes(int value) => [
+    value & 0xFF,
+    (value >> 8) & 0xFF,
+    (value >> 16) & 0xFF,
+    (value >> 24) & 0xFF,
+  ];
+
+  List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
+
+  // ── Audio helpers dinámicos ───────────────────────────────────────────────
+  void _updateAudio() {
+    final speed = _angularVelocity.abs();
+
+    if (_audioEnabled && speed > 0.02) {
+      // Modificamos dinámicamente los Hz (pitch) según la velocidad
+      final pitch = (speed * 1.5).clamp(0.5, 2.0);
+      // El volumen también responde a la inercia
+      final volume = (speed / 1.2).clamp(0.0, 1.0);
+
+      _audioPlayer.setPitch(pitch);
+      _audioPlayer.setVolume(volume);
+
+      if (!_audioPlayer.playing) {
+        _audioPlayer.play();
+      }
+    } else {
+      if (_audioPlayer.playing) {
+        _audioPlayer.pause();
+      }
     }
   }
 
   void _toggleAudio() {
     HapticFeedback.selectionClick();
     setState(() => _audioEnabled = !_audioEnabled);
-    if (!_audioEnabled) {
-      // [SONIDO] _audioPlayer.stop();
-    } else if (_wasSpinning) {
-      // [SONIDO] _audioPlayer.play(AssetSource('sounds/spin_loop.mp3'));
-    }
+    _updateAudio();
   }
 
   // ── Física de giro ────────────────────────────────────────────────────────

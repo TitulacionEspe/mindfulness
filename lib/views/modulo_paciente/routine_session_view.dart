@@ -7,6 +7,7 @@ import '../../models/routine_model.dart';
 import '../../moduloTareas/viewmodels/tasks_viewmodel.dart';
 import '../../viewmodels/routines_viewmodel.dart';
 import 'componet/breathing_runner.dart';
+import 'componet/relaxation_runner.dart';
 import 'componet/viewtimed_runner.dart';
 import 'self_assessment_flow.dart';
 
@@ -72,21 +73,14 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 20),
-                  child: _buildRunner(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              _buildFinishButton(),
-            ],
-          ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: _buildHeader(),
+            ),
+            Expanded(child: _buildRunner()),
+          ],
         ),
       ),
     );
@@ -105,6 +99,13 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
         audioUrl: audioUrl,
         durationSeconds: widget.routine.durationSeconds,
         category: widget.routine.category,
+        onComplete: _onSessionFinished,
+      );
+    }
+
+    if (widget.routine.category == RoutineCategory.relaxation) {
+      return RelaxationRunner(
+        durationSeconds: widget.routine.durationSeconds,
         onComplete: _onSessionFinished,
       );
     }
@@ -140,30 +141,6 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
         ),
         const SizedBox(width: 48),
       ],
-    );
-  }
-
-  Widget _buildFinishButton() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _onSessionFinished,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.lavender.withValues(alpha: 0.1),
-          foregroundColor: AppColors.lavender,
-          elevation: 0,
-          side: BorderSide(color: AppColors.lavender.withValues(alpha: 0.3)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: const Text(
-          "FINALIZAR SESIÓN",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5),
-        ),
-      ),
     );
   }
 

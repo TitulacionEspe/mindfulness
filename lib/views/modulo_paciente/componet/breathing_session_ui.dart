@@ -32,25 +32,21 @@ class BreathingSessionUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Spacer(),
-
         // ── Visualizador central + toggle de sonido ──
         Expanded(
-          flex: 4,
           child: Stack(
+            alignment: Alignment.center,
             children: [
               // Esfera de respiración
-              Center(
-                child: BreathingSphere(
-                  animation: animationController,
-                  label: currentLabel,
-                ),
+              BreathingSphere(
+                animation: animationController,
+                label: currentLabel,
               ),
 
               // Toggle sonido / vibración (esquina superior derecha)
               Positioned(
-                top: 0,
-                right: 0,
+                top: 16,
+                right: 24,
                 child: _SoundToggle(
                   enabled: soundEnabled,
                   onTap: onToggleSound,
@@ -60,17 +56,49 @@ class BreathingSessionUI extends StatelessWidget {
           ),
         ),
 
-        const Spacer(),
-
-        // Indicadores de progreso
-        PhaseProgressBar(
-          label: currentLabel,
-          time: remainingTime,
-          progress: phaseProgress,
+        // ── Panel inferior de controles y progreso ──
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PhaseProgressBar(
+                label: currentLabel,
+                time: remainingTime,
+                progress: phaseProgress,
+              ),
+              const SizedBox(height: 16),
+              CycleSegmentsBar(total: totalCycles, completed: completedCycles),
+              const SizedBox(height: 32),
+              _buildFinishButton(),
+            ],
+          ),
         ),
-        const SizedBox(height: 16),
-        CycleSegmentsBar(total: totalCycles, completed: completedCycles),
       ],
+    );
+  }
+
+  Widget _buildFinishButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton.icon(
+        onPressed: onFinish,
+        icon: const Icon(Icons.check_circle_outline_rounded),
+        label: const Text(
+          "FINALIZAR SESIÓN",
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.lavender.withValues(alpha: 0.15),
+          foregroundColor: AppColors.lavender,
+          elevation: 0,
+          side: BorderSide(color: AppColors.lavender.withValues(alpha: 0.4)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
     );
   }
 }

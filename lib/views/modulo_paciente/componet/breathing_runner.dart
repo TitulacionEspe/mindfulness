@@ -105,20 +105,27 @@ class _BreathingRunnerState extends State<BreathingRunner>
   // ─────────────────────────────────────────────────────────────────────
 
   void _onPhaseTransition() {
-    // Solo notificamos en las fases activas (inhala / exhala),
-    // no en las pausas (retén / pausa).
-    if (_phase != _BreathPhase.inhale && _phase != _BreathPhase.exhale) return;
-
     if (_soundEnabled) {
-      _playBell();
+      _playSoundForPhase();
     } else {
       _vibrate();
     }
   }
 
-  Future<void> _playBell() async {
+  Future<void> _playSoundForPhase() async {
     try {
-      await _audioPlayer.play(AssetSource('sounds/bell.wav'), volume: 0.5);
+      final soundPath = switch (_phase) {
+        _BreathPhase.inhale => widget.pattern.inhaleSound,
+        _BreathPhase.holdIn => widget.pattern.holdInSound,
+        _BreathPhase.exhale => widget.pattern.exhaleSound,
+        _BreathPhase.holdOut => widget.pattern.holdOutSound,
+      };
+
+      // Ensure that if a phase is skipped (duration 0) we shouldn't be here,
+      // but if the sound is configured to empty we don't play.
+      if (soundPath.isNotEmpty) {
+        await _audioPlayer.play(AssetSource(soundPath), volume: 0.5);
+      }
     } catch (_) {}
   }
 

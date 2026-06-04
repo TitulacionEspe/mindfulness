@@ -76,6 +76,7 @@ flutter:
     - assets/sounds/bell.wav     
     - assets/img/Icono_Minfulnes.png
     - assets/sounds/burbuja.wav
+    - assets/sounds/platillo.wav
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

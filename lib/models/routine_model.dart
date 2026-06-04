@@ -50,6 +50,10 @@ class BreathingPatternModel {
     required this.exhaleSec,
     required this.holdOutSec,
     required this.cyclesRecommended,
+    this.inhaleSound = 'sounds/bell.wav',
+    this.holdInSound = 'sounds/burbuja.wav',
+    this.exhaleSound = 'sounds/platillo.wav',
+    this.holdOutSound = 'sounds/burbuja.wav',
   });
 
   final String routineId;
@@ -58,6 +62,10 @@ class BreathingPatternModel {
   final int exhaleSec;
   final int holdOutSec;
   final int cyclesRecommended;
+  final String inhaleSound;
+  final String holdInSound;
+  final String exhaleSound;
+  final String holdOutSound;
 
   factory BreathingPatternModel.fromMap(Map<String, dynamic> map) {
     return BreathingPatternModel(
@@ -67,6 +75,10 @@ class BreathingPatternModel {
       exhaleSec: map['exhale_sec'] as int? ?? 6,
       holdOutSec: map['hold_out_sec'] as int? ?? 0,
       cyclesRecommended: map['cycles_recommended'] as int? ?? 5,
+      inhaleSound: map['inhale_sound'] as String? ?? 'sounds/bell.wav',
+      holdInSound: map['hold_in_sound'] as String? ?? 'sounds/burbuja.wav',
+      exhaleSound: map['exhale_sound'] as String? ?? 'sounds/platillo.wav',
+      holdOutSound: map['hold_out_sound'] as String? ?? 'sounds/burbuja.wav',
     );
   }
 }
