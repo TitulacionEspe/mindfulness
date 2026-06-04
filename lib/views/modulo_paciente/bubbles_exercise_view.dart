@@ -109,13 +109,17 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
     for (int i = 0; i < numSamples; i++) {
       final t = i / sampleRate;
       // Barrido de frecuencia ascendente
-      final freq = startFrequency + ((endFrequency - startFrequency) * (t / duration));
+      final freq =
+          startFrequency + ((endFrequency - startFrequency) * (t / duration));
       // Envolvente rápida para el "click"
       final envelope = math.exp(-30.0 * t);
-      
+
       final wave = math.sin(2 * math.pi * freq * t);
-      
-      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(-32768, 32767);
+
+      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(
+        -32768,
+        32767,
+      );
       bytes.add(_int16ToBytes(sample));
     }
 
@@ -123,15 +127,19 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
     return 'data:audio/wav;base64,$base64String';
   }
 
-  List<int> _int32ToBytes(int value) =>
-      [value & 0xFF, (value >> 8) & 0xFF, (value >> 16) & 0xFF, (value >> 24) & 0xFF];
+  List<int> _int32ToBytes(int value) => [
+    value & 0xFF,
+    (value >> 8) & 0xFF,
+    (value >> 16) & 0xFF,
+    (value >> 24) & 0xFF,
+  ];
 
   List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
 
   // ── Sonido (respeta el toggle) ────────────────────────────────────────
   Future<void> _playPopSound() async {
     if (!_soundEnabled) return;
-    
+
     try {
       await _audioPlayer.stop();
       if (!_classicSoundEnabled) {
@@ -403,7 +411,9 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                     // Toggle Sonido Clásico (Solo si el sonido general está activo)
                     if (_soundEnabled)
                       SwitchListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
                         dense: true,
                         title: Row(
                           children: [

@@ -60,7 +60,10 @@ class _TimedRunnerState extends State<TimedRunner>
           child: Center(
             child: SizedBox(
               height: 300,
-              child: BreathingSphere(animation: _animationController, label: ''),
+              child: BreathingSphere(
+                animation: _animationController,
+                label: '',
+              ),
             ),
           ),
         ),

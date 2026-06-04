@@ -21,7 +21,7 @@ class _SpinnerViewState extends State<SpinnerView>
   double _angularVelocity = 0.0;
   final GlobalKey _spinnerKey = GlobalKey();
 
-  bool _audioEnabled = false; 
+  bool _audioEnabled = false;
 
   final AudioPlayer _audioPlayer = AudioPlayer();
 
@@ -63,7 +63,7 @@ class _SpinnerViewState extends State<SpinnerView>
   // ── Generador de Onda Sintética (Hz) ──────────────────────────────────────
   String _generateSpinnerSound() {
     const sampleRate = 44100;
-    const duration = 1.0; 
+    const duration = 1.0;
     const numSamples = (sampleRate * duration);
     const frequency = 120.0; // Frecuencia base del zumbido (Hz)
 
@@ -99,7 +99,10 @@ class _SpinnerViewState extends State<SpinnerView>
       // Ruido para la fricción metálica
       final noise = (random.nextDouble() * 2 - 1) * 0.15;
 
-      final sample = ((wave1 + wave2 + noise) * 0.4 * 32767).toInt().clamp(-32768, 32767);
+      final sample = ((wave1 + wave2 + noise) * 0.4 * 32767).toInt().clamp(
+        -32768,
+        32767,
+      );
       bytes.add(_int16ToBytes(sample));
     }
 
@@ -107,8 +110,12 @@ class _SpinnerViewState extends State<SpinnerView>
     return 'data:audio/wav;base64,$base64String';
   }
 
-  List<int> _int32ToBytes(int value) =>
-      [value & 0xFF, (value >> 8) & 0xFF, (value >> 16) & 0xFF, (value >> 24) & 0xFF];
+  List<int> _int32ToBytes(int value) => [
+    value & 0xFF,
+    (value >> 8) & 0xFF,
+    (value >> 16) & 0xFF,
+    (value >> 24) & 0xFF,
+  ];
 
   List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
 
@@ -118,9 +125,9 @@ class _SpinnerViewState extends State<SpinnerView>
 
     if (_audioEnabled && speed > 0.02) {
       // Modificamos dinámicamente los Hz (pitch) según la velocidad
-      final pitch = (speed * 1.5).clamp(0.5, 2.0); 
+      final pitch = (speed * 1.5).clamp(0.5, 2.0);
       // El volumen también responde a la inercia
-      final volume = (speed / 1.2).clamp(0.0, 1.0); 
+      final volume = (speed / 1.2).clamp(0.0, 1.0);
 
       _audioPlayer.setPitch(pitch);
       _audioPlayer.setVolume(volume);

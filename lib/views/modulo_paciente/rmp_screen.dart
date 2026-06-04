@@ -649,7 +649,7 @@ class _RmpScreenState extends State<RmpScreen>
               color: _phaseBg,
               boxShadow: [
                 BoxShadow(
-                  color: _phaseColor.withOpacity(0.18),
+                  color: _phaseColor.withValues(alpha: 0.18),
                   blurRadius: 22,
                   spreadRadius: 4,
                 ),
@@ -683,13 +683,13 @@ class _RmpScreenState extends State<RmpScreen>
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: _isRunning
-              ? _phaseColor.withOpacity(0.4)
+              ? _phaseColor.withValues(alpha: 0.4)
               : Colors.grey.shade200,
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -794,7 +794,7 @@ class _RmpScreenState extends State<RmpScreen>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(6),
                       color: isActive
-                          ? color.withOpacity(0.15)
+                          ? color.withValues(alpha: 0.15)
                           : Colors.grey.shade100,
                     ),
                     child: Center(
@@ -945,7 +945,7 @@ class _RmpScreenState extends State<RmpScreen>
                     color: active
                         ? const Color(0xFF7B61FF)
                         : done
-                        ? const Color(0xFF7B61FF).withOpacity(0.45)
+                        ? const Color(0xFF7B61FF).withValues(alpha: 0.45)
                         : Colors.grey.shade300,
                   ),
                 ),

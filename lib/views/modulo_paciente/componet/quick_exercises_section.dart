@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mindfulness_app/views/modulo_paciente/RmpScreen.dart';
+import 'package:mindfulness_app/views/modulo_paciente/rmp_screen.dart';
 
 import '../bubbles_exercise_view.dart';
 import '../spinner_view.dart';

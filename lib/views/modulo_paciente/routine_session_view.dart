@@ -79,9 +79,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: _buildHeader(),
             ),
-            Expanded(
-              child: _buildRunner(),
-            ),
+            Expanded(child: _buildRunner()),
           ],
         ),
       ),

@@ -105,15 +105,20 @@ class _StressBallViewState extends State<StressBallView>
     for (int i = 0; i < numSamples; i++) {
       final t = i / sampleRate;
       // Frecuencia que decae rápidamente (efecto de percusión / golpe)
-      final freq = startFrequency * math.pow(endFrequency / startFrequency, t / duration);
+      final freq =
+          startFrequency *
+          math.pow(endFrequency / startFrequency, t / duration);
       // Envolvente de decaimiento rápido
       final envelope = math.exp(-15.0 * t);
       // Mezcla con un poco de ruido para simular la textura de goma impactando
       final noise = (math.Random().nextDouble() * 2 - 1) * 0.2;
-      
+
       final wave = math.sin(2 * math.pi * freq * t) + noise;
-      
-      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(-32768, 32767);
+
+      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(
+        -32768,
+        32767,
+      );
       bytes.add(_int16ToBytes(sample));
     }
 
@@ -121,8 +126,12 @@ class _StressBallViewState extends State<StressBallView>
     return 'data:audio/wav;base64,$base64String';
   }
 
-  List<int> _int32ToBytes(int value) =>
-      [value & 0xFF, (value >> 8) & 0xFF, (value >> 16) & 0xFF, (value >> 24) & 0xFF];
+  List<int> _int32ToBytes(int value) => [
+    value & 0xFF,
+    (value >> 8) & 0xFF,
+    (value >> 16) & 0xFF,
+    (value >> 24) & 0xFF,
+  ];
 
   List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
 
@@ -197,7 +206,7 @@ class _StressBallViewState extends State<StressBallView>
     final speed = _velocity.distance;
     final volume = (speed / 1200.0).clamp(0.2, 1.0);
     final pitch = (speed / 800.0).clamp(0.8, 1.5);
-    
+
     try {
       await _audioPlayer.setVolume(volume);
       await _audioPlayer.setPitch(pitch);
@@ -308,7 +317,11 @@ class _StressBallViewState extends State<StressBallView>
                             opacity: 1.0 - (_onboardingController.value * 0.3),
                             child: Column(
                               children: const [
-                                Icon(Icons.touch_app_rounded, size: 56, color: Color(0xFFE8622A)),
+                                Icon(
+                                  Icons.touch_app_rounded,
+                                  size: 56,
+                                  color: Color(0xFFE8622A),
+                                ),
                                 SizedBox(height: 12),
                                 Text(
                                   'Arrastra la pelota hacia abajo\ny suelta para lanzar',
@@ -450,7 +463,10 @@ class _StressBallViewState extends State<StressBallView>
                           flex: 2,
                           child: ElevatedButton.icon(
                             onPressed: _resetCounter,
-                            icon: const Icon(Icons.refresh, color: Colors.white),
+                            icon: const Icon(
+                              Icons.refresh,
+                              color: Colors.white,
+                            ),
                             label: const Text(
                               'Reiniciar Contador',
                               style: TextStyle(
