@@ -67,29 +67,42 @@ class _IAAssistantViewState extends State<IAAssistantView> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Limpiar chat',
-            style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700)),
+        title: Text(
+          'Limpiar chat',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: Text(
           '¿Borrar la conversación actual?\nEl historial se conserva.',
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () {
               context.read<IAChatViewModel>().clearCurrentChat();
               Navigator.pop(ctx);
             },
-            child: Text('Limpiar',
-                style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Limpiar',
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -106,29 +119,42 @@ class _IAAssistantViewState extends State<IAAssistantView> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Eliminar conversación',
-            style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700)),
+        title: Text(
+          'Eliminar conversación',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: Text(
           '¿Eliminar esta conversación del historial?\nEsta acción no se puede deshacer.',
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () {
               context.read<IAChatViewModel>().deleteHistoryMessages(ids);
               Navigator.pop(ctx);
             },
-            child: Text('Eliminar',
-                style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Eliminar',
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -231,8 +257,11 @@ class _IAAssistantViewState extends State<IAAssistantView> {
                   ),
                   if (vm.historyMessages.isNotEmpty)
                     IconButton(
-                      icon: Icon(Icons.delete_sweep_rounded,
-                          color: AppColors.error, size: 22),
+                      icon: Icon(
+                        Icons.delete_sweep_rounded,
+                        color: AppColors.error,
+                        size: 22,
+                      ),
                       tooltip: 'Vaciar todo',
                       onPressed: () => _confirmDeleteAll(vm),
                     ),
@@ -249,8 +278,11 @@ class _IAAssistantViewState extends State<IAAssistantView> {
                     vm.clearCurrentChat();
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(Icons.add_rounded,
-                      color: AppColors.mint, size: 20),
+                  icon: Icon(
+                    Icons.add_rounded,
+                    color: AppColors.mint,
+                    size: 20,
+                  ),
                   label: Text(
                     'Nuevo chat',
                     style: TextStyle(
@@ -271,10 +303,11 @@ class _IAAssistantViewState extends State<IAAssistantView> {
             ),
             const SizedBox(height: 16),
             Divider(
-                color: AppColors.outlineVariant,
-                height: 1,
-                indent: 20,
-                endIndent: 20),
+              color: AppColors.outlineVariant,
+              height: 1,
+              indent: 20,
+              endIndent: 20,
+            ),
             const SizedBox(height: 8),
             Expanded(
               child: groups.isEmpty
@@ -290,8 +323,7 @@ class _IAAssistantViewState extends State<IAAssistantView> {
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       itemCount: groups.length,
-                      itemBuilder: (_, i) =>
-                          _buildDateGroup(groups[i]),
+                      itemBuilder: (_, i) => _buildDateGroup(groups[i]),
                     ),
             ),
           ],
@@ -306,29 +338,42 @@ class _IAAssistantViewState extends State<IAAssistantView> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Vaciar historial',
-            style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700)),
+        title: Text(
+          'Vaciar historial',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: Text(
           '¿Eliminar TODO el historial?\nEsta acción no se puede deshacer.',
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 14,
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () {
               vm.deleteAllHistory();
               Navigator.pop(ctx);
             },
-            child: Text('Eliminar todo',
-                style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Eliminar todo',
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -337,8 +382,7 @@ class _IAAssistantViewState extends State<IAAssistantView> {
 
   Widget _buildDateGroup(_DateGroup group) {
     // Cada mensaje del usuario es una conversación independiente
-    final userMessages =
-        group.messages.where((m) => m.role == 'user').toList();
+    final userMessages = group.messages.where((m) => m.role == 'user').toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,9 +402,10 @@ class _IAAssistantViewState extends State<IAAssistantView> {
         if (userMessages.isEmpty)
           Padding(
             padding: const EdgeInsets.only(left: 16),
-            child: Text('Sin mensajes',
-                style: TextStyle(
-                    color: AppColors.textSecondary, fontSize: 13)),
+            child: Text(
+              'Sin mensajes',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            ),
           )
         else
           ...userMessages.map((userMsg) {
@@ -383,7 +428,10 @@ class _IAAssistantViewState extends State<IAAssistantView> {
   }
 
   Widget _buildHistoryItem(
-      String preview, dynamic userMsg, List<String> idsToDelete) {
+    String preview,
+    dynamic userMsg,
+    List<String> idsToDelete,
+  ) {
     final key = userMsg.id ?? preview;
     return Dismissible(
       key: Key('$key'),
@@ -412,12 +460,14 @@ class _IAAssistantViewState extends State<IAAssistantView> {
             borderRadius: BorderRadius.circular(14),
             onTap: () => Navigator.of(context).pop(),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
-                  Icon(Icons.chat_bubble_outline_rounded,
-                      size: 18, color: AppColors.textSecondary),
+                  Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    size: 18,
+                    color: AppColors.textSecondary,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -455,8 +505,11 @@ class _IAAssistantViewState extends State<IAAssistantView> {
                 color: AppColors.successBg,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(Icons.auto_awesome_rounded,
-                  size: 32, color: AppColors.mint),
+              child: Icon(
+                Icons.auto_awesome_rounded,
+                size: 32,
+                color: AppColors.mint,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
@@ -493,8 +546,7 @@ class _IAAssistantViewState extends State<IAAssistantView> {
             return _buildTypingBubble();
           }
           final msg = vm.chatMessages[index];
-          return _ChatBubble(
-              text: msg.content, isUser: msg.role == 'user');
+          return _ChatBubble(text: msg.content, isUser: msg.role == 'user');
         },
       ),
     );
@@ -567,7 +619,9 @@ class _IAAssistantViewState extends State<IAAssistantView> {
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 14),
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                 ),
                 onSubmitted: (_) => _sendMessage(),
               ),
@@ -637,7 +691,8 @@ class _ChatBubble extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.78),
+          maxWidth: MediaQuery.of(context).size.width * 0.78,
+        ),
         decoration: BoxDecoration(
           color: isUser ? AppColors.successBg : AppColors.surfaceHigh,
           borderRadius: BorderRadius.only(

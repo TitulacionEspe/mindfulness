@@ -71,7 +71,8 @@ class IAChatService {
 
   /// Obtiene el historial de chat para el profesional actual
   Future<List<ProfessionalIAChatMessage>> getChatHistory(
-      String professionalId) async {
+    String professionalId,
+  ) async {
     try {
       final response = await _supabase
           .from('professional_ia_chat')
@@ -103,10 +104,7 @@ class IAChatService {
   Future<void> deleteMessages(List<String> ids) async {
     if (ids.isEmpty) return;
     try {
-      await _supabase
-          .from('professional_ia_chat')
-          .delete()
-          .inFilter('id', ids);
+      await _supabase.from('professional_ia_chat').delete().inFilter('id', ids);
     } catch (e) {
       print('Error al eliminar mensajes IA: $e');
     }
@@ -128,7 +126,9 @@ class IAChatService {
 
   /// Envía la petición a la IA y devuelve la respuesta
   Future<String> getAIResponse(
-      String prompt, List<ProfessionalIAChatMessage> history) async {
+    String prompt,
+    List<ProfessionalIAChatMessage> history,
+  ) async {
     try {
       // Construimos los mensajes en formato OpenAI
       final messages = <Map<String, String>>[
@@ -144,15 +144,12 @@ class IAChatService {
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
-          'Authorization': 'Bearer ${_key}',
+          'Authorization': 'Bearer $_key',
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://mindfulness-espe.app',
           'X-Title': 'Nidara Mindfulness',
         },
-        body: jsonEncode({
-          'model': _model,
-          'messages': messages,
-        }),
+        body: jsonEncode({'model': _model, 'messages': messages}),
       );
 
       if (response.statusCode == 200) {

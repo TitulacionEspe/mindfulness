@@ -51,8 +51,10 @@ class IAChatViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final aiResponseText =
-        await _chatService.getAIResponse(text, _chatMessages);
+    final aiResponseText = await _chatService.getAIResponse(
+      text,
+      _chatMessages,
+    );
 
     final aiMessage = ProfessionalIAChatMessage(
       professionalId: _professionalId!,

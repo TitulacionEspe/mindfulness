@@ -51,9 +51,7 @@ class AsignarView extends StatelessWidget {
                   color: AppColors.mint,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const AsignarTareaView(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const AsignarTareaView()),
                   ),
                 ),
                 _ModernActionCard(
