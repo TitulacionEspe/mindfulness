@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mindfulness_app/moduloPsiquiatra/view_ps/asignar_tarea_view.dart';
 import 'package:mindfulness_app/views/modulo_psicologa/cuestionario/conten_asignados.dart';
+import 'package:mindfulness_app/views/modulo_psicologa/ia_assistant/ia_assistant_view.dart';
 
 import '../../core/theme/app_colors.dart';
 import 'cuestionario/components/cuestionario_card_pro.dart';
@@ -35,33 +36,44 @@ class AsignarView extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Grid de acciones principales
-            Row(
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.1,
               children: [
-                Expanded(
-                  child: _ModernActionCard(
-                    title: "Asignar",
-                    subtitle: "Enviar retos",
-                    icon: Icons.add_task_rounded,
-                    color: AppColors.mint,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AsignarTareaView(),
-                      ),
+                _ModernActionCard(
+                  title: "Asignar",
+                  subtitle: "Enviar retos",
+                  icon: Icons.add_task_rounded,
+                  color: AppColors.mint,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AsignarTareaView(),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _ModernActionCard(
-                    title: "Historial",
-                    subtitle: "Ver asignados",
-                    icon: Icons.history_edu_rounded,
-                    color: AppColors.lavender,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const Asignarconten()),
-                    ),
+                _ModernActionCard(
+                  title: "Historial",
+                  subtitle: "Ver asignados",
+                  icon: Icons.history_edu_rounded,
+                  color: AppColors.lavender,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const Asignarconten()),
+                  ),
+                ),
+                _ModernActionCard(
+                  title: "Asistente IA",
+                  subtitle: "Crear contenido",
+                  icon: Icons.auto_awesome_rounded,
+                  color: const Color(0xFF7B61FF),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const IAAssistantView()),
                   ),
                 ),
               ],
@@ -240,7 +252,7 @@ class _ModernActionCard extends StatelessWidget {
                   ),
                   child: Icon(icon, color: color, size: 28),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Text(
                   title,
                   style: TextStyle(
