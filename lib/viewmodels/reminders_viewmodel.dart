@@ -16,11 +16,20 @@ class RemindersViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  NotificationPermissionState? _permissionState;
+  NotificationPermissionState? get permissionState => _permissionState;
+
   Future<void> ensureNotificationPermissions() async {
     try {
-      await _notificationService.requestPermissions();
+      _permissionState = await _notificationService.requestPermissions();
     } catch (_) {
       // Keep UI flow uninterrupted if the OS rejects a permission call.
+      _permissionState = const NotificationPermissionState(
+        notificationsGranted: false,
+        exactAlarmsGranted: false,
+      );
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -46,7 +55,7 @@ class RemindersViewModel extends ChangeNotifier {
 
       await _syncLocalNotifications();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = _friendlyError(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -63,6 +72,7 @@ class RemindersViewModel extends ChangeNotifier {
   /// Agrega un nuevo recordatorio
   Future<bool> addReminder(ReminderModel reminder) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
@@ -85,7 +95,7 @@ class RemindersViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = _friendlyError(e);
       return false;
     } finally {
       _isLoading = false;
@@ -98,6 +108,7 @@ class RemindersViewModel extends ChangeNotifier {
     if (reminder.id == null) return false;
 
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
@@ -120,7 +131,7 @@ class RemindersViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = _friendlyError(e);
       return false;
     } finally {
       _isLoading = false;
@@ -131,6 +142,7 @@ class RemindersViewModel extends ChangeNotifier {
   /// Elimina un recordatorio
   Future<bool> deleteReminder(String id) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
@@ -142,7 +154,7 @@ class RemindersViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = _friendlyError(e);
       return false;
     } finally {
       _isLoading = false;
@@ -164,5 +176,19 @@ class RemindersViewModel extends ChangeNotifier {
         await _notificationService.cancelReminder(reminder.notificationBaseId!);
       }
     }
+  }
+
+  String _friendlyError(Object error) {
+    final raw = error.toString().toLowerCase();
+    if (raw.contains('auth') || raw.contains('autenticado')) {
+      return 'Tu sesión no está activa. Inicia sesión nuevamente.';
+    }
+    if (raw.contains('network') ||
+        raw.contains('socket') ||
+        raw.contains('fetch') ||
+        raw.contains('connection')) {
+      return 'No se pudo conectar. Revisa tu internet e intenta nuevamente.';
+    }
+    return 'No se pudo guardar el recordatorio. Revisa los datos e intenta nuevamente.';
   }
 }

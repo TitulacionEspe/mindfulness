@@ -39,7 +39,7 @@ class ChatViewModel extends ChangeNotifier {
           _messages.isNotEmpty &&
           _messages.last.riskLevel == ChatRiskLevel.high;
     } catch (_) {
-      _errorMessage = 'No se pudo cargar tu conversacion. Intenta nuevamente.';
+      _errorMessage = 'No se pudo cargar tu conversación. Intenta nuevamente.';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -65,7 +65,7 @@ class ChatViewModel extends ChangeNotifier {
           result.assistantMessage.riskLevel == ChatRiskLevel.high;
     } catch (_) {
       _errorMessage =
-          'No se pudo enviar tu mensaje. Revisa tu conexion e intenta otra vez.';
+          'No se pudo enviar tu mensaje. Revisa tu conexión e intenta otra vez.';
     } finally {
       _isSending = false;
       notifyListeners();
@@ -83,7 +83,7 @@ class ChatViewModel extends ChangeNotifier {
       _messages = const [];
       _suggestAppointment = false;
     } catch (_) {
-      _errorMessage = 'No se pudo borrar la conversacion.';
+      _errorMessage = 'No se pudo borrar la conversación.';
     } finally {
       notifyListeners();
     }

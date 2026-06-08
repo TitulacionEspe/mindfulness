@@ -60,6 +60,106 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _showPasswordResetDialog() async {
+    final resetEmailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Restablecer contraseña'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Escribe el correo asociado a tu cuenta. Te enviaremos un enlace para crear una nueva contraseña.',
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: resetEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  decoration: const InputDecoration(
+                    labelText: 'Correo personal o institucional',
+                    hintText: 'nombre@correo.com',
+                  ),
+                  validator: (value) {
+                    final email = value?.trim() ?? '';
+                    if (email.isEmpty) return 'Ingresa tu correo.';
+                    if (!_isValidEmail(email)) {
+                      return 'Ingresa un correo válido.';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
+            Consumer<AuthViewModel>(
+              builder: (context, viewModel, _) {
+                return ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(120, 48),
+                  ),
+                  onPressed: viewModel.isLoading
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          final navigator = Navigator.of(dialogContext);
+                          final messenger = ScaffoldMessenger.of(context);
+                          final success = await viewModel
+                              .sendPasswordResetEmail(
+                                resetEmailController.text.trim(),
+                              );
+                          if (!context.mounted) return;
+                          navigator.pop();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success
+                                    ? 'Te enviamos un enlace para restablecer tu contraseña. Revisa tu correo.'
+                                    : viewModel.errorMessage ??
+                                          'No se pudo enviar el correo. Intenta nuevamente.',
+                              ),
+                            ),
+                          );
+                        },
+                  child: viewModel.isLoading
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.buttonPrimaryText,
+                          ),
+                        )
+                      : const Text('Enviar enlace'),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    resetEmailController.dispose();
+  }
+
+  bool _isValidEmail(String value) {
+    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,9 +191,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 _buildInputField(
                   controller: _emailController,
                   focusNode: _emailFocus,
-                  label: 'Correo institucional',
-                  hint: 'usuario@espe.edu.ec',
+                  label: 'Correo personal o institucional',
+                  hint: 'nombre@correo.com',
+                  helperText:
+                      'Usa el correo con el que creaste tu cuenta en Nidara.',
                   icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
                   onSubmitted: (_) => _passwordFocus.requestFocus(),
                 ),
                 const SizedBox(height: 20),
@@ -119,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: _showPasswordResetDialog,
                     child: Text(
                       '¿Olvidaste tu contraseña?',
                       style: TextStyle(
@@ -148,29 +251,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '¿No tienes cuenta? ',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
-                      ),
-                      child: Text(
-                        'Regístrate aquí',
-                        style: TextStyle(
-                          color: AppColors.mint,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
+                _NewAccountCallout(
+                  onRegister: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                  ),
                 ),
               ],
             ),
@@ -186,6 +270,8 @@ class _LoginScreenState extends State<LoginScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    String? helperText,
+    TextInputType? keyboardType,
     bool obscureText = false,
     Widget? suffixIcon,
     void Function(String)? onSubmitted,
@@ -206,10 +292,18 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: controller,
           focusNode: focusNode,
           obscureText: obscureText,
+          keyboardType: keyboardType,
           onSubmitted: onSubmitted,
           style: TextStyle(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
+            helperText: helperText,
+            helperMaxLines: 2,
+            helperStyle: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              height: 1.25,
+            ),
             hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
             suffixIcon: suffixIcon,
@@ -223,6 +317,61 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _NewAccountCallout extends StatelessWidget {
+  const _NewAccountCallout({required this.onRegister});
+
+  final VoidCallback onRegister;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceHigh,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.person_add_alt_rounded, color: AppColors.mint),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '¿Primera vez en Nidara?',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Crea tu cuenta antes de iniciar sesión. Puedes usar un correo personal o institucional según corresponda.',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: onRegister,
+            icon: const Icon(Icons.arrow_forward_rounded),
+            label: const Text('Crear cuenta'),
+          ),
+        ],
+      ),
     );
   }
 }

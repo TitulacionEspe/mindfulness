@@ -88,7 +88,7 @@ class _CitasViewState extends State<CitasView> {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
                 children: [
                   Text(
-                    'Agenda clínica',
+                    'Agenda de citas',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 24,
@@ -97,7 +97,7 @@ class _CitasViewState extends State<CitasView> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Gestiona próximas citas, solicitudes pendientes y sesiones completadas.',
+                    'Gestiona próximas citas, solicitudes pendientes y citas finalizadas.',
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 14,

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 
+import '../../core/theme/app_colors.dart';
+
 class BubbleData {
   final int id;
   final Offset position;
@@ -208,17 +210,17 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
         _rows * _bubbleSize + (_rows - 1) * _bubbleSpacing;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F4F8),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.bubble_chart, color: Color(0xFF1AAA7A), size: 22),
-            SizedBox(width: 8),
+          children: [
+            Icon(Icons.bubble_chart, color: AppColors.mint, size: 22),
+            const SizedBox(width: 8),
             Text(
-              'Burbujas Antiestrés',
+              'Burbujas antiestrés',
               style: TextStyle(
-                color: Color(0xFF1A1A2E),
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
                 fontSize: 18,
               ),
@@ -226,18 +228,18 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
           ],
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFFE8F4F8),
+        backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const BackButton(color: Color(0xFF1A1A2E)),
-        actions: const [
+        leading: BackButton(color: AppColors.textPrimary),
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.info_outline, color: Color(0xFF1A1A2E)),
+            padding: const EdgeInsets.only(right: 12),
+            child: Icon(Icons.info_outline, color: AppColors.textPrimary),
           ),
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -245,12 +247,12 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
               const SizedBox(height: 10),
 
               // Subtítulo
-              const Text(
-                'Toca para Explotar',
+              Text(
+                'Toca para explotar',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF0D9E6E),
+                  color: AppColors.mint,
                 ),
               ),
 
@@ -260,15 +262,9 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.07),
-                      blurRadius: 14,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+                  border: Border.all(color: AppColors.outlineVariant),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Center(
@@ -308,17 +304,17 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _resetBubbles,
-                  icon: const Icon(Icons.refresh, color: Colors.white),
-                  label: const Text(
-                    'Reiniciar Burbujas',
+                  icon: Icon(Icons.refresh, color: AppColors.buttonPrimaryText),
+                  label: Text(
+                    'Reiniciar burbujas',
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: AppColors.buttonPrimaryText,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1AAA7A),
+                    backgroundColor: AppColors.buttonPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 17),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -335,8 +331,9 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.outlineVariant),
                 ),
                 child: Column(
                   children: [
@@ -350,8 +347,8 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                             _soundEnabled ? Icons.volume_up : Icons.volume_off,
                             size: 20,
                             color: _soundEnabled
-                                ? const Color(0xFF1AAA7A)
-                                : const Color(0xFF999999),
+                                ? AppColors.mint
+                                : AppColors.textSecondary,
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -360,14 +357,14 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: _soundEnabled
-                                  ? const Color(0xFF1A1A2E)
-                                  : const Color(0xFF999999),
+                                  ? AppColors.textPrimary
+                                  : AppColors.textSecondary,
                             ),
                           ),
                         ],
                       ),
                       value: _soundEnabled,
-                      activeThumbColor: const Color(0xFF1AAA7A),
+                      activeThumbColor: AppColors.mint,
                       onChanged: (val) {
                         setState(() {
                           _soundEnabled = val;
@@ -384,8 +381,8 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                             Icons.autorenew,
                             size: 20,
                             color: _regenerativeMode
-                                ? const Color(0xFF1AAA7A)
-                                : const Color(0xFF999999),
+                                ? AppColors.mint
+                                : AppColors.textSecondary,
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -394,14 +391,14 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: _regenerativeMode
-                                  ? const Color(0xFF1A1A2E)
-                                  : const Color(0xFF999999),
+                                  ? AppColors.textPrimary
+                                  : AppColors.textSecondary,
                             ),
                           ),
                         ],
                       ),
                       value: _regenerativeMode,
-                      activeThumbColor: const Color(0xFF1AAA7A),
+                      activeThumbColor: AppColors.mint,
                       onChanged: (val) {
                         setState(() {
                           _regenerativeMode = val;
@@ -421,26 +418,26 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                               Icons.slow_motion_video_rounded,
                               size: 20,
                               color: _classicSoundEnabled
-                                  ? const Color(0xFF1AAA7A)
-                                  : const Color(0xFF999999),
+                                  ? AppColors.mint
+                                  : AppColors.textSecondary,
                             ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Usar audio clásico (Lento)',
+                                'Usar audio clásico (lento)',
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                   color: _classicSoundEnabled
-                                      ? const Color(0xFF1A1A2E)
-                                      : const Color(0xFF999999),
+                                      ? AppColors.textPrimary
+                                      : AppColors.textSecondary,
                                 ),
                               ),
                             ),
                           ],
                         ),
                         value: _classicSoundEnabled,
-                        activeThumbColor: const Color(0xFF1AAA7A),
+                        activeThumbColor: AppColors.mint,
                         onChanged: (val) {
                           setState(() {
                             _classicSoundEnabled = val;
@@ -475,11 +472,11 @@ class _BubbleWidget extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: const Color(0xFFD4EDE8),
-          border: Border.all(color: const Color(0xFFA8D4CC), width: 2),
+          color: AppColors.surfaceHigh,
+          border: Border.all(color: AppColors.outlineVariant, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: AppColors.surfaceLowest.withValues(alpha: 0.10),
               blurRadius: 4,
               offset: const Offset(1, 1),
             ),
@@ -494,19 +491,19 @@ class _BubbleWidget extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const RadialGradient(
-          colors: [Color(0xFF7EEEDD), Color(0xFF2ABCAA)],
+        gradient: RadialGradient(
+          colors: [AppColors.secondaryContainer, AppColors.mint],
           center: Alignment(-0.3, -0.3),
         ),
-        border: Border.all(color: const Color(0xFF1AAA8A), width: 2),
+        border: Border.all(color: AppColors.mint, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withValues(alpha: 0.4),
+            color: AppColors.surfaceBright.withValues(alpha: 0.4),
             blurRadius: 4,
             offset: const Offset(-2, -2),
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.13),
+            color: AppColors.surfaceLowest.withValues(alpha: 0.20),
             blurRadius: 8,
             offset: const Offset(2, 3),
           ),
@@ -518,7 +515,7 @@ class _BubbleWidget extends StatelessWidget {
           width: size * 0.3,
           height: size * 0.18,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.45),
+            color: AppColors.surfaceBright.withValues(alpha: 0.45),
             borderRadius: BorderRadius.circular(20),
           ),
         ),
