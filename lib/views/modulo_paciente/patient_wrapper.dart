@@ -315,7 +315,6 @@ class _PatientWrapperState extends State<PatientWrapper> {
   }
 
   Widget _buildCalmaBubbleButton() {
-    const String? calmaImage = null; // Asignable en el futuro
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -359,21 +358,15 @@ class _PatientWrapperState extends State<PatientWrapper> {
               border: Border.all(color: AppColors.outlineVariant),
             ),
             child: ClipOval(
-              child: calmaImage != null
-                  ? Image.network(
-                      calmaImage,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.favorite_rounded,
-                        color: AppColors.lavender,
-                        size: 20,
-                      ),
-                    )
-                  : Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      color: AppColors.lavender,
-                      size: 20,
-                    ),
+              child: Image.asset(
+                'assets/img/Calma_Icon.png',
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  color: AppColors.lavender,
+                  size: 20,
+                ),
+              ),
             ),
           ),
         ),

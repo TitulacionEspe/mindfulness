@@ -65,12 +65,36 @@ class _ChatViewState extends State<ChatView> {
         backgroundColor: AppColors.background,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.textPrimary),
-        title: Text(
-          'Calma · Acompañamiento',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
+        title: Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.surfaceHigh,
+              backgroundImage: const AssetImage('assets/img/Calma_Icon.png'),
+            ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Calma',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Acompañamiento emocional',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
       body: Column(
@@ -228,29 +252,45 @@ class _EmptyChatState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.chat_bubble_outline_rounded,
-              size: 56,
-              color: AppColors.lavender,
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.outlineVariant, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.lavender.withValues(alpha: 0.15),
+                    blurRadius: 24,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/img/Calma_Icon.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               'Hola, soy Calma',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 22,
+                fontSize: 24,
                 fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
-              'Cuéntame cómo te sientes hoy. Estoy aquí para escucharte sin '
-              'juzgarte, a tu ritmo.',
+              'Cuéntame cómo te sientes hoy. Estoy aquí para escucharte y acompañarte sin juzgarte, a tu propio ritmo.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 15,
-                height: 1.4,
+                height: 1.45,
               ),
             ),
           ],
@@ -273,29 +313,56 @@ class _MessageBubble extends StatelessWidget {
         : AppColors.surfaceHigh;
     final textColor = AppColors.textPrimary;
 
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.78,
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.72,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(18),
+          topRight: const Radius.circular(18),
+          bottomLeft: Radius.circular(isUser ? 18 : 4),
+          bottomRight: Radius.circular(isUser ? 4 : 18),
         ),
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
-            bottomLeft: Radius.circular(isUser ? 20 : 6),
-            bottomRight: Radius.circular(isUser ? 6 : 20),
-          ),
-        ),
-        child: Text(
-          message.content,
-          style: TextStyle(color: textColor, fontSize: 15, height: 1.35),
-        ),
+        border: isUser
+            ? null
+            : Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              ),
+      ),
+      child: Text(
+        message.content,
+        style: TextStyle(color: textColor, fontSize: 15, height: 1.4),
       ),
     );
+
+    if (isUser) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Align(alignment: Alignment.centerRight, child: bubble),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.surfaceHigh,
+              backgroundImage: const AssetImage('assets/img/Calma_Icon.png'),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Align(alignment: Alignment.centerLeft, child: bubble),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
 
@@ -322,9 +389,10 @@ class _BouncingDotsIndicatorState extends State<_BouncingDotsIndicator>
     });
 
     _animations = _controllers.map((controller) {
-      return Tween<double>(begin: 0, end: -6).animate(
-        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
-      );
+      return Tween<double>(
+        begin: 0,
+        end: -6,
+      ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
     }).toList();
 
     for (int i = 0; i < 3; i++) {
@@ -376,10 +444,16 @@ class _TypingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: AppColors.surfaceHigh,
+            backgroundImage: const AssetImage('assets/img/Calma_Icon.png'),
+          ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
@@ -389,6 +463,9 @@ class _TypingIndicator extends StatelessWidget {
                 topRight: Radius.circular(16),
                 bottomLeft: Radius.circular(4),
                 bottomRight: Radius.circular(16),
+              ),
+              border: Border.all(
+                color: AppColors.outlineVariant.withValues(alpha: 0.5),
               ),
             ),
             child: const _BouncingDotsIndicator(),
