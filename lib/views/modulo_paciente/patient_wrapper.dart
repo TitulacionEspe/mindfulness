@@ -183,8 +183,8 @@ class _PatientWrapperState extends State<PatientWrapper> {
     final pages = [
       PatientHomeView(onShowFeatureGuide: _openFeatureGuide),
       const RoutinesLibraryView(),
-      const PatientAppointmentsView(),
-      const SleepHabitsView(),
+      const PatientAppointmentsView(showAppBar: false),
+      const SleepHabitsView(showAppBar: false),
       const PatientHistoryView(),
     ];
 
@@ -194,10 +194,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
         backgroundColor: AppColors.background,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.textPrimary),
-        actions: [
-          _buildCalmaBubbleButton(),
-          const SizedBox(width: 8),
-        ],
+        actions: [_buildCalmaBubbleButton(), const SizedBox(width: 8)],
       ),
       drawer: NocturneDrawer(
         userName:

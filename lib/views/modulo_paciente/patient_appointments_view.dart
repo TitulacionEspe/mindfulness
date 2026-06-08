@@ -18,10 +18,12 @@ class PatientAppointmentsView extends StatefulWidget {
     super.key,
     this.initialTab,
     this.openRequestComposerOnStart = false,
+    this.showAppBar = true,
   });
 
   final PatientAppointmentsTab? initialTab;
   final bool openRequestComposerOnStart;
+  final bool showAppBar;
 
   @override
   State<PatientAppointmentsView> createState() =>
@@ -127,32 +129,35 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text(
-          'Citas con Psicología',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Menú principal',
-            onPressed: () => PatientNavigationHelper.returnToMainMenu(context),
-            icon: const Icon(Icons.home_outlined),
-          ),
-          IconButton(
-            tooltip: 'Actualizar',
-            onPressed: () async {
-              await vm.loadAll();
-              await _loadProfessionals();
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
+      appBar: widget.showAppBar
+          ? AppBar(
+              backgroundColor: AppColors.background,
+              elevation: 0,
+              title: Text(
+                'Citas con Psicología',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              actions: [
+                IconButton(
+                  tooltip: 'Menú principal',
+                  onPressed: () =>
+                      PatientNavigationHelper.returnToMainMenu(context),
+                  icon: const Icon(Icons.home_outlined),
+                ),
+                IconButton(
+                  tooltip: 'Actualizar',
+                  onPressed: () async {
+                    await vm.loadAll();
+                    await _loadProfessionals();
+                  },
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: () async {
           await vm.loadAll();
@@ -161,6 +166,32 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 92),
           children: [
+            if (!widget.showAppBar) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Citas con Psicología',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Actualizar',
+                    onPressed: () async {
+                      await vm.loadAll();
+                      await _loadProfessionals();
+                    },
+                    icon: Icon(Icons.refresh, color: AppColors.textPrimary),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
             Text(
               'Gestiona tus solicitudes y agenda confirmada sin perder contexto.',
               style: TextStyle(

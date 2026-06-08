@@ -6,7 +6,12 @@ import '../../viewmodels/theme_viewmodel.dart';
 
 class SleepHabitsView extends StatefulWidget {
   final bool showBackButton;
-  const SleepHabitsView({super.key, this.showBackButton = false});
+  final bool showAppBar;
+  const SleepHabitsView({
+    super.key,
+    this.showBackButton = false,
+    this.showAppBar = true,
+  });
 
   @override
   State<SleepHabitsView> createState() => _SleepHabitsViewState();
@@ -28,7 +33,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: viewModel.hasCompletedOnboarding
+      appBar: (viewModel.hasCompletedOnboarding && widget.showAppBar)
           ? AppBar(
               backgroundColor: AppColors.background.withValues(alpha: 0),
               elevation: 0,
@@ -53,21 +58,31 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
             ? Center(child: CircularProgressIndicator(color: AppColors.mint))
             : CustomScrollView(
                 slivers: [
-                  if (!viewModel.hasCompletedOnboarding)
+                  if (!viewModel.hasCompletedOnboarding || !widget.showAppBar)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Personaliza tu descanso',
-                              style: Theme.of(context).textTheme.displayMedium,
+                              viewModel.hasCompletedOnboarding
+                                  ? 'Ajustes de Sueño'
+                                  : 'Personaliza tu descanso',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Configura tus hábitos para que el sistema se adapte a tu ritmo universitario.',
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                                height: 1.35,
+                              ),
                             ),
                           ],
                         ),
@@ -82,10 +97,9 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                           children: [
                             Text(
                               'Te enviaremos una notificación suave para ayudarte a descansar por la noche y un saludo calmado al despertar.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(fontSize: 13),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 13),
                             ),
                             const SizedBox(height: 16),
                             _buildTimeTile(
@@ -151,14 +165,14 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                           children: [
                             Text(
                               'Elige el efecto de sonido que se reproducirá como guía al iniciar o cambiar de fase en tus ejercicios.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(fontSize: 13),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 13),
                             ),
                             const SizedBox(height: 16),
                             Semantics(
-                              label: 'Selector de tono de transición de rutinas',
+                              label:
+                                  'Selector de tono de transición de rutinas',
                               child: Row(
                                 children: [
                                   _buildToneCard(
@@ -313,6 +327,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
       showCheckmark: false,
     );
   }
+
   Widget _buildThemeSelectorCard(BuildContext context) {
     final themeViewModel = context.watch<ThemeViewModel>();
     return _buildConfigCard(
@@ -424,7 +439,9 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                    color: isSelected
+                        ? AppColors.textPrimary
+                        : AppColors.textSecondary,
                   ),
                 ),
               ],
