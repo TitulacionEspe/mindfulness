@@ -66,7 +66,9 @@ class ChatViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final historyForSend = _messages.where((m) => m.id != 'temp_user').toList();
+      final historyForSend = _messages
+          .where((m) => m.id != 'temp_user')
+          .toList();
       final result = await _repository.sendMessage(
         text: normalized,
         history: historyForSend,

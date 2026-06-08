@@ -39,7 +39,9 @@ class AiParser {
         if (firstQuote != -1) {
           final content = afterReply.substring(firstQuote + 1);
           final lastQuote = content.lastIndexOf('"');
-          String clean = lastQuote != -1 ? content.substring(0, lastQuote) : content;
+          String clean = lastQuote != -1
+              ? content.substring(0, lastQuote)
+              : content;
           clean = clean.replaceAll(r'\"', '"').replaceAll(r'\n', '\n');
           // Quitar caracteres residuales de JSON al final
           clean = clean.replaceAll(RegExp(r'[}"]+$'), '').trim();

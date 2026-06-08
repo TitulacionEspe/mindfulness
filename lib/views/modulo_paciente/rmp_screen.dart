@@ -665,9 +665,21 @@ class _RmpScreenState extends State<RmpScreen>
     final voice = habits.preferredVoice;
 
     final (label, icon, color) = switch (voice) {
-      'femenina' => ('Aviso: Tono Burbuja 🫧', Icons.bubble_chart_outlined, AppColors.mint),
-      'masculina' => ('Aviso: Tono Platillo 🔔', Icons.graphic_eq_outlined, AppColors.lavender),
-      'ambient' || _ => ('Aviso: Tono Campana 🔔', Icons.notifications_active_outlined, AppColors.tertiary),
+      'femenina' => (
+        'Aviso: Tono Burbuja 🫧',
+        Icons.bubble_chart_outlined,
+        AppColors.mint,
+      ),
+      'masculina' => (
+        'Aviso: Tono Platillo 🔔',
+        Icons.graphic_eq_outlined,
+        AppColors.lavender,
+      ),
+      'ambient' || _ => (
+        'Aviso: Tono Campana 🔔',
+        Icons.notifications_active_outlined,
+        AppColors.tertiary,
+      ),
     };
 
     final bgColor = switch (voice) {
@@ -681,9 +693,7 @@ class _RmpScreenState extends State<RmpScreen>
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

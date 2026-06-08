@@ -23,7 +23,7 @@ class FakeThemePreferencesRepository extends ThemePreferencesRepository {
 
 class FakeSleepHabitsViewModel extends SleepHabitsViewModel {
   final bool _isLoadingFake = false;
-  
+
   @override
   bool get isLoading => _isLoadingFake;
 
@@ -57,7 +57,9 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => AuthViewModel()),
-          ChangeNotifierProvider<SleepHabitsViewModel>.value(value: sleepHabitsViewModel),
+          ChangeNotifierProvider<SleepHabitsViewModel>.value(
+            value: sleepHabitsViewModel,
+          ),
           ChangeNotifierProvider.value(value: themeViewModel),
         ],
         child: MaterialApp(
@@ -73,7 +75,11 @@ void main() {
     await tester.pump(); // Post frame callback
 
     // Imprimir los textos encontrados en pantalla
-    final textWidgets = find.byType(Text).evaluate().map((el) => (el.widget as Text).data).toList();
+    final textWidgets = find
+        .byType(Text)
+        .evaluate()
+        .map((el) => (el.widget as Text).data)
+        .toList();
     print('Textos en pantalla: $textWidgets');
 
     expect(find.text('Tema preferencial / Descanso visual'), findsOneWidget);

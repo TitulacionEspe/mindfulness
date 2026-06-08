@@ -557,7 +557,9 @@ class _SessionEmotionSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLikert = emotion.preEmotion == 'likert_scale' || emotion.postEmotion == 'likert_scale';
+    final isLikert =
+        emotion.preEmotion == 'likert_scale' ||
+        emotion.postEmotion == 'likert_scale';
     if (isLikert) {
       final score = emotion.postIntensity ?? emotion.preIntensity;
       final (emoji, label) = _getLikertDetails(score);

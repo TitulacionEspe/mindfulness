@@ -83,7 +83,8 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
       final response = await Supabase.instance.client.functions.invoke(
         'emotional-chat',
         body: {
-          'message': 'Analiza el siguiente pensamiento registrado por un estudiante en su diario de descarga emocional: "$normalized". Por favor, responde en español siguiendo estas reglas: \n1. Si el pensamiento es predominantemente positivo, responde con un mensaje alegre, optimista y motivador. \n2. Si el pensamiento es intermedio, neutral o describe un día común con estrés normal, da una respuesta empática y equilibrada. \n3. Si el pensamiento es muy negativo, triste, de alta tensión o sugiere riesgo emocional, bríndale una retrospectiva de por qué puede sentirse así, recuérdale con mucha empatía que no está solo, y recomiéndale de forma cálida solicitar una cita con un profesional de psicología en la aplicación.',
+          'message':
+              'Analiza el siguiente pensamiento registrado por un estudiante en su diario de descarga emocional: "$normalized". Por favor, responde en español siguiendo estas reglas: \n1. Si el pensamiento es predominantemente positivo, responde con un mensaje alegre, optimista y motivador. \n2. Si el pensamiento es intermedio, neutral o describe un día común con estrés normal, da una respuesta empática y equilibrada. \n3. Si el pensamiento es muy negativo, triste, de alta tensión o sugiere riesgo emocional, bríndale una retrospectiva de por qué puede sentirse así, recuérdale con mucha empatía que no está solo, y recomiéndale de forma cálida solicitar una cita con un profesional de psicología en la aplicación.',
           'history': [],
         },
       );
@@ -98,10 +99,12 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
       } else if (data is String) {
         _aiRetrospect = AiParser.cleanAiResponse(data);
       } else {
-        _aiRetrospect = 'Interesante reflexión. Recuerda que siempre tienes la opción de tomar un momento para respirar y cuidar de ti.';
+        _aiRetrospect =
+            'Interesante reflexión. Recuerda que siempre tienes la opción de tomar un momento para respirar y cuidar de ti.';
       }
     } catch (e) {
-      _aiRetrospect = 'He guardado tu pensamiento con éxito. Calma no pudo generar una retrospectiva en este momento debido a un problema de conexión, pero recuerda que estás haciendo un gran esfuerzo por cuidar de ti.';
+      _aiRetrospect =
+          'He guardado tu pensamiento con éxito. Calma no pudo generar una retrospectiva en este momento debido a un problema de conexión, pero recuerda que estás haciendo un gran esfuerzo por cuidar de ti.';
     } finally {
       _isAnalyzing = false;
       notifyListeners();

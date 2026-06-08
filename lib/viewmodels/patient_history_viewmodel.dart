@@ -198,8 +198,9 @@ class PatientHistoryViewModel extends ChangeNotifier {
       if (sessionId == null || !completedSessionIds.contains(sessionId)) {
         continue;
       }
-      
-      if (emotion.preEmotion == 'likert_scale' || emotion.postEmotion == 'likert_scale') {
+
+      if (emotion.preEmotion == 'likert_scale' ||
+          emotion.postEmotion == 'likert_scale') {
         assessableSessions += 1;
         final score = emotion.postIntensity ?? emotion.preIntensity;
         if (score >= 3) {

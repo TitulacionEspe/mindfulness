@@ -127,7 +127,8 @@ class NotificationService {
       await _scheduleWeekly(
         id: _sleepHabitNotificationBaseId + i,
         title: 'Higiene del Sueño',
-        body: 'Es hora de preparar tu descanso. Intenta desconectar tus pantallas y realizar una rutina relajante.',
+        body:
+            'Es hora de preparar tu descanso. Intenta desconectar tus pantallas y realizar una rutina relajante.',
         time: bedtime,
         day: i,
       );
@@ -138,7 +139,8 @@ class NotificationService {
       await _scheduleWeekly(
         id: _sleepHabitNotificationBaseId + 7 + i,
         title: '¡Buenos Días!',
-        body: 'Comienza tu despertar en calma. Tómate un momento para observar tu respiración.',
+        body:
+            'Comienza tu despertar en calma. Tómate un momento para observar tu respiración.',
         time: wakeTime,
         day: i,
       );
@@ -152,7 +154,8 @@ class NotificationService {
         await _scheduleWeekly(
           id: _sleepHabitNotificationBaseId + 14 + weekDay,
           title: 'Día de Alta Carga Académica',
-          body: 'Hoy es un día complicado. Recuerda tomar pausas de respiración y hacer lo posible para cuidarte.',
+          body:
+              'Hoy es un día complicado. Recuerda tomar pausas de respiración y hacer lo posible para cuidarte.',
           time: const TimeOfDay(hour: 8, minute: 0),
           day: weekDay,
         );

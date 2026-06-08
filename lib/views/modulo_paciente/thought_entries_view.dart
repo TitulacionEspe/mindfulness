@@ -284,7 +284,11 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.auto_awesome_rounded, color: AppColors.lavender, size: 20),
+                            Icon(
+                              Icons.auto_awesome_rounded,
+                              color: AppColors.lavender,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Retrospectiva de Calma 🌟',
@@ -322,14 +326,20 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => const PatientAppointmentsView(
-                                      openRequestComposerOnStart: true,
-                                    ),
+                                    builder: (_) =>
+                                        const PatientAppointmentsView(
+                                          openRequestComposerOnStart: true,
+                                        ),
                                   ),
                                 );
                               },
-                              icon: const Icon(Icons.calendar_month_rounded, size: 18),
-                              label: const Text('Solicitar cita con Psicología'),
+                              icon: const Icon(
+                                Icons.calendar_month_rounded,
+                                size: 18,
+                              ),
+                              label: const Text(
+                                'Solicitar cita con Psicología',
+                              ),
                             ),
                           ),
                         ],
