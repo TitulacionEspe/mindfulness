@@ -70,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
+          scrollable: true,
           title: const Text('Restablecer contraseña'),
           content: Form(
             key: formKey,
