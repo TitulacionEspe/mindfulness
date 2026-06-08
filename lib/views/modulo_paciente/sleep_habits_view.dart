@@ -145,12 +145,12 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                         ),
                       ),
                       _buildConfigCard(
-                        title: 'Preferencia de voz / audio',
+                        title: 'Tono acústico de transición',
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Elige el tipo de guía por voz para tus ejercicios de relajación y audios de inducción al sueño.',
+                              'Elige el efecto de sonido que se reproducirá como guía al iniciar o cambiar de fase en tus ejercicios.',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -158,7 +158,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                             ),
                             const SizedBox(height: 16),
                             Semantics(
-                              label: 'Selector de voz de audio preferida',
+                              label: 'Selector de tono de transición de rutinas',
                               child: SizedBox(
                                 width: double.infinity,
                                 child: SegmentedButton<String>(
@@ -166,18 +166,18 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                                   segments: const [
                                     ButtonSegment<String>(
                                       value: 'femenina',
-                                      icon: Icon(Icons.record_voice_over_outlined),
-                                      label: Text('Femenina'),
+                                      icon: Icon(Icons.bubble_chart_outlined),
+                                      label: Text('Burbuja'),
                                     ),
                                     ButtonSegment<String>(
                                       value: 'masculina',
-                                      icon: Icon(Icons.voice_over_off_outlined),
-                                      label: Text('Masculina'),
+                                      icon: Icon(Icons.graphic_eq_outlined),
+                                      label: Text('Platillo'),
                                     ),
                                     ButtonSegment<String>(
                                       value: 'ambient',
-                                      icon: Icon(Icons.music_note_outlined),
-                                      label: Text('Solo sonidos'),
+                                      icon: Icon(Icons.notifications_active_outlined),
+                                      label: Text('Campana'),
                                     ),
                                   ],
                                   selected: {viewModel.preferredVoice},
