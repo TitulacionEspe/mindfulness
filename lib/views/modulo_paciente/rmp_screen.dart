@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../viewmodels/sleep_habits_viewmodel.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════
 //
@@ -407,22 +409,7 @@ int get kSecondsPerPhase =>
 //  • Completa   → assets/sounds/burbuja.wav
 //
 // ═══════════════════════════════════════════════════════════════════════════
-
-// Rutas de los archivos de audio (definidas aquí para cambiarlas fácil)
-const String _kSoundTension = 'sounds/platillo.wav'; // fase tensión
-const String _kSoundRelax = 'sounds/platillo.wav'; // fase relajación
-const String _kSoundFinished = 'sounds/burbuja.wav'; // sesión completa
-
-Future<void> _playSound(String assetPath) async {
-  final player = AudioPlayer();
-  await player.play(AssetSource(assetPath));
-  // Libera el player cuando termina
-  player.onPlayerComplete.listen((_) => player.dispose());
-}
-
-Future<void> _playTensionSound() async => _playSound(_kSoundTension);
-Future<void> _playRelaxationSound() async => _playSound(_kSoundRelax);
-Future<void> _playFinishedSound() async => _playSound(_kSoundFinished);
+// Las funciones de audio ahora se manejan a nivel de estado en _RmpScreenState para responder a la preferencia de voz del usuario.
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  PANTALLA PRINCIPAL
@@ -446,6 +433,45 @@ class _RmpScreenState extends State<RmpScreen>
 
   Timer? _timer;
   late AnimationController _pulseController;
+
+  // ── audio y preferencia ──
+  Future<void> _playSound(String assetPath) async {
+    try {
+      final player = AudioPlayer();
+      await player.play(AssetSource(assetPath));
+      player.onPlayerComplete.listen((_) => player.dispose());
+    } catch (e) {
+      debugPrint("Error al reproducir sonido: $e");
+    }
+  }
+
+  void _playTensionSound() {
+    final habits = Provider.of<SleepHabitsViewModel>(context, listen: false);
+    final voice = habits.preferredVoice;
+    if (voice == 'femenina') {
+      _playSound('sounds/burbuja.wav');
+    } else if (voice == 'masculina') {
+      _playSound('sounds/platillo.wav');
+    } else {
+      _playSound('sounds/bell.wav');
+    }
+  }
+
+  void _playRelaxationSound() {
+    final habits = Provider.of<SleepHabitsViewModel>(context, listen: false);
+    final voice = habits.preferredVoice;
+    if (voice == 'femenina') {
+      _playSound('sounds/burbuja.wav');
+    } else if (voice == 'masculina') {
+      _playSound('sounds/platillo.wav');
+    } else {
+      _playSound('sounds/bell.wav');
+    }
+  }
+
+  void _playFinishedSound() {
+    _playSound('sounds/burbuja.wav');
+  }
 
   // ── lifecycle ──
 
@@ -616,6 +642,8 @@ class _RmpScreenState extends State<RmpScreen>
               height: 1.2,
             ),
           ),
+          const SizedBox(height: 10),
+          _buildVoiceGuideBadge(),
           const SizedBox(height: 20),
           _buildEmojiIllustration(),
           const SizedBox(height: 24),
@@ -627,6 +655,49 @@ class _RmpScreenState extends State<RmpScreen>
           const SizedBox(height: 20),
           _buildGroupDots(),
           const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVoiceGuideBadge() {
+    final habits = Provider.of<SleepHabitsViewModel>(context);
+    final voice = habits.preferredVoice;
+
+    final (label, icon, color) = switch (voice) {
+      'femenina' => ('Guía: Voz Femenina 🎙️', Icons.record_voice_over_outlined, AppColors.mint),
+      'masculina' => ('Guía: Voz Masculina 🎙️', Icons.voice_over_off_outlined, AppColors.lavender),
+      'ambient' || _ => ('Guía: Solo sonidos 🎵', Icons.music_note_outlined, AppColors.tertiary),
+    };
+
+    final bgColor = switch (voice) {
+      'femenina' => AppColors.successBg,
+      'masculina' => AppColors.warningBg,
+      'ambient' || _ => AppColors.tertiaryBg,
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
         ],
       ),
     );
