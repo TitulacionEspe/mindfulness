@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/notification_service.dart';
 
 class SleepHabitsViewModel extends ChangeNotifier {
-  final _supabase = Supabase.instance.client;
+  SupabaseClient get _supabase => Supabase.instance.client;
   bool _hasLoadedSettings = false;
 
   bool _isLoading = false;
@@ -27,6 +28,9 @@ class SleepHabitsViewModel extends ChangeNotifier {
   bool _darkModeEnforced = false;
   bool get darkModeEnforced => _darkModeEnforced;
 
+  String _preferredVoice = 'femenina';
+  String get preferredVoice => _preferredVoice;
+
   void setBedtime(TimeOfDay time) {
     _bedtime = time;
     notifyListeners();
@@ -48,6 +52,11 @@ class SleepHabitsViewModel extends ChangeNotifier {
 
   void setDarkMode(bool value) {
     _darkModeEnforced = value;
+    notifyListeners();
+  }
+
+  void setPreferredVoice(String value) {
+    _preferredVoice = value;
     notifyListeners();
   }
 
@@ -93,6 +102,7 @@ class SleepHabitsViewModel extends ChangeNotifier {
 
         _academicLoadDays = response['academic_load_days'] ?? 0;
         _darkModeEnforced = response['dark_mode_enforced'] ?? false;
+        _preferredVoice = response['preferred_voice'] as String? ?? 'femenina';
       } else {
         _hasCompletedOnboarding = false;
       }
@@ -114,6 +124,7 @@ class SleepHabitsViewModel extends ChangeNotifier {
     _wakeTime = const TimeOfDay(hour: 6, minute: 0);
     _academicLoadDays = 0;
     _darkModeEnforced = false;
+    _preferredVoice = 'femenina';
     notifyListeners();
   }
 
@@ -138,8 +149,19 @@ class SleepHabitsViewModel extends ChangeNotifier {
         'habitual_wake_time': wakeStr,
         'academic_load_days': _academicLoadDays,
         'dark_mode_enforced': _darkModeEnforced,
+        'preferred_voice': _preferredVoice,
         'updated_at': DateTime.now().toIso8601String(),
       });
+
+      try {
+        await NotificationService().scheduleSleepHabits(
+          bedtime: _bedtime,
+          wakeTime: _wakeTime,
+          academicLoadDays: _academicLoadDays,
+        );
+      } catch (e) {
+        debugPrint('Error al programar alertas de hábitos: $e');
+      }
 
       _hasCompletedOnboarding = true;
       _hasLoadedSettings = true;

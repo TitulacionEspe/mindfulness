@@ -111,6 +111,55 @@ class NotificationService {
     );
   }
 
+  static const int _sleepHabitNotificationBaseId = 998000;
+
+  Future<void> scheduleSleepHabits({
+    required TimeOfDay bedtime,
+    required TimeOfDay wakeTime,
+    required int academicLoadDays,
+  }) async {
+    for (int i = 1; i <= 21; i++) {
+      await _notificationsPlugin.cancel(id: _sleepHabitNotificationBaseId + i);
+    }
+
+    // Programar Hora de Dormir (Todos los días)
+    for (int i = 1; i <= 7; i++) {
+      await _scheduleWeekly(
+        id: _sleepHabitNotificationBaseId + i,
+        title: 'Higiene del Sueño',
+        body: 'Es hora de preparar tu descanso. Intenta desconectar tus pantallas y realizar una rutina relajante.',
+        time: bedtime,
+        day: i,
+      );
+    }
+
+    // Programar Hora de Despertar (Todos los días)
+    for (int i = 1; i <= 7; i++) {
+      await _scheduleWeekly(
+        id: _sleepHabitNotificationBaseId + 7 + i,
+        title: '¡Buenos Días!',
+        body: 'Comienza tu despertar en calma. Tómate un momento para observar tu respiración.',
+        time: wakeTime,
+        day: i,
+      );
+    }
+
+    // Programar Carga Académica (Solo días seleccionados, en la mañana a las 08:00 AM)
+    for (int i = 0; i < 7; i++) {
+      final dayBit = 1 << i;
+      if ((academicLoadDays & dayBit) != 0) {
+        final weekDay = i + 1;
+        await _scheduleWeekly(
+          id: _sleepHabitNotificationBaseId + 14 + weekDay,
+          title: 'Día de Alta Carga Académica',
+          body: 'Hoy es un día complicado. Recuerda tomar pausas de respiración y hacer lo posible para cuidarte.',
+          time: const TimeOfDay(hour: 8, minute: 0),
+          day: weekDay,
+        );
+      }
+    }
+  }
+
   Future<void> scheduleReminder(ReminderModel reminder) async {
     final baseId = reminder.notificationBaseId;
     if (baseId == null) {

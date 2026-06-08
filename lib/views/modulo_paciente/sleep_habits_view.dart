@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
+import '../../viewmodels/theme_viewmodel.dart';
 
 class SleepHabitsView extends StatefulWidget {
   final bool showBackButton;
@@ -77,7 +78,16 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                       _buildConfigCard(
                         title: 'Horarios habituales',
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              'Te enviaremos una notificación suave para ayudarte a descansar por la noche y un saludo calmado al despertar.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(fontSize: 13),
+                            ),
+                            const SizedBox(height: 16),
                             _buildTimeTile(
                               label: 'Hora de dormir',
                               icon: Icons.bedtime_outlined,
@@ -112,7 +122,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Selecciona los días en los que sueles tener más estrés o clases tarde.',
+                              'En los días seleccionados, recibirás una notificación motivacional por la mañana a las 8:00 AM para recordarte respirar y cuidar tu bienestar.',
                               style: Theme.of(
                                 context,
                               ).textTheme.bodyMedium?.copyWith(fontSize: 13),
@@ -135,29 +145,53 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                         ),
                       ),
                       _buildConfigCard(
-                        title: 'Preferencias',
-                        child: SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            'Forzar modo oscuro',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textPrimary,
+                        title: 'Preferencia de voz / audio',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Elige el tipo de guía por voz para tus ejercicios de relajación y audios de inducción al sueño.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(fontSize: 13),
                             ),
-                          ),
-                          subtitle: Text(
-                            'Ideal para reducir la fatiga visual nocturna.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
+                            const SizedBox(height: 16),
+                            Semantics(
+                              label: 'Selector de voz de audio preferida',
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: SegmentedButton<String>(
+                                  showSelectedIcon: false,
+                                  segments: const [
+                                    ButtonSegment<String>(
+                                      value: 'femenina',
+                                      icon: Icon(Icons.record_voice_over_outlined),
+                                      label: Text('Femenina'),
+                                    ),
+                                    ButtonSegment<String>(
+                                      value: 'masculina',
+                                      icon: Icon(Icons.voice_over_off_outlined),
+                                      label: Text('Masculina'),
+                                    ),
+                                    ButtonSegment<String>(
+                                      value: 'ambient',
+                                      icon: Icon(Icons.music_note_outlined),
+                                      label: Text('Solo sonidos'),
+                                    ),
+                                  ],
+                                  selected: {viewModel.preferredVoice},
+                                  onSelectionChanged: (selection) {
+                                    viewModel.setPreferredVoice(selection.first);
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
-                          value: viewModel.darkModeEnforced,
-                          activeThumbColor: AppColors.mint,
-                          onChanged: (val) => viewModel.setDarkMode(val),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 100),
+                      _buildThemeSelectorCard(context),
+                      const SizedBox(height: 100),
                     ]),
                   ),
                 ],
@@ -277,6 +311,65 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
         color: isSelected ? AppColors.mint : AppColors.navBorder,
       ),
       showCheckmark: false,
+    );
+  }
+  Widget _buildThemeSelectorCard(BuildContext context) {
+    final themeViewModel = context.watch<ThemeViewModel>();
+    return _buildConfigCard(
+      title: 'Tema preferencial / Descanso visual',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Elige la apariencia que mejor se adapte a tu fatiga visual o luz ambiental. El modo claro es ideal para el día y el modo oscuro ayuda a descansar la vista por la noche.',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Semantics(
+            label: 'Selector de tema preferencial',
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<ThemeMode>(
+                showSelectedIcon: false,
+                segments: const [
+                  ButtonSegment(
+                    value: ThemeMode.light,
+                    icon: Icon(Icons.light_mode_outlined),
+                    label: Text('Claro'),
+                  ),
+                  ButtonSegment(
+                    value: ThemeMode.dark,
+                    icon: Icon(Icons.dark_mode_outlined),
+                    label: Text('Oscuro'),
+                  ),
+                ],
+                selected: {themeViewModel.themeMode},
+                onSelectionChanged: themeViewModel.isLoading
+                    ? null
+                    : (selection) async {
+                        final mode = selection.first;
+                        await context.read<ThemeViewModel>().setThemeMode(mode);
+                        if (!context.mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              mode == ThemeMode.dark
+                                  ? 'Modo oscuro activado'
+                                  : 'Modo claro activado',
+                            ),
+                          ),
+                        );
+                      },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

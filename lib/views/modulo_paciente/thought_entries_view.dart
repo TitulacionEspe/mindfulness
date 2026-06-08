@@ -235,6 +235,108 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                     background: AppColors.successBg,
                   ),
                 ),
+              if (viewModel.isAnalyzing)
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.outlineVariant),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.lavender,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Calma está analizando tu pensamiento...',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if (viewModel.aiRetrospect != null)
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceHigh,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.outlineVariant),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.auto_awesome_rounded, color: AppColors.lavender, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Retrospectiva de Calma 🌟',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          viewModel.aiRetrospect!,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
+                        ),
+                        if (viewModel.aiSuggestsAppointment) ...[
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 44,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.mint,
+                                foregroundColor: AppColors.buttonPrimaryText,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const PatientAppointmentsView(
+                                      openRequestComposerOnStart: true,
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.calendar_month_rounded, size: 18),
+                              label: const Text('Solicitar cita con Psicología'),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
               if (viewModel.successMessage != null)
                 SliverToBoxAdapter(
                   child: _AfterThoughtSaveActions(
@@ -307,6 +409,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
 
   Future<void> _saveCurrent() async {
     final viewModel = context.read<ThoughtEntriesViewModel>();
+    viewModel.clearMessages();
     final content = _controller.text;
     final shouldShowSupportNotice = _containsRiskLanguage(content);
     final success = await viewModel.saveEntry(
@@ -322,6 +425,8 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
     });
     if (shouldShowSupportNotice) {
       await _showResponsibleHelpDialog();
+    } else {
+      await viewModel.generateAIRetrospect(content);
     }
   }
 

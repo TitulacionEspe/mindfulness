@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../core/theme/app_colors.dart';
 import 'componet/patient_navigation_helper.dart';
 
@@ -30,24 +29,39 @@ class PatientSupportView extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         children: [
           _SupportCard(
-            icon: Icons.help_outline_rounded,
-            title: 'Centro de ayuda',
+            icon: Icons.shield_outlined,
+            title: 'Privacidad y cifrado',
             subtitle:
-                'Consulta guías de uso sobre rutinas, hábitos y seguimiento.',
+                'Tus registros de autopercepción y las sesiones de relajación se guardan de forma segura para mostrarte métricas de progreso. Las notas de pensamientos privados están cifradas y son 100% privadas; nadie más, ni siquiera los profesionales de psicología, pueden leerlas.',
           ),
           const SizedBox(height: 12),
           _SupportCard(
-            icon: Icons.shield_outlined,
-            title: 'Privacidad',
+            icon: Icons.notifications_active_outlined,
+            title: 'Ajustes de alertas locales',
             subtitle:
-                'Si tienes dudas sobre tus datos, contacta al equipo de administración institucional.',
+                'Puedes programar alertas diarias para ayudarte a iniciar tus rutinas nocturnas. Si no recibes las notificaciones en la hora programada, asegúrate de activar los permisos de notificación de la aplicación en los ajustes de tu celular.',
+          ),
+          const SizedBox(height: 12),
+          _SupportCard(
+            icon: Icons.calendar_month_outlined,
+            title: 'Solicitud de citas de psicología',
+            subtitle:
+                'Dirígete al apartado de "Citas con Psicología", pulsa el botón "+" y detalla tu motivo. La psicóloga asignada recibirá tu solicitud y te propondrá un horario que podrás confirmar directamente desde la aplicación.',
+          ),
+          const SizedBox(height: 12),
+          _SupportCard(
+            icon: Icons.health_and_safety_outlined,
+            title: 'Emergencia emocional',
+            subtitle:
+                'Si estás pasando por una crisis o momento muy difícil, recuerda que no estás solo. Puedes llamar de forma gratuita y confidencial a la línea nacional de salud mental 171 (opción 6) o al servicio de emergencias 911.',
+            accentColor: AppColors.error,
           ),
           const SizedBox(height: 12),
           _SupportCard(
             icon: Icons.contact_support_outlined,
-            title: 'Contacto',
+            title: 'Contacto de soporte técnico',
             subtitle:
-                'Correo sugerido: soporte@mindfulness.app\nRespuesta estimada: 24-48 horas.',
+                'Si experimentas fallas en la aplicación o errores de carga, puedes escribir a:\nsoporte.nidara@espe.edu.ec\n\nNuestro equipo te responderá en un plazo estimado de 24 a 48 horas hábiles.',
           ),
         ],
       ),
@@ -60,14 +74,18 @@ class _SupportCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.accentColor,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = accentColor ?? AppColors.mint;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -85,7 +103,7 @@ class _SupportCard extends StatelessWidget {
               color: AppColors.surfaceHigh,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: AppColors.mint),
+            child: Icon(icon, color: themeColor),
           ),
           const SizedBox(width: 12),
           Expanded(

@@ -50,20 +50,37 @@ class ChatViewModel extends ChangeNotifier {
     final normalized = text.trim();
     if (normalized.isEmpty || _isSending) return;
 
+    final tempUserMessage = ChatMessageModel(
+      id: 'temp_user',
+      patientId: '',
+      role: ChatRole.user,
+      content: normalized,
+      createdAt: DateTime.now(),
+      riskLevel: ChatRiskLevel.none,
+    );
+
+    // Render immediate local message and start loader
+    _messages = [..._messages, tempUserMessage];
     _isSending = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
+      final historyForSend = _messages.where((m) => m.id != 'temp_user').toList();
       final result = await _repository.sendMessage(
         text: normalized,
-        history: _messages,
+        history: historyForSend,
       );
-      _messages = [..._messages, result.userMessage, result.assistantMessage];
+      _messages = [
+        ..._messages.where((m) => m.id != 'temp_user'),
+        result.userMessage,
+        result.assistantMessage,
+      ];
       _suggestAppointment =
           result.suggestAppointment ||
           result.assistantMessage.riskLevel == ChatRiskLevel.high;
     } catch (_) {
+      _messages = _messages.where((m) => m.id != 'temp_user').toList();
       _errorMessage =
           'No se pudo enviar tu mensaje. Revisa tu conexión e intenta otra vez.';
     } finally {

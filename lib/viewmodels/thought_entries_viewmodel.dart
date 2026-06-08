@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/thought_entry_model.dart';
 import '../services/thought_entries_repository.dart';
@@ -19,6 +20,15 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
 
   bool _isSaving = false;
   bool get isSaving => _isSaving;
+
+  bool _isAnalyzing = false;
+  bool get isAnalyzing => _isAnalyzing;
+
+  String? _aiRetrospect;
+  String? get aiRetrospect => _aiRetrospect;
+
+  bool _aiSuggestsAppointment = false;
+  bool get aiSuggestsAppointment => _aiSuggestsAppointment;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -50,9 +60,48 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
     _entries = const [];
     _isLoading = false;
     _isSaving = false;
+    _isAnalyzing = false;
+    _aiRetrospect = null;
+    _aiSuggestsAppointment = false;
     _errorMessage = null;
     _successMessage = null;
     notifyListeners();
+  }
+
+  Future<void> generateAIRetrospect(String thoughtContent) async {
+    final normalized = thoughtContent.trim();
+    if (normalized.isEmpty) return;
+
+    _isAnalyzing = true;
+    _aiRetrospect = null;
+    _aiSuggestsAppointment = false;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'emotional-chat',
+        body: {
+          'message': 'Analiza el siguiente pensamiento registrado por un estudiante en su diario de descarga emocional: "$normalized". Por favor, responde en español siguiendo estas reglas: \n1. Si el pensamiento es predominantemente positivo, responde con un mensaje alegre, optimista y motivador. \n2. Si el pensamiento es intermedio, neutral o describe un día común con estrés normal, da una respuesta empática y equilibrada. \n3. Si el pensamiento es muy negativo, triste, de alta tensión o sugiere riesgo emocional, bríndale una retrospectiva de por qué puede sentirse así, recuérdale con mucha empatía que no está solo, y recomiéndale de forma cálida solicitar una cita con un profesional de psicología en la aplicación.',
+          'history': [],
+        },
+      );
+
+      final data = response.data;
+      if (data is Map) {
+        _aiRetrospect = (data['reply'] as String?)?.trim();
+        final riskLevel = data['riskLevel'] as String?;
+        final suggestApp = data['suggestAppointment'] == true;
+        _aiSuggestsAppointment = suggestApp || riskLevel == 'high';
+      } else {
+        _aiRetrospect = 'Interesante reflexión. Recuerda que siempre tienes la opción de tomar un momento para respirar y cuidar de ti.';
+      }
+    } catch (e) {
+      _aiRetrospect = 'He guardado tu pensamiento con éxito. Calma no pudo generar una retrospectiva en este momento debido a un problema de conexión, pero recuerda que estás haciendo un gran esfuerzo por cuidar de ti.';
+    } finally {
+      _isAnalyzing = false;
+      notifyListeners();
+    }
   }
 
   bool canEditOrDelete(ThoughtEntryModel entry, {DateTime? now}) {
@@ -141,6 +190,8 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
   void clearMessages() {
     _errorMessage = null;
     _successMessage = null;
+    _aiRetrospect = null;
+    _aiSuggestsAppointment = false;
     notifyListeners();
   }
 }
