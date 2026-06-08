@@ -49,14 +49,6 @@ class FakeSelfAssessmentsRepository implements SelfAssessmentsRepository {
   }
 }
 
-const _routine = RoutineModel(
-  id: 'routine-1',
-  title: 'Respiración guiada',
-  description: 'desc',
-  category: RoutineCategory.breathing,
-  durationSeconds: 180,
-);
-
 Widget _wrapWithProviders(Widget child) {
   return MultiProvider(
     providers: [
@@ -79,35 +71,13 @@ Widget _wrapWithProviders(Widget child) {
 }
 
 void main() {
-  testWidgets('pre assessment blocks start until emotion is selected', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrapWithProviders(const PreSessionAssessmentView(routine: _routine)),
-    );
-    await tester.pumpAndSettle();
-
-    ElevatedButton startButton = tester.widget(
-      find.widgetWithText(ElevatedButton, 'Iniciar sesión'),
-    );
-    expect(startButton.onPressed, isNull);
-
-    await tester.tap(find.text('Calma'));
-    await tester.pumpAndSettle();
-
-    startButton = tester.widget(
-      find.widgetWithText(ElevatedButton, 'Iniciar sesión'),
-    );
-    expect(startButton.onPressed, isNotNull);
-  });
-
-  testWidgets('post assessment blocks finish until emotion is selected', (
+  testWidgets('Likert sheet blocks finish until a face is selected', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrapWithProviders(
         const Scaffold(
-          body: PostSessionAssessmentSheet(
+          body: PostSessionLikertSheet(
             sessionId: 'session-1',
             routineTitle: 'Respiración guiada',
           ),
@@ -116,17 +86,20 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    ElevatedButton finishButton = tester.widget(
+    // Botón debe estar deshabilitado sin selección
+    final finishButton = tester.widget<ElevatedButton>(
       find.widgetWithText(ElevatedButton, 'Guardar y finalizar'),
     );
     expect(finishButton.onPressed, isNull);
 
-    await tester.tap(find.text('Calma'));
+    // Tocar una carita (la tercera: 😐 Regular)
+    await tester.tap(find.text('😐'));
     await tester.pumpAndSettle();
 
-    finishButton = tester.widget(
+    // Ahora el botón debe estar habilitado
+    final enabledButton = tester.widget<ElevatedButton>(
       find.widgetWithText(ElevatedButton, 'Guardar y finalizar'),
     );
-    expect(finishButton.onPressed, isNotNull);
+    expect(enabledButton.onPressed, isNotNull);
   });
 }

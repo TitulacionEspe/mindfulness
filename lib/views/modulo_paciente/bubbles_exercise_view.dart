@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class BubbleData {
   final int id;
@@ -30,20 +35,25 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
   final int _cols = 5;
   final int _rows = 6;
 
-  // [SONIDO] final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  // ── Controles de experiencia ──────────────────────────────────────────
+  bool _soundEnabled = true;
+  bool _classicSoundEnabled = false; // Audio WAV como secundario
+  bool _regenerativeMode = false;
 
   @override
   void initState() {
     super.initState();
     _generateBubbles();
 
-    // [SONIDO] Precarga el sonido para evitar delay en la primera explosión:
-    // _audioPlayer.setSource(AssetSource('sounds/pop.mp3'));
+    // Precarga el sonido para evitar delay en la primera explosión
+    _audioPlayer.setSource(AssetSource('sounds/burbuja.wav'));
   }
 
   @override
   void dispose() {
-    // [SONIDO] _audioPlayer.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -65,17 +75,96 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
     }
   }
 
-  Future<void> _playPopSound() async {
-    // [SONIDO] Descomenta las siguientes líneas:
-    // await _audioPlayer.stop();
-    // await _audioPlayer.play(AssetSource('sounds/pop.mp3'));
+  // ── Generador de sonido sintético rápido ──────────────────────────────
+  String _generatePopSound() {
+    const sampleRate = 44100;
+    const duration = 0.08; // Muy corto (80ms) para respuesta ultra rápida
+    const numSamples = (sampleRate * duration);
+    // Para el "pop", iniciamos con una frecuencia media que sube bruscamente (efecto burbuja rápida)
+    const startFrequency = 400.0;
+    const endFrequency = 800.0;
+
+    final dataSize = (numSamples * 2).toInt();
+    final bytes = BytesBuilder();
+
+    // RIFF header
+    bytes.add(utf8.encode('RIFF'));
+    bytes.add(_int32ToBytes(36 + dataSize));
+    bytes.add(utf8.encode('WAVE'));
+
+    // fmt subchunk
+    bytes.add(utf8.encode('fmt '));
+    bytes.add(_int32ToBytes(16));
+    bytes.add(_int16ToBytes(1));
+    bytes.add(_int16ToBytes(1)); // Mono
+    bytes.add(_int32ToBytes(sampleRate));
+    bytes.add(_int32ToBytes(sampleRate * 2));
+    bytes.add(_int16ToBytes(2));
+    bytes.add(_int16ToBytes(16));
+
+    // data subchunk
+    bytes.add(utf8.encode('data'));
+    bytes.add(_int32ToBytes(dataSize));
+
+    for (int i = 0; i < numSamples; i++) {
+      final t = i / sampleRate;
+      // Barrido de frecuencia ascendente
+      final freq =
+          startFrequency + ((endFrequency - startFrequency) * (t / duration));
+      // Envolvente rápida para el "click"
+      final envelope = math.exp(-30.0 * t);
+
+      final wave = math.sin(2 * math.pi * freq * t);
+
+      final sample = (wave * envelope * 0.8 * 32767).toInt().clamp(
+        -32768,
+        32767,
+      );
+      bytes.add(_int16ToBytes(sample));
+    }
+
+    final base64String = base64Encode(bytes.toBytes());
+    return 'data:audio/wav;base64,$base64String';
   }
 
+  List<int> _int32ToBytes(int value) => [
+    value & 0xFF,
+    (value >> 8) & 0xFF,
+    (value >> 16) & 0xFF,
+    (value >> 24) & 0xFF,
+  ];
+
+  List<int> _int16ToBytes(int value) => [value & 0xFF, (value >> 8) & 0xFF];
+
+  // ── Sonido (respeta el toggle) ────────────────────────────────────────
+  Future<void> _playPopSound() async {
+    if (!_soundEnabled) return;
+
+    try {
+      await _audioPlayer.stop();
+      if (!_classicSoundEnabled) {
+        // En Android/iOS AudioPlayer de audioplayers a veces tarda con data URIs grandes.
+        // Pero para muestras muy cortas funciona bien, o se puede alternar la fuente.
+        // Si el usuario exije velocidad pura, la generación en tiempo real puede introducir un lag mínimo por la decodificación.
+        // Lo generamos:
+        final uri = _generatePopSound();
+        await _audioPlayer.setSource(UrlSource(uri));
+      } else {
+        await _audioPlayer.setSource(AssetSource('sounds/burbuja.wav'));
+      }
+      // Pequeña variación de pitch aleatoria para que no suenen todas idénticas
+      final pitch = 0.9 + (math.Random().nextDouble() * 0.3); // 0.9 a 1.2
+      await _audioPlayer.setPlaybackRate(pitch);
+      await _audioPlayer.resume();
+    } catch (_) {}
+  }
+
+  // ── Explotar burbuja ──────────────────────────────────────────────────
   void _popBubble(int index) {
     if (_bubbles[index].isPopped) return;
 
-    HapticFeedback.lightImpact();
-    _playPopSound(); // ← sonido listo, solo activa las líneas [SONIDO]
+    HapticFeedback.heavyImpact();
+    _playPopSound();
 
     setState(() {
       _bubbles[index].isPopped = true;
@@ -88,8 +177,20 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
         _bubbles[index].scale = 0.86;
       });
     });
+
+    // Modo regenerativo: la burbuja reaparece sola
+    if (_regenerativeMode) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        setState(() {
+          _bubbles[index].isPopped = false;
+          _bubbles[index].scale = 1.0;
+        });
+      });
+    }
   }
 
+  // ── Reiniciar todas las burbujas ──────────────────────────────────────
   void _resetBubbles() {
     HapticFeedback.mediumImpact();
     setState(() {
@@ -224,6 +325,129 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                     ),
                     elevation: 0,
                   ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // ── Toggles: Sonido y Regenerativo ───────────────────────
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    // Toggle Sonido
+                    SwitchListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      dense: true,
+                      title: Row(
+                        children: [
+                          Icon(
+                            _soundEnabled ? Icons.volume_up : Icons.volume_off,
+                            size: 20,
+                            color: _soundEnabled
+                                ? const Color(0xFF1AAA7A)
+                                : const Color(0xFF999999),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Sonido de explosión',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: _soundEnabled
+                                  ? const Color(0xFF1A1A2E)
+                                  : const Color(0xFF999999),
+                            ),
+                          ),
+                        ],
+                      ),
+                      value: _soundEnabled,
+                      activeThumbColor: const Color(0xFF1AAA7A),
+                      onChanged: (val) {
+                        setState(() {
+                          _soundEnabled = val;
+                        });
+                      },
+                    ),
+                    // Toggle Regenerativo
+                    SwitchListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      dense: true,
+                      title: Row(
+                        children: [
+                          Icon(
+                            Icons.autorenew,
+                            size: 20,
+                            color: _regenerativeMode
+                                ? const Color(0xFF1AAA7A)
+                                : const Color(0xFF999999),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Burbujas infinitas',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: _regenerativeMode
+                                  ? const Color(0xFF1A1A2E)
+                                  : const Color(0xFF999999),
+                            ),
+                          ),
+                        ],
+                      ),
+                      value: _regenerativeMode,
+                      activeThumbColor: const Color(0xFF1AAA7A),
+                      onChanged: (val) {
+                        setState(() {
+                          _regenerativeMode = val;
+                        });
+                      },
+                    ),
+                    // Toggle Sonido Clásico (Solo si el sonido general está activo)
+                    if (_soundEnabled)
+                      SwitchListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
+                        dense: true,
+                        title: Row(
+                          children: [
+                            Icon(
+                              Icons.slow_motion_video_rounded,
+                              size: 20,
+                              color: _classicSoundEnabled
+                                  ? const Color(0xFF1AAA7A)
+                                  : const Color(0xFF999999),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Usar audio clásico (Lento)',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: _classicSoundEnabled
+                                      ? const Color(0xFF1A1A2E)
+                                      : const Color(0xFF999999),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        value: _classicSoundEnabled,
+                        activeThumbColor: const Color(0xFF1AAA7A),
+                        onChanged: (val) {
+                          setState(() {
+                            _classicSoundEnabled = val;
+                          });
+                        },
+                      ),
+                  ],
                 ),
               ),
             ],
