@@ -124,10 +124,10 @@ class _PatientWrapperState extends State<PatientWrapper> {
         _onItemTapped(1);
         break;
       case PatientFeatureAction.habits:
-        _onItemTapped(2);
+        _onItemTapped(3);
         break;
       case PatientFeatureAction.progress:
-        _onItemTapped(3);
+        _onItemTapped(4);
         break;
       case PatientFeatureAction.tasks:
         Navigator.of(
@@ -145,9 +145,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
         ).push(MaterialPageRoute(builder: (_) => const RemindersView()));
         break;
       case PatientFeatureAction.appointments:
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const PatientAppointmentsView()),
-        );
+        _onItemTapped(2);
         break;
     }
   }
@@ -185,6 +183,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
     final pages = [
       PatientHomeView(onShowFeatureGuide: _openFeatureGuide),
       const RoutinesLibraryView(),
+      const PatientAppointmentsView(),
       const SleepHabitsView(),
       const PatientHistoryView(),
     ];
@@ -282,6 +281,11 @@ class _PatientWrapperState extends State<PatientWrapper> {
             icon: Icon(Icons.self_improvement_outlined),
             activeIcon: Icon(Icons.self_improvement),
             label: 'Rutinas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_outlined),
+            activeIcon: Icon(Icons.calendar_month),
+            label: 'Citas',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bedtime_outlined),
