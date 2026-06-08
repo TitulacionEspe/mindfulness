@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/utils/ai_parser.dart';
 import '../models/thought_entry_model.dart';
 import '../services/thought_entries_repository.dart';
 
@@ -89,10 +90,13 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
 
       final data = response.data;
       if (data is Map) {
-        _aiRetrospect = (data['reply'] as String?)?.trim();
+        final rawReply = (data['reply'] as String?)?.trim() ?? '';
+        _aiRetrospect = AiParser.cleanAiResponse(rawReply);
         final riskLevel = data['riskLevel'] as String?;
         final suggestApp = data['suggestAppointment'] == true;
         _aiSuggestsAppointment = suggestApp || riskLevel == 'high';
+      } else if (data is String) {
+        _aiRetrospect = AiParser.cleanAiResponse(data);
       } else {
         _aiRetrospect = 'Interesante reflexión. Recuerda que siempre tienes la opción de tomar un momento para respirar y cuidar de ti.';
       }

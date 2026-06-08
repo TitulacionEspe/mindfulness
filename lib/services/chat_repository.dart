@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/utils/ai_parser.dart';
 import '../models/chat_message_model.dart';
 
 /// Resultado de enviar un mensaje: el mensaje del usuario y la respuesta del
@@ -94,13 +96,27 @@ class SupabaseChatRepository implements ChatRepository {
     );
 
     final data = invokeResponse.data;
-    final map = data is Map
-        ? Map<String, dynamic>.from(data)
-        : <String, dynamic>{};
+    String cleanReply = 'Estoy aquí contigo. Cuéntame un poco más, con calma.';
+    Map<String, dynamic> map = {};
 
-    final reply =
-        (map['reply'] as String?)?.trim() ??
-        'Estoy aquí contigo. Cuéntame un poco más, con calma.';
+    if (data is Map) {
+      map = Map<String, dynamic>.from(data);
+      final rawReply = (map['reply'] as String?)?.trim() ?? '';
+      cleanReply = AiParser.cleanAiResponse(rawReply);
+    } else if (data is String) {
+      cleanReply = AiParser.cleanAiResponse(data);
+      try {
+        final decoded = jsonDecode(data);
+        if (decoded is Map) {
+          map = Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {}
+    }
+
+    if (cleanReply.isEmpty) {
+      cleanReply = 'Estoy aquí contigo. Cuéntame un poco más, con calma.';
+    }
+
     final riskLevel = ChatMessageModel.riskFromString(
       map['riskLevel'] as String?,
     );
@@ -112,7 +128,7 @@ class SupabaseChatRepository implements ChatRepository {
         .insert({
           'patient_id': user.id,
           'role': 'assistant',
-          'content': reply,
+          'content': cleanReply,
           'risk_level': ChatMessageModel.riskToString(riskLevel),
         })
         .select(_columns)

@@ -159,32 +159,32 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                             const SizedBox(height: 16),
                             Semantics(
                               label: 'Selector de tono de transición de rutinas',
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: SegmentedButton<String>(
-                                  showSelectedIcon: false,
-                                  segments: const [
-                                    ButtonSegment<String>(
-                                      value: 'femenina',
-                                      icon: Icon(Icons.bubble_chart_outlined),
-                                      label: Text('Burbuja'),
-                                    ),
-                                    ButtonSegment<String>(
-                                      value: 'masculina',
-                                      icon: Icon(Icons.graphic_eq_outlined),
-                                      label: Text('Platillo'),
-                                    ),
-                                    ButtonSegment<String>(
-                                      value: 'ambient',
-                                      icon: Icon(Icons.notifications_active_outlined),
-                                      label: Text('Campana'),
-                                    ),
-                                  ],
-                                  selected: {viewModel.preferredVoice},
-                                  onSelectionChanged: (selection) {
-                                    viewModel.setPreferredVoice(selection.first);
-                                  },
-                                ),
+                              child: Row(
+                                children: [
+                                  _buildToneCard(
+                                    context: context,
+                                    label: 'Burbuja',
+                                    value: 'femenina',
+                                    icon: Icons.bubble_chart_outlined,
+                                    viewModel: viewModel,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildToneCard(
+                                    context: context,
+                                    label: 'Platillo',
+                                    value: 'masculina',
+                                    icon: Icons.graphic_eq_outlined,
+                                    viewModel: viewModel,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildToneCard(
+                                    context: context,
+                                    label: 'Campana',
+                                    value: 'ambient',
+                                    icon: Icons.notifications_active_outlined,
+                                    viewModel: viewModel,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -369,6 +369,68 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildToneCard({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required IconData icon,
+    required SleepHabitsViewModel viewModel,
+  }) {
+    final isSelected = viewModel.preferredVoice == value;
+
+    final (accentColor, bgColor) = switch (value) {
+      'femenina' => (AppColors.mint, AppColors.successBg),
+      'masculina' => (AppColors.lavender, AppColors.warningBg),
+      'ambient' || _ => (AppColors.tertiary, AppColors.tertiaryBg),
+    };
+
+    return Expanded(
+      child: Semantics(
+        selected: isSelected,
+        button: true,
+        label: 'Tono $label',
+        child: InkWell(
+          onTap: () => viewModel.setPreferredVoice(value),
+          borderRadius: BorderRadius.circular(16),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? bgColor : AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? accentColor : AppColors.outlineVariant,
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 22,
+                  color: isSelected ? accentColor : AppColors.textSecondary,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
