@@ -32,7 +32,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
   int _selectedIndex = 0;
   bool _isLoadingFeatureGuide = true;
   bool _showFeatureGuide = false;
-  bool _showCalmaTooltip = true;
+  final bool _showCalmaTooltip = true;
 
   @override
   void initState() {
@@ -42,12 +42,6 @@ class _PatientWrapperState extends State<PatientWrapper> {
       context.read<SleepHabitsViewModel>().loadSettings();
       context.read<PatientHistoryViewModel>().loadHistory();
       _loadFeatureGuidePreference();
-    });
-    // Ocultar el globo de diálogo después de 8 segundos
-    Future.delayed(const Duration(seconds: 8), () {
-      if (mounted) {
-        setState(() => _showCalmaTooltip = false);
-      }
     });
   }
 
