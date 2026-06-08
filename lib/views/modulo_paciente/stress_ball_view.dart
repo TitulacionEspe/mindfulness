@@ -7,6 +7,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../core/theme/app_colors.dart';
+
 class StressBallView extends StatefulWidget {
   const StressBallView({super.key});
 
@@ -259,17 +261,17 @@ class _StressBallViewState extends State<StressBallView>
         _screenSize = Size(constraints.maxWidth, constraints.maxHeight);
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF0F4F8),
+          backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircleAvatar(radius: 9, backgroundColor: Color(0xFFE8622A)),
-                SizedBox(width: 8),
+              children: [
+                CircleAvatar(radius: 9, backgroundColor: AppColors.tertiary),
+                const SizedBox(width: 8),
                 Text(
-                  'Pelota Antiestrés',
+                  'Pelota antiestrés',
                   style: TextStyle(
-                    color: Color(0xFF1A1A2E),
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
                   ),
@@ -277,13 +279,13 @@ class _StressBallViewState extends State<StressBallView>
               ],
             ),
             centerTitle: true,
-            backgroundColor: const Color(0xFFF0F4F8),
+            backgroundColor: AppColors.background,
             elevation: 0,
-            leading: const BackButton(color: Color(0xFF1A1A2E)),
-            actions: const [
+            leading: BackButton(color: AppColors.textPrimary),
+            actions: [
               Padding(
-                padding: EdgeInsets.only(right: 12),
-                child: Icon(Icons.info_outline, color: Color(0xFF1A1A2E)),
+                padding: const EdgeInsets.only(right: 12),
+                child: Icon(Icons.info_outline, color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -316,18 +318,18 @@ class _StressBallViewState extends State<StressBallView>
                           child: Opacity(
                             opacity: 1.0 - (_onboardingController.value * 0.3),
                             child: Column(
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.touch_app_rounded,
                                   size: 56,
-                                  color: Color(0xFFE8622A),
+                                  color: AppColors.tertiary,
                                 ),
-                                SizedBox(height: 12),
+                                const SizedBox(height: 12),
                                 Text(
                                   'Arrastra la pelota hacia abajo\ny suelta para lanzar',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: Color(0xFFE8622A),
+                                    color: AppColors.tertiary,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
                                     height: 1.3,
@@ -350,7 +352,7 @@ class _StressBallViewState extends State<StressBallView>
                   width: _ballRadius * 1.4,
                   height: _ballRadius * 0.3,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.10),
+                    color: AppColors.surfaceLowest.withValues(alpha: 0.22),
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -386,31 +388,25 @@ class _StressBallViewState extends State<StressBallView>
                         horizontal: 24,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 12,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        border: Border.all(color: AppColors.outlineVariant),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'Rebotes:',
                             style: TextStyle(
-                              color: Color(0xFF555566),
+                              color: AppColors.textSecondary,
                               fontSize: 17,
                             ),
                           ),
                           const SizedBox(width: 14),
                           Text(
                             '$_bounceCount',
-                            style: const TextStyle(
-                              color: Color(0xFFE8622A),
+                            style: TextStyle(
+                              color: AppColors.tertiary,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
@@ -434,26 +430,26 @@ class _StressBallViewState extends State<StressBallView>
                                   ? Icons.volume_up_rounded
                                   : Icons.volume_off_rounded,
                               size: 20,
-                              color: const Color(0xFF1A1A2E),
+                              color: AppColors.textPrimary,
                             ),
                             label: Text(
                               _audioEnabled ? 'Sonido' : 'Mudo',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF1A1A2E),
+                                color: AppColors.textPrimary,
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 15),
-                              side: const BorderSide(
-                                color: Color(0xFFCCCCDD),
+                              side: BorderSide(
+                                color: AppColors.outlineVariant,
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              backgroundColor: Colors.white,
+                              backgroundColor: AppColors.surface,
                             ),
                           ),
                         ),
@@ -463,20 +459,20 @@ class _StressBallViewState extends State<StressBallView>
                           flex: 2,
                           child: ElevatedButton.icon(
                             onPressed: _resetCounter,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.refresh,
-                              color: Colors.white,
+                              color: AppColors.buttonPrimaryText,
                             ),
-                            label: const Text(
-                              'Reiniciar Contador',
+                            label: Text(
+                              'Reiniciar contador',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.white,
+                                color: AppColors.buttonPrimaryText,
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE8622A),
+                              backgroundColor: AppColors.buttonPrimary,
                               padding: const EdgeInsets.symmetric(vertical: 15),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -518,19 +514,23 @@ class _StressBall extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const RadialGradient(
-            colors: [Color(0xFFFFB347), Color(0xFFE8622A), Color(0xFFB84010)],
+          gradient: RadialGradient(
+            colors: [
+              AppColors.tertiaryContainer,
+              AppColors.tertiary,
+              AppColors.tertiaryOnContainer,
+            ],
             stops: [0.0, 0.55, 1.0],
             center: Alignment(-0.3, -0.35),
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFB84010).withValues(alpha: 0.45),
+              color: AppColors.tertiary.withValues(alpha: 0.45),
               blurRadius: isDragging ? 22 : 16,
               offset: const Offset(4, 8),
             ),
             BoxShadow(
-              color: Colors.white.withValues(alpha: 0.15),
+              color: AppColors.surfaceBright.withValues(alpha: 0.15),
               blurRadius: 8,
               offset: const Offset(-4, -4),
             ),
@@ -545,7 +545,7 @@ class _StressBall extends StatelessWidget {
                 width: size * 0.28,
                 height: size * 0.16,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.35),
+                  color: AppColors.surfaceBright.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
@@ -557,7 +557,7 @@ class _StressBall extends StatelessWidget {
                 width: size * 0.1,
                 height: size * 0.06,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: AppColors.surfaceBright.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),

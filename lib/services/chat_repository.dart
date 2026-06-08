@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/chat_message_model.dart';
 
 /// Resultado de enviar un mensaje: el mensaje del usuario y la respuesta del
-/// asistente ya persistidos, mas la senal de sugerir una cita.
+/// asistente ya persistidos, más la señal de sugerir una cita.
 class ChatSendResult {
   const ChatSendResult({
     required this.userMessage,
@@ -100,7 +100,7 @@ class SupabaseChatRepository implements ChatRepository {
 
     final reply =
         (map['reply'] as String?)?.trim() ??
-        'Estoy aqui contigo. Cuentame un poco mas, con calma.';
+        'Estoy aquí contigo. Cuéntame un poco más, con calma.';
     final riskLevel = ChatMessageModel.riskFromString(
       map['riskLevel'] as String?,
     );

@@ -653,7 +653,7 @@ class _AssignmentContextChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAssigned = contextValue == 'assigned';
     final label = isAssigned
-        ? 'Asignada por psicologia'
+        ? 'Asignada por psicología'
         : 'Sesión autoiniciada';
     final icon = isAssigned ? Icons.groups_rounded : Icons.self_improvement;
     final color = isAssigned ? AppColors.lavender : AppColors.mint;

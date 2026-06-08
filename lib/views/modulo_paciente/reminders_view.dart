@@ -130,7 +130,7 @@ class _RemindersViewState extends State<RemindersView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Manten la constancia',
+                            'Mantén la constancia',
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 30,
@@ -147,6 +147,22 @@ class _RemindersViewState extends State<RemindersView> {
                               height: 1.35,
                             ),
                           ),
+                          if (viewModel.permissionState != null &&
+                              (!viewModel
+                                      .permissionState!
+                                      .notificationsGranted ||
+                                  !viewModel
+                                      .permissionState!
+                                      .exactAlarmsGranted)) ...[
+                            const SizedBox(height: 14),
+                            _PermissionNotice(
+                              notificationsGranted: viewModel
+                                  .permissionState!
+                                  .notificationsGranted,
+                              exactAlarmsGranted:
+                                  viewModel.permissionState!.exactAlarmsGranted,
+                            ),
+                          ],
                           if (viewModel.errorMessage != null) ...[
                             SizedBox(height: 14),
                             Container(
@@ -212,9 +228,9 @@ class _RemindersViewState extends State<RemindersView> {
 
   String _getDaysSummary(int daysOfWeek) {
     if (daysOfWeek == 127) return 'Todos los días';
-    if (daysOfWeek == 0) return 'Ningun dia';
+    if (daysOfWeek == 0) return 'Ningún día';
 
-    final days = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
+    final days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
     final selected = <String>[];
     for (int i = 0; i < 7; i++) {
       if ((daysOfWeek & (1 << i)) != 0) {
@@ -361,6 +377,50 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
+class _PermissionNotice extends StatelessWidget {
+  const _PermissionNotice({
+    required this.notificationsGranted,
+    required this.exactAlarmsGranted,
+  });
+
+  final bool notificationsGranted;
+  final bool exactAlarmsGranted;
+
+  @override
+  Widget build(BuildContext context) {
+    final message = !notificationsGranted
+        ? 'Activa las notificaciones de Nidara en los ajustes del dispositivo para recibir tus avisos.'
+        : 'El dispositivo no permitió alarmas exactas. Tus avisos pueden llegar con algunos minutos de diferencia.';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.tertiaryBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.notifications_paused_outlined, color: AppColors.tertiary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class ReminderFormSheet extends StatefulWidget {
   const ReminderFormSheet({super.key, this.reminder});
 
@@ -389,169 +449,258 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
     final viewModel = context.read<RemindersViewModel>();
     final authViewModel = context.read<AuthViewModel>();
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-        left: 24,
-        right: 24,
-        top: 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.reminder == null
-                    ? 'Nuevo recordatorio'
-                    : 'Editar recordatorio',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          left: 24,
+          right: 24,
+          top: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.reminder == null
+                      ? 'Nuevo recordatorio'
+                      : 'Editar recordatorio',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
+                if (widget.reminder != null)
+                  IconButton(
+                    tooltip: 'Eliminar recordatorio',
+                    icon: Icon(Icons.delete_outline, color: AppColors.error),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          title: const Text('Eliminar recordatorio'),
+                          content: const Text(
+                            'Esta acción quitará el aviso y cancelará sus notificaciones programadas.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(dialogContext).pop(false),
+                              child: const Text('Cancelar'),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.error,
+                                foregroundColor: AppColors.surfaceLowest,
+                                minimumSize: const Size(120, 48),
+                              ),
+                              onPressed: () =>
+                                  Navigator.of(dialogContext).pop(true),
+                              child: const Text('Eliminar'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm != true || !context.mounted) return;
+                      final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
+                      final success = await viewModel.deleteReminder(
+                        widget.reminder!.id!,
+                      );
+                      if (success) {
+                        navigator.pop();
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Recordatorio eliminado.'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+              ],
+            ),
+            SizedBox(height: 22),
+            Text(
+              'Tipo de aviso',
+              style: TextStyle(
+                color: AppColors.lavender,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
               ),
-              if (widget.reminder != null)
-                IconButton(
-                  icon: Icon(Icons.delete_outline, color: AppColors.error),
-                  onPressed: () async {
-                    final navigator = Navigator.of(context);
-                    final success = await viewModel.deleteReminder(
-                      widget.reminder!.id!,
-                    );
-                    if (success) {
-                      navigator.pop();
-                    }
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Elige si el aviso será para iniciar una rutina, preparar el descanso o hacer una pausa breve.',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                height: 1.35,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ReminderType.values.map((type) {
+                final isSelected = _type == type;
+                return ChoiceChip(
+                  label: Text(type.label),
+                  selected: isSelected,
+                  onSelected: (val) {
+                    if (val) setState(() => _type = type);
                   },
-                ),
-            ],
-          ),
-          SizedBox(height: 22),
-          Text(
-            'Tipo de aviso',
-            style: TextStyle(
-              color: AppColors.lavender,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: ReminderType.values.map((type) {
-              final isSelected = _type == type;
-              return ChoiceChip(
-                label: Text(type.label),
-                selected: isSelected,
-                onSelected: (val) {
-                  if (val) setState(() => _type = type);
-                },
-                selectedColor: AppColors.mint,
-                backgroundColor: AppColors.surfaceLow,
-                side: BorderSide(color: AppColors.outlineVariant),
-                labelStyle: TextStyle(
-                  color: isSelected
-                      ? AppColors.buttonPrimaryText
-                      : AppColors.textPrimary,
-                ),
-                showCheckmark: false,
-              );
-            }).toList(),
-          ),
-          SizedBox(height: 22),
-          Text(
-            'Horario',
-            style: TextStyle(
-              color: AppColors.lavender,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 8),
-          Material(
-            color: AppColors.surfaceLow,
-            borderRadius: BorderRadius.circular(16),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Text(
-                _time.format(context),
-                style: TextStyle(
-                  color: AppColors.mint,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              trailing: Icon(Icons.access_time, color: AppColors.mint),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: _time,
+                  selectedColor: AppColors.mint,
+                  backgroundColor: AppColors.surfaceLow,
+                  side: BorderSide(color: AppColors.outlineVariant),
+                  labelStyle: TextStyle(
+                    color: isSelected
+                        ? AppColors.buttonPrimaryText
+                        : AppColors.textPrimary,
+                  ),
+                  showCheckmark: false,
                 );
-                if (time != null) setState(() => _time = time);
-              },
+              }).toList(),
             ),
-          ),
-          SizedBox(height: 22),
-          Text(
-            'Días',
-            style: TextStyle(
-              color: AppColors.lavender,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+            SizedBox(height: 22),
+            Text(
+              'Horario',
+              style: TextStyle(
+                color: AppColors.lavender,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _dayButton('L', 1),
-              _dayButton('M', 2),
-              _dayButton('M', 4),
-              _dayButton('J', 8),
-              _dayButton('V', 16),
-              _dayButton('S', 32),
-              _dayButton('D', 64),
-            ],
-          ),
-          const SizedBox(height: 28),
-          ElevatedButton(
-            onPressed: viewModel.isLoading
-                ? null
-                : () async {
-                    final currentUserId = authViewModel.currentUser?.id;
-                    if (currentUserId == null) return;
-
-                    final navigator = Navigator.of(context);
-                    final newReminder = ReminderModel(
-                      id: widget.reminder?.id,
-                      patientId: currentUserId,
-                      triggerTime: _time,
-                      daysOfWeek: _days,
-                      type: _type,
-                      isActive: widget.reminder?.isActive ?? true,
-                    );
-
-                    final success = widget.reminder == null
-                        ? await viewModel.addReminder(newReminder)
-                        : await viewModel.updateReminder(newReminder);
-
-                    if (success) {
-                      navigator.pop();
-                    }
-                  },
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(double.infinity, 56),
+            const SizedBox(height: 6),
+            Text(
+              'Selecciona una hora realista, idealmente antes de dormir o al inicio de tu rutina nocturna.',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                height: 1.35,
+              ),
             ),
-            child: viewModel.isLoading
-                ? CircularProgressIndicator(color: AppColors.buttonPrimaryText)
-                : const Text('Guardar'),
-          ),
-        ],
+            SizedBox(height: 8),
+            Material(
+              color: AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(16),
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Text(
+                  _time.format(context),
+                  style: TextStyle(
+                    color: AppColors.mint,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                trailing: Icon(Icons.access_time, color: AppColors.mint),
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: _time,
+                  );
+                  if (time != null) setState(() => _time = time);
+                },
+              ),
+            ),
+            SizedBox(height: 22),
+            Text(
+              'Días',
+              style: TextStyle(
+                color: AppColors.lavender,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Marca los días en los que quieres recibir el aviso. Puedes usarlo para días de carga académica alta.',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                height: 1.35,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _dayButton('L', 1),
+                _dayButton('M', 2),
+                _dayButton('M', 4),
+                _dayButton('J', 8),
+                _dayButton('V', 16),
+                _dayButton('S', 32),
+                _dayButton('D', 64),
+              ],
+            ),
+            const SizedBox(height: 28),
+            ElevatedButton(
+              onPressed: viewModel.isLoading
+                  ? null
+                  : () async {
+                      final currentUserId = authViewModel.currentUser?.id;
+                      if (currentUserId == null) return;
+                      if (_days == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Selecciona al menos un día para activar el recordatorio.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
+                      final newReminder = ReminderModel(
+                        id: widget.reminder?.id,
+                        patientId: currentUserId,
+                        triggerTime: _time,
+                        daysOfWeek: _days,
+                        type: _type,
+                        isActive: widget.reminder?.isActive ?? true,
+                      );
+
+                      final success = widget.reminder == null
+                          ? await viewModel.addReminder(newReminder)
+                          : await viewModel.updateReminder(newReminder);
+
+                      if (success) {
+                        navigator.pop();
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              widget.reminder == null
+                                  ? 'Recordatorio configurado correctamente.'
+                                  : 'Recordatorio actualizado correctamente.',
+                            ),
+                          ),
+                        );
+                      } else if (viewModel.errorMessage != null) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text(viewModel.errorMessage!)),
+                        );
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 56),
+              ),
+              child: viewModel.isLoading
+                  ? CircularProgressIndicator(
+                      color: AppColors.buttonPrimaryText,
+                    )
+                  : const Text('Guardar'),
+            ),
+          ],
+        ),
       ),
     );
   }

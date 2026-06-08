@@ -148,6 +148,24 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> sendPasswordResetEmail(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authRepository.sendPasswordResetEmail(email.trim());
+      _errorMessage = null;
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// Records explicit acceptance of the ethical consent by the user.
   Future<void> acceptConsent() async {
     if (_currentUser == null) return;

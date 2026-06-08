@@ -8,6 +8,8 @@ class AppointmentsViewModel extends ChangeNotifier {
 
   List<Appointment> allAppointments = [];
   bool isLoading = false;
+  String? statusUpdateMessage;
+  final Map<String, String> _knownStatuses = {};
 
   // Listas filtradas para la UI
   List<Appointment> get pendingRequests =>
@@ -15,11 +17,24 @@ class AppointmentsViewModel extends ChangeNotifier {
   List<Appointment> get confirmedAgenda =>
       allAppointments.where((a) => a.status == 'CONFIRMADA').toList();
 
-  Future<void> loadAll() async {
+  Future<void> loadAll({bool notifyStatusChanges = true}) async {
     isLoading = true;
     notifyListeners();
     try {
-      allAppointments = await _service.getAppointments();
+      final nextAppointments = await _service.getAppointments();
+      if (notifyStatusChanges) {
+        statusUpdateMessage = _detectStatusChange(nextAppointments);
+      }
+      allAppointments = nextAppointments;
+      _knownStatuses
+        ..clear()
+        ..addEntries(
+          allAppointments
+              .where((appointment) => appointment.id != null)
+              .map(
+                (appointment) => MapEntry(appointment.id!, appointment.status),
+              ),
+        );
     } catch (e) {
       debugPrint("Error: $e");
     }
@@ -30,6 +45,13 @@ class AppointmentsViewModel extends ChangeNotifier {
   void reset() {
     allAppointments = [];
     isLoading = false;
+    statusUpdateMessage = null;
+    _knownStatuses.clear();
+    notifyListeners();
+  }
+
+  void clearStatusUpdateMessage() {
+    statusUpdateMessage = null;
     notifyListeners();
   }
 
@@ -59,7 +81,7 @@ class AppointmentsViewModel extends ChangeNotifier {
       motive: motive,
     );
     await _service.requestAppointment(appointment);
-    await loadAll();
+    await loadAll(notifyStatusChanges: false);
   }
 
   // ACCIÓN DE LA PROFESIONAL: Proponer Horario
@@ -97,7 +119,7 @@ class AppointmentsViewModel extends ChangeNotifier {
         'status': 'PROPUESTA',
       },
     );
-    await loadAll();
+    await loadAll(notifyStatusChanges: false);
   }
 
   // ACCIÓN DE LA PROFESIONAL: Rechazar Solicitud
@@ -106,14 +128,14 @@ class AppointmentsViewModel extends ChangeNotifier {
       appointmentId: id,
       data: {'status': 'RECHAZADA'},
     );
-    await loadAll();
+    await loadAll(notifyStatusChanges: false);
   }
   // En lib/moduloCitas/viewmodels/appointments_viewmodel.dart
 
   Future<void> updateStatusFromPatient(String id, String newStatus) async {
     try {
       await _service.updateByPatient(appointmentId: id, newStatus: newStatus);
-      await loadAll(); // Refrescar lista local
+      await loadAll(notifyStatusChanges: false); // Refrescar lista local
     } catch (e) {
       final msg = e.toString();
       if (msg.contains('Conflicto de horario')) {
@@ -124,6 +146,37 @@ class AppointmentsViewModel extends ChangeNotifier {
       }
       rethrow;
     }
+  }
+
+  String? _detectStatusChange(List<Appointment> nextAppointments) {
+    if (_knownStatuses.isEmpty) return null;
+
+    for (final appointment in nextAppointments) {
+      final id = appointment.id;
+      if (id == null) continue;
+      final previous = _knownStatuses[id];
+      if (previous == null || previous == appointment.status) continue;
+
+      final label = _statusLabel(appointment.status);
+      final professional = appointment.professionalName?.trim();
+      final source = professional == null || professional.isEmpty
+          ? 'tu profesional'
+          : professional;
+      return 'Tu cita cambió a "$label" por $source.';
+    }
+    return null;
+  }
+
+  String _statusLabel(String status) {
+    return switch (status) {
+      'SOLICITADA' => 'solicitada',
+      'PROPUESTA' => 'propuesta',
+      'CONFIRMADA' => 'confirmada',
+      'COMPLETADA' => 'finalizada',
+      'RECHAZADA' => 'rechazada',
+      'CANCELADA' => 'cancelada',
+      _ => status.toLowerCase(),
+    };
   }
 
   // --- ACCIÓN: FINALIZAR CITA ---
@@ -139,6 +192,15 @@ class AppointmentsViewModel extends ChangeNotifier {
       // En lugar de llamar a loadAll que vuelve a poner isLoading=true,
       // podemos simplemente actualizar la lista local o llamar a _service directamente
       allAppointments = await _service.getAppointments();
+      _knownStatuses
+        ..clear()
+        ..addEntries(
+          allAppointments
+              .where((appointment) => appointment.id != null)
+              .map(
+                (appointment) => MapEntry(appointment.id!, appointment.status),
+              ),
+        );
       debugPrint("Lista recargada.");
     } catch (e) {
       debugPrint("Error al finalizar cita: $e");

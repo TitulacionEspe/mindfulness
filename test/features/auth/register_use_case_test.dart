@@ -33,6 +33,8 @@ class MockAuthRepository implements IAuthRepository {
   @override
   Future<void> saveConsent(String userId, String version) async {}
   @override
+  Future<void> sendPasswordResetEmail(String email) async {}
+  @override
   Future<UserEntity> signIn(String email, String password) async =>
       throw UnimplementedError();
   @override

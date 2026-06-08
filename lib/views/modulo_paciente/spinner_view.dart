@@ -7,6 +7,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../core/theme/app_colors.dart';
+
 class SpinnerView extends StatefulWidget {
   const SpinnerView({super.key});
 
@@ -178,17 +180,17 @@ class _SpinnerViewState extends State<SpinnerView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.refresh, color: Color(0xFF1AAA7A), size: 22),
-            SizedBox(width: 8),
+          children: [
+            Icon(Icons.refresh, color: AppColors.mint, size: 22),
+            const SizedBox(width: 8),
             Text(
-              'Fidget Spinner',
+              'Fidget spinner',
               style: TextStyle(
-                color: Color(0xFF1A1A2E),
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
                 fontSize: 18,
               ),
@@ -196,13 +198,13 @@ class _SpinnerViewState extends State<SpinnerView>
           ],
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFFF0F4F8),
+        backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const BackButton(color: Color(0xFF1A1A2E)),
-        actions: const [
+        leading: BackButton(color: AppColors.textPrimary),
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.info_outline, color: Color(0xFF1A1A2E)),
+            padding: const EdgeInsets.only(right: 12),
+            child: Icon(Icons.info_outline, color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -214,7 +216,8 @@ class _SpinnerViewState extends State<SpinnerView>
             // Instrucción
             Text(
               'Desliza los bordes rápido para girar',
-              style: TextStyle(color: Colors.grey[500], fontSize: 15),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
             ),
 
             const Spacer(),
@@ -252,26 +255,26 @@ class _SpinnerViewState extends State<SpinnerView>
                             ? Icons.volume_up_rounded
                             : Icons.volume_off_rounded,
                         size: 20,
-                        color: const Color(0xFF1A1A2E),
+                        color: AppColors.textPrimary,
                       ),
                       label: Text(
-                        _audioEnabled ? 'Audio On' : 'Audio Off',
-                        style: const TextStyle(
+                        _audioEnabled ? 'Sonido' : 'Mudo',
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF1A1A2E),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(
-                          color: Color(0xFFCCCCDD),
+                        side: BorderSide(
+                          color: AppColors.outlineVariant,
                           width: 1.5,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppColors.surface,
                       ),
                     ),
                   ),
@@ -282,21 +285,21 @@ class _SpinnerViewState extends State<SpinnerView>
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _impulso,
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.bolt_rounded,
-                        color: Colors.white,
+                        color: AppColors.buttonPrimaryText,
                         size: 20,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Impulso rápido',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                          color: AppColors.buttonPrimaryText,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1AAA7A),
+                        backgroundColor: AppColors.buttonPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -340,7 +343,7 @@ class _SpinnerWidget extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF1AAA7A).withValues(alpha: 0.18),
+                color: AppColors.mint.withValues(alpha: 0.18),
                 blurRadius: 40,
                 spreadRadius: 10,
               ),
@@ -378,18 +381,18 @@ class _SpinnerWidget extends StatelessWidget {
           height: _centerSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: const RadialGradient(
+            gradient: RadialGradient(
               colors: [
-                Color(0xFF6EDDB8), // highlight claro
-                Color(0xFF1AAA7A), // verde base
-                Color(0xFF0D7A55), // sombra
+                AppColors.secondaryContainer,
+                AppColors.mint,
+                AppColors.buttonPrimaryText,
               ],
               stops: [0.0, 0.5, 1.0],
               center: Alignment(-0.3, -0.35),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
+                color: AppColors.surfaceLowest.withValues(alpha: 0.25),
                 blurRadius: 10,
                 offset: const Offset(3, 5),
               ),
@@ -401,8 +404,8 @@ class _SpinnerWidget extends StatelessWidget {
               height: _bearingSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const RadialGradient(
-                  colors: [Color(0xFFABEDD4), Color(0xFF3DC996)],
+                gradient: RadialGradient(
+                  colors: [AppColors.surfaceBright, AppColors.mint],
                   center: Alignment(-0.3, -0.4),
                 ),
               ),
@@ -419,18 +422,18 @@ class _SpinnerWidget extends StatelessWidget {
       height: _wingSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const RadialGradient(
+        gradient: RadialGradient(
           colors: [
-            Color(0xFF8DEFD0), // highlight blanco-verdoso
-            Color(0xFF2DC99A), // verde medio
-            Color(0xFF0F8A60), // verde oscuro borde
+            AppColors.secondaryContainer,
+            AppColors.mint,
+            AppColors.buttonPrimaryText,
           ],
           stops: [0.0, 0.5, 1.0],
           center: Alignment(-0.25, -0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.22),
+            color: AppColors.surfaceLowest.withValues(alpha: 0.22),
             blurRadius: 12,
             offset: const Offset(3, 6),
           ),
@@ -440,10 +443,10 @@ class _SpinnerWidget extends StatelessWidget {
         child: Container(
           width: _wingSize * 0.38,
           height: _wingSize * 0.38,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: RadialGradient(
-              colors: [Color(0xFFD0F7EC), Color(0xFF5DD4A8)],
+              colors: [AppColors.surfaceBright, AppColors.mint],
               center: Alignment(-0.3, -0.4),
             ),
           ),

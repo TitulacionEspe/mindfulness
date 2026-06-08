@@ -69,7 +69,7 @@ class CitasDialogs {
                     _buildOptionTile(
                       icon: Icons.calendar_month_outlined,
                       label: DateFormat('dd/MM/yyyy').format(selectedDate),
-                      color: const Color(0xFFB2EBF2),
+                      color: AppColors.mint,
                       onTap: () async {
                         final picked = await showDatePicker(
                           context: dialogContext,
@@ -89,7 +89,7 @@ class CitasDialogs {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Horarios disponibles ;) (1h)',
+                      'Horarios disponibles (60 min)',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
@@ -186,12 +186,12 @@ class CitasDialogs {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Error al rechazar: $e'),
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppColors.error,
                         ),
                       );
                     }
                   },
-                  style: TextButton.styleFrom(foregroundColor: Colors.red),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.error),
                   child: const Text('Rechazar'),
                 ),
                 ElevatedButton(
@@ -220,7 +220,6 @@ class CitasDialogs {
                                 content: Text(
                                   'Horario propuesto correctamente.',
                                 ),
-                                backgroundColor: Colors.green,
                               ),
                             );
                           } catch (e) {
@@ -245,8 +244,8 @@ class CitasDialogs {
                           }
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFB2EBF2),
-                    foregroundColor: Colors.black87,
+                    backgroundColor: AppColors.buttonPrimary,
+                    foregroundColor: AppColors.buttonPrimaryText,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -276,7 +275,7 @@ class CitasDialogs {
             borderRadius: BorderRadius.circular(24),
           ),
           title: Text(
-            'Finalizar sesión',
+            'Finalizar cita',
             style: TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
@@ -287,7 +286,7 @@ class CitasDialogs {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Añade notas importantes sobre el progreso del paciente.',
+                'Añade observaciones administrativas de la cita. No registres diagnósticos ni contenido privado innecesario.',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 16),
@@ -297,7 +296,7 @@ class CitasDialogs {
                 decoration: InputDecoration(
                   hintText: 'Escribe aquí tus notas...',
                   filled: true,
-                  fillColor: const Color(0xFFF5F5F5),
+                  fillColor: AppColors.surfaceLow,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                     borderSide: BorderSide.none,
@@ -328,7 +327,6 @@ class CitasDialogs {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Cita finalizada y guardada.'),
-                      backgroundColor: Colors.green,
                     ),
                   );
                 } catch (e) {
@@ -336,20 +334,20 @@ class CitasDialogs {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Error al finalizar: $e'),
-                      backgroundColor: Colors.red,
+                      backgroundColor: AppColors.error,
                     ),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFC8E6C9), // Menta suave
-                foregroundColor: Colors.black87,
+                backgroundColor: AppColors.buttonPrimary,
+                foregroundColor: AppColors.buttonPrimaryText,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
               ),
-              child: const Text('Guardar y Cerrar'),
+              child: const Text('Guardar y cerrar'),
             ),
           ],
         );
@@ -378,10 +376,10 @@ class CitasDialogs {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
             const Spacer(),

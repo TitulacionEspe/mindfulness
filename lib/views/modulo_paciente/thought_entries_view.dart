@@ -3,8 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../models/routine_model.dart';
 import '../../models/thought_entry_model.dart';
 import '../../viewmodels/thought_entries_viewmodel.dart';
+import 'category_routines_view.dart';
+import 'patient_appointments_view.dart';
 
 class ThoughtEntriesView extends StatefulWidget {
   const ThoughtEntriesView({super.key});
@@ -46,6 +49,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
           backgroundColor: AppColors.surface,
           onRefresh: () => viewModel.loadEntries(force: true),
           child: CustomScrollView(
+            cacheExtent: 1200,
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(
@@ -120,6 +124,8 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                           height: 1.35,
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      const _ThoughtPrivacyNotice(),
                       if (_editingEntry != null) ...[
                         const SizedBox(height: 14),
                         Container(
@@ -144,7 +150,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Modo edicion activo',
+                                  'Modo edición activo',
                                   style: TextStyle(
                                     color: AppColors.lavender,
                                     fontSize: 14,
@@ -173,7 +179,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         ),
                         decoration: InputDecoration(
                           hintText:
-                              'Escribe aqui tus preocupaciones, ideas o reflexiones de hoy.',
+                              'Escribe aquí tus preocupaciones, ideas o reflexiones de hoy.',
                           hintStyle: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
@@ -229,6 +235,26 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                     background: AppColors.successBg,
                   ),
                 ),
+              if (viewModel.successMessage != null)
+                SliverToBoxAdapter(
+                  child: _AfterThoughtSaveActions(
+                    onBreathe: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CategoryRoutinesView(
+                          category: RoutineCategory.breathing,
+                        ),
+                      ),
+                    ),
+                    onRelax: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CategoryRoutinesView(
+                          category: RoutineCategory.relaxation,
+                        ),
+                      ),
+                    ),
+                    onClose: () => Navigator.of(context).pop(),
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
@@ -281,8 +307,10 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
 
   Future<void> _saveCurrent() async {
     final viewModel = context.read<ThoughtEntriesViewModel>();
+    final content = _controller.text;
+    final shouldShowSupportNotice = _containsRiskLanguage(content);
     final success = await viewModel.saveEntry(
-      content: _controller.text,
+      content: content,
       existingEntry: _editingEntry,
     );
 
@@ -292,6 +320,58 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
     setState(() {
       _editingEntry = null;
     });
+    if (shouldShowSupportNotice) {
+      await _showResponsibleHelpDialog();
+    }
+  }
+
+  bool _containsRiskLanguage(String value) {
+    final normalized = value.toLowerCase();
+    const patterns = [
+      'suicid',
+      'no quiero vivir',
+      'quiero morir',
+      'hacerme daño',
+      'hacerme dano',
+      'lastimarme',
+      'me voy a matar',
+      'no puedo seguir',
+    ];
+    return patterns.any(normalized.contains);
+  }
+
+  Future<void> _showResponsibleHelpDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Busca apoyo si lo necesitas'),
+          content: const Text(
+            'Nidara no realiza diagnósticos ni reemplaza atención profesional. Si sientes que podrías hacerte daño o estás en emergencia, llama al 911 o busca ayuda inmediata. También puedes solicitar una cita con Psicología.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Entendido'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(minimumSize: const Size(120, 48)),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const PatientAppointmentsView(
+                      openRequestComposerOnStart: true,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Solicitar cita'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _startEditing(ThoughtEntryModel entry) {
@@ -439,6 +519,124 @@ class _ThoughtEntryCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ThoughtPrivacyNotice extends StatelessWidget {
+  const _ThoughtPrivacyNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.tertiaryBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.lock_outline_rounded, color: AppColors.tertiary, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Este registro es personal y no se usa para diagnosticar. Si escribes algo que indique riesgo o necesitas ayuda inmediata, busca apoyo profesional o comunícate con emergencias.',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AfterThoughtSaveActions extends StatelessWidget {
+  const _AfterThoughtSaveActions({
+    required this.onBreathe,
+    required this.onRelax,
+    required this.onClose,
+  });
+
+  final VoidCallback onBreathe;
+  final VoidCallback onRelax;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceHigh,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Puedes continuar con una acción breve.',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _ActionChipButton(
+                icon: Icons.air_rounded,
+                label: 'Respirar',
+                onPressed: onBreathe,
+              ),
+              _ActionChipButton(
+                icon: Icons.self_improvement_rounded,
+                label: 'Relajarme',
+                onPressed: onRelax,
+              ),
+              _ActionChipButton(
+                icon: Icons.check_rounded,
+                label: 'Cerrar',
+                onPressed: onClose,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionChipButton extends StatelessWidget {
+  const _ActionChipButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 44),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
       ),
     );
   }
