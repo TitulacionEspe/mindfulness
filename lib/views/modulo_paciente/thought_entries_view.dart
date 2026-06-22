@@ -49,7 +49,6 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
           backgroundColor: AppColors.surface,
           onRefresh: () => viewModel.loadEntries(force: true),
           child: CustomScrollView(
-            cacheExtent: 1200,
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(
