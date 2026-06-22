@@ -117,9 +117,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 20),
               _buildInputField(
                 controller: _emailController,
-                label: 'Correo institucional',
-                hint: 'usuario@espe.edu.ec',
+                label: 'Correo personal o institucional',
+                hint: 'nombre@correo.com',
+                helperText:
+                    'Usa un correo activo para confirmar tu cuenta o recuperar el acceso.',
                 icon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
               _buildInputField(
@@ -184,6 +187,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    String? helperText,
+    TextInputType? keyboardType,
     bool obscureText = false,
     Widget? suffixIcon,
   }) {
@@ -202,9 +207,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         TextField(
           controller: controller,
           obscureText: obscureText,
+          keyboardType: keyboardType,
           style: TextStyle(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
+            helperText: helperText,
+            helperMaxLines: 2,
+            helperStyle: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              height: 1.25,
+            ),
             hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
             suffixIcon: suffixIcon,

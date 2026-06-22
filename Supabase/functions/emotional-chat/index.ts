@@ -193,8 +193,9 @@ async function callGemini(
 }
 
 function parseModelReply(raw: string): ParsedReply {
+  const trimmed = raw.trim();
   try {
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(trimmed);
     const reply = typeof parsed.reply === "string" && parsed.reply.trim()
       ? parsed.reply.trim()
       : FALLBACK_REPLY;
@@ -204,9 +205,23 @@ function parseModelReply(raw: string): ParsedReply {
     const suggestAppointment = parsed.suggestAppointment === true;
     return { reply, riskLevel, suggestAppointment };
   } catch (_e) {
-    // Si el modelo no devolvio JSON, usamos el texto crudo como respuesta.
+    // Si falla porque el JSON está incompleto o truncado, intentamos extraer el reply por regex
+    const replyMatch = trimmed.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)/);
+    if (replyMatch && replyMatch[1]) {
+      let extracted = replyMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n');
+      extracted = extracted.replace(/[}"]+$/, "").trim();
+      if (extracted) {
+        return {
+          reply: extracted,
+          riskLevel: "none",
+          suggestAppointment: false,
+        };
+      }
+    }
+
+    // Si no tiene forma de JSON en absoluto, devolvemos el texto plano directamente
     return {
-      reply: raw.trim() || FALLBACK_REPLY,
+      reply: trimmed || FALLBACK_REPLY,
       riskLevel: "none",
       suggestAppointment: false,
     };

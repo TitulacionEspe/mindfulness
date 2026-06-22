@@ -15,7 +15,6 @@ import 'patient_feature_guide_view.dart';
 import 'patient_history_view.dart';
 import 'patient_home_view.dart';
 import 'patient_support_view.dart';
-import 'profile_view.dart';
 import 'reminders_view.dart';
 import 'routines_library_view.dart';
 import 'sleep_habits_view.dart';
@@ -33,6 +32,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
   int _selectedIndex = 0;
   bool _isLoadingFeatureGuide = true;
   bool _showFeatureGuide = false;
+  final bool _showCalmaTooltip = true;
 
   @override
   void initState() {
@@ -118,10 +118,10 @@ class _PatientWrapperState extends State<PatientWrapper> {
         _onItemTapped(1);
         break;
       case PatientFeatureAction.habits:
-        _onItemTapped(2);
+        _onItemTapped(3);
         break;
       case PatientFeatureAction.progress:
-        _onItemTapped(3);
+        _onItemTapped(4);
         break;
       case PatientFeatureAction.tasks:
         Navigator.of(
@@ -139,9 +139,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
         ).push(MaterialPageRoute(builder: (_) => const RemindersView()));
         break;
       case PatientFeatureAction.appointments:
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const PatientAppointmentsView()),
-        );
+        _onItemTapped(2);
         break;
     }
   }
@@ -179,7 +177,8 @@ class _PatientWrapperState extends State<PatientWrapper> {
     final pages = [
       PatientHomeView(onShowFeatureGuide: _openFeatureGuide),
       const RoutinesLibraryView(),
-      const SleepHabitsView(),
+      const PatientAppointmentsView(showAppBar: false),
+      const SleepHabitsView(showAppBar: false),
       const PatientHistoryView(),
     ];
 
@@ -189,6 +188,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
         backgroundColor: AppColors.background,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.textPrimary),
+        actions: [_buildCalmaBubbleButton(), const SizedBox(width: 8)],
       ),
       drawer: NocturneDrawer(
         userName:
@@ -203,55 +203,6 @@ class _PatientWrapperState extends State<PatientWrapper> {
           await context.read<AuthViewModel>().signOut();
         },
         menuItems: [
-          ListTile(
-            leading: Icon(
-              Icons.chat_bubble_outline_rounded,
-              color: AppColors.lavender,
-            ),
-            title: Text(
-              'Hablar con Calma',
-              style: TextStyle(color: AppColors.textPrimary),
-            ),
-            subtitle: Text(
-              'Acompañamiento emocional',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ChatView()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.person_outline, color: AppColors.textPrimary),
-            title: Text(
-              'Perfil del paciente',
-              style: TextStyle(color: AppColors.textPrimary),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileView()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.tune_outlined, color: AppColors.textPrimary),
-            title: Text(
-              'Preferencias de experiencia',
-              style: TextStyle(color: AppColors.textPrimary),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileView()),
-              );
-            },
-          ),
           ListTile(
             leading: Icon(
               Icons.notifications_active_outlined,
@@ -323,6 +274,11 @@ class _PatientWrapperState extends State<PatientWrapper> {
             label: 'Rutinas',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_outlined),
+            activeIcon: Icon(Icons.calendar_month),
+            label: 'Citas',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.bedtime_outlined),
             activeIcon: Icon(Icons.bedtime),
             label: 'Hábitos',
@@ -334,6 +290,87 @@ class _PatientWrapperState extends State<PatientWrapper> {
           ),
         ],
       ),
+    );
+  }
+
+  void _openCalmaChatBubble(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Container(
+          height: MediaQuery.of(sheetContext).size.height * 0.85,
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: const ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            child: ChatView(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCalmaBubbleButton() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedOpacity(
+          opacity: _showCalmaTooltip ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 500),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            margin: EdgeInsets.only(right: _showCalmaTooltip ? 8.0 : 0.0),
+            width: _showCalmaTooltip ? 165 : 0,
+            height: _showCalmaTooltip ? 32 : 0,
+            child: _showCalmaTooltip
+                ? Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceHigh,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.outlineVariant),
+                    ),
+                    child: Text(
+                      '¿Cómo te sientes hoy? 💬',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _openCalmaChatBubble(context),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceHigh,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.outlineVariant),
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/img/Calma_Icon.png',
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  color: AppColors.lavender,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

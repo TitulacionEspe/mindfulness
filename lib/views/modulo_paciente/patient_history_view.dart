@@ -557,6 +557,22 @@ class _SessionEmotionSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLikert =
+        emotion.preEmotion == 'likert_scale' ||
+        emotion.postEmotion == 'likert_scale';
+    if (isLikert) {
+      final score = emotion.postIntensity ?? emotion.preIntensity;
+      final (emoji, label) = _getLikertDetails(score);
+      return _EmotionRow(
+        title: 'Autopercepción',
+        emotion: '$emoji $label',
+        intensity: score,
+        accent: AppColors.mint,
+        icon: Icons.emoji_emotions_outlined,
+        maxScore: 5,
+      );
+    }
+
     return Column(
       children: [
         _EmotionRow(
@@ -568,7 +584,7 @@ class _SessionEmotionSummary extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _EmotionRow(
-          title: 'Despues',
+          title: 'Después',
           emotion: emotion.hasPost
               ? _humanizeEmotion(emotion.postEmotion!)
               : 'Sin registro',
@@ -581,6 +597,17 @@ class _SessionEmotionSummary extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  (String, String) _getLikertDetails(int score) {
+    return switch (score) {
+      1 => ('😞', 'Muy mal'),
+      2 => ('😟', 'Mal'),
+      3 => ('😐', 'Regular'),
+      4 => ('😊', 'Bien'),
+      5 => ('😍', 'Muy bien'),
+      _ => ('😐', 'Regular'),
+    };
   }
 }
 
@@ -653,7 +680,7 @@ class _AssignmentContextChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAssigned = contextValue == 'assigned';
     final label = isAssigned
-        ? 'Asignada por psicologia'
+        ? 'Asignada por psicología'
         : 'Sesión autoiniciada';
     final icon = isAssigned ? Icons.groups_rounded : Icons.self_improvement;
     final color = isAssigned ? AppColors.lavender : AppColors.mint;
@@ -685,7 +712,8 @@ class _AssignmentContextChip extends StatelessWidget {
 }
 
 String _humanizeEmotion(String value) {
-  if (value.isEmpty) return 'Sin emocion';
+  if (value == 'likert_scale') return 'Autopercepción';
+  if (value.isEmpty) return 'Sin emoción';
   final text = value.replaceAll('_', ' ');
   return '${text[0].toUpperCase()}${text.substring(1)}';
 }
@@ -698,6 +726,7 @@ class _EmotionRow extends StatelessWidget {
     required this.accent,
     required this.icon,
     this.withIntensity = true,
+    this.maxScore = 10,
   });
 
   final String title;
@@ -706,6 +735,7 @@ class _EmotionRow extends StatelessWidget {
   final Color accent;
   final IconData icon;
   final bool withIntensity;
+  final int maxScore;
 
   @override
   Widget build(BuildContext context) {
@@ -725,7 +755,7 @@ class _EmotionRow extends StatelessWidget {
         ),
         if (withIntensity)
           Text(
-            '$intensity/10',
+            '$intensity/$maxScore',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,

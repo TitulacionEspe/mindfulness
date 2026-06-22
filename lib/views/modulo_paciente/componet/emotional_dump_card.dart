@@ -49,7 +49,7 @@ class EmotionalDumpCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Registra pensamientos privados para reducir rumiacion nocturna.',
+            'Registra pensamientos privados para reducir rumiación nocturna.',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 15,

@@ -242,7 +242,7 @@ class RoutinesRepository implements RoutinesDataSource {
   static const List<RoutineModel> fallbackRoutines = [
     RoutineModel(
       id: '11111111-1111-4111-8111-111111111111',
-      title: 'Respiracion 4-6',
+      title: 'Respiración 4-6',
       description:
           'Ejercicio breve para bajar el ritmo antes de dormir: inhala cuatro segundos y exhala seis segundos, sin retener el aire.',
       category: RoutineCategory.breathing,
@@ -258,9 +258,9 @@ class RoutinesRepository implements RoutinesDataSource {
     ),
     RoutineModel(
       id: '22222222-2222-4222-8222-222222222222',
-      title: 'Respiracion 4-7-8',
+      title: 'Respiración 4-7-8',
       description:
-          'Practica de respiracion con pausa suave. Si la retencion incomoda, reduce el tiempo o vuelve a respiracion natural.',
+          'Práctica de respiración con pausa suave. Si la retención incomoda, reduce el tiempo o vuelve a respiración natural.',
       category: RoutineCategory.breathing,
       durationSeconds: 240,
       breathingPattern: BreathingPatternModel(
@@ -274,9 +274,9 @@ class RoutinesRepository implements RoutinesDataSource {
     ),
     RoutineModel(
       id: '33333333-3333-4333-8333-333333333333',
-      title: 'Relajacion muscular breve',
+      title: 'Relajación muscular breve',
       description:
-          'Recorrido corporal sencillo para tensar y soltar grupos musculares, reduciendo activacion fisica antes del descanso.',
+          'Recorrido corporal sencillo para tensar y soltar grupos musculares, reduciendo activación física antes del descanso.',
       category: RoutineCategory.relaxation,
       durationSeconds: 360,
     ),
@@ -284,15 +284,15 @@ class RoutinesRepository implements RoutinesDataSource {
       id: '44444444-4444-4444-8444-444444444444',
       title: 'Escaneo corporal nocturno',
       description:
-          'Atencion gradual desde la cabeza hasta los pies para reconocer sensaciones sin juzgarlas y preparar el descanso.',
+          'Atención gradual desde la cabeza hasta los pies para reconocer sensaciones sin juzgarlas y preparar el descanso.',
       category: RoutineCategory.sleepInduction,
       durationSeconds: 300,
     ),
     RoutineModel(
       id: '55555555-5555-4555-8555-555555555555',
-      title: 'Visualizacion de descanso',
+      title: 'Visualización de descanso',
       description:
-          'Guia corta para imaginar un lugar seguro y tranquilo, con respiracion estable y cierre progresivo del dia.',
+          'Guía corta para imaginar un lugar seguro y tranquilo, con respiración estable y cierre progresivo del día.',
       category: RoutineCategory.sleepInduction,
       durationSeconds: 300,
     ),

@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/theme/app_colors.dart';
+import '../../viewmodels/sleep_habits_viewmodel.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════
 //
@@ -405,22 +409,7 @@ int get kSecondsPerPhase =>
 //  • Completa   → assets/sounds/burbuja.wav
 //
 // ═══════════════════════════════════════════════════════════════════════════
-
-// Rutas de los archivos de audio (definidas aquí para cambiarlas fácil)
-const String _kSoundTension = 'sounds/platillo.wav'; // fase tensión
-const String _kSoundRelax = 'sounds/platillo.wav'; // fase relajación
-const String _kSoundFinished = 'sounds/burbuja.wav'; // sesión completa
-
-Future<void> _playSound(String assetPath) async {
-  final player = AudioPlayer();
-  await player.play(AssetSource(assetPath));
-  // Libera el player cuando termina
-  player.onPlayerComplete.listen((_) => player.dispose());
-}
-
-Future<void> _playTensionSound() async => _playSound(_kSoundTension);
-Future<void> _playRelaxationSound() async => _playSound(_kSoundRelax);
-Future<void> _playFinishedSound() async => _playSound(_kSoundFinished);
+// Las funciones de audio ahora se manejan a nivel de estado en _RmpScreenState para responder a la preferencia de voz del usuario.
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  PANTALLA PRINCIPAL
@@ -444,6 +433,45 @@ class _RmpScreenState extends State<RmpScreen>
 
   Timer? _timer;
   late AnimationController _pulseController;
+
+  // ── audio y preferencia ──
+  Future<void> _playSound(String assetPath) async {
+    try {
+      final player = AudioPlayer();
+      await player.play(AssetSource(assetPath));
+      player.onPlayerComplete.listen((_) => player.dispose());
+    } catch (e) {
+      debugPrint("Error al reproducir sonido: $e");
+    }
+  }
+
+  void _playTensionSound() {
+    final habits = Provider.of<SleepHabitsViewModel>(context, listen: false);
+    final voice = habits.preferredVoice;
+    if (voice == 'femenina') {
+      _playSound('sounds/burbuja.wav');
+    } else if (voice == 'masculina') {
+      _playSound('sounds/platillo.wav');
+    } else {
+      _playSound('sounds/bell.wav');
+    }
+  }
+
+  void _playRelaxationSound() {
+    final habits = Provider.of<SleepHabitsViewModel>(context, listen: false);
+    final voice = habits.preferredVoice;
+    if (voice == 'femenina') {
+      _playSound('sounds/burbuja.wav');
+    } else if (voice == 'masculina') {
+      _playSound('sounds/platillo.wav');
+    } else {
+      _playSound('sounds/bell.wav');
+    }
+  }
+
+  void _playFinishedSound() {
+    _playSound('sounds/burbuja.wav');
+  }
 
   // ── lifecycle ──
 
@@ -542,11 +570,9 @@ class _RmpScreenState extends State<RmpScreen>
 
   MuscleGroup get _current => kActiveGroups[_groupIndex];
 
-  Color get _phaseColor =>
-      _isTension ? const Color(0xFFE53935) : const Color(0xFF26A69A);
+  Color get _phaseColor => _isTension ? AppColors.tertiary : AppColors.mint;
 
-  Color get _phaseBg =>
-      _isTension ? const Color(0xFFFFF0F0) : const Color(0xFFF0FAF8);
+  Color get _phaseBg => _isTension ? AppColors.tertiaryBg : AppColors.successBg;
 
   String get _phaseLabel => _isTension ? 'Tensión' : 'Relajación';
 
@@ -557,7 +583,7 @@ class _RmpScreenState extends State<RmpScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
@@ -572,19 +598,19 @@ class _RmpScreenState extends State<RmpScreen>
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       elevation: 0.5,
-      leading: const BackButton(color: Colors.black87),
+      leading: BackButton(color: AppColors.textPrimary),
       centerTitle: true,
       title: Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.accessibility_new, color: Color(0xFF7B61FF), size: 22),
-          SizedBox(width: 6),
+        children: [
+          Icon(Icons.accessibility_new, color: AppColors.lavender, size: 22),
+          const SizedBox(width: 6),
           Text(
             'RMP',
             style: TextStyle(
-              color: Colors.black87,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
               fontSize: 18,
               letterSpacing: 1.2,
@@ -594,7 +620,7 @@ class _RmpScreenState extends State<RmpScreen>
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.info_outline, color: Colors.black54),
+          icon: Icon(Icons.info_outline, color: AppColors.textSecondary),
           onPressed: _showInfoDialog,
         ),
       ],
@@ -609,13 +635,15 @@ class _RmpScreenState extends State<RmpScreen>
           Text(
             _current.name,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
               height: 1.2,
             ),
           ),
+          const SizedBox(height: 10),
+          _buildVoiceGuideBadge(),
           const SizedBox(height: 20),
           _buildEmojiIllustration(),
           const SizedBox(height: 24),
@@ -627,6 +655,59 @@ class _RmpScreenState extends State<RmpScreen>
           const SizedBox(height: 20),
           _buildGroupDots(),
           const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVoiceGuideBadge() {
+    final habits = Provider.of<SleepHabitsViewModel>(context);
+    final voice = habits.preferredVoice;
+
+    final (label, icon, color) = switch (voice) {
+      'femenina' => (
+        'Aviso: Tono Burbuja 🫧',
+        Icons.bubble_chart_outlined,
+        AppColors.mint,
+      ),
+      'masculina' => (
+        'Aviso: Tono Platillo 🔔',
+        Icons.graphic_eq_outlined,
+        AppColors.lavender,
+      ),
+      'ambient' || _ => (
+        'Aviso: Tono Campana 🔔',
+        Icons.notifications_active_outlined,
+        AppColors.tertiary,
+      ),
+    };
+
+    final bgColor = switch (voice) {
+      'femenina' => AppColors.successBg,
+      'masculina' => AppColors.warningBg,
+      'ambient' || _ => AppColors.tertiaryBg,
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
         ],
       ),
     );
@@ -679,37 +760,30 @@ class _RmpScreenState extends State<RmpScreen>
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: _isRunning
               ? _phaseColor.withValues(alpha: 0.4)
-              : Colors.grey.shade200,
+              : AppColors.outlineVariant,
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         children: [
           _buildSection(
             label: 'Tensión',
-            color: const Color(0xFFE53935),
-            bgColor: const Color(0xFFFFF0F0),
+            color: AppColors.tertiary,
+            bgColor: AppColors.tertiaryBg,
             isActive: _isTension && _isRunning,
             steps: _current.tensionSteps,
             countdown: (_isTension && _isRunning) ? _secondsLeft : null,
           ),
-          Divider(height: 1, color: Colors.grey.shade100),
+          Divider(height: 1, color: AppColors.outlineVariant),
           _buildSection(
             label: 'Relajación',
-            color: const Color(0xFF26A69A),
-            bgColor: const Color(0xFFF0FAF8),
+            color: AppColors.mint,
+            bgColor: AppColors.successBg,
             isActive: !_isTension && _isRunning,
             steps: _current.relaxationSteps,
             countdown: (!_isTension && _isRunning) ? _secondsLeft : null,
@@ -730,7 +804,7 @@ class _RmpScreenState extends State<RmpScreen>
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        color: isActive ? bgColor : Colors.transparent,
+        color: isActive ? bgColor : AppColors.surface,
         borderRadius: BorderRadius.circular(18),
       ),
       padding: const EdgeInsets.all(16),
@@ -754,7 +828,7 @@ class _RmpScreenState extends State<RmpScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                  color: isActive ? color : Colors.grey.shade400,
+                  color: isActive ? color : AppColors.textSecondary,
                 ),
               ),
               const Spacer(),
@@ -769,8 +843,8 @@ class _RmpScreenState extends State<RmpScreen>
                   child: Center(
                     child: Text(
                       '$countdown',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppColors.buttonPrimaryText,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -795,7 +869,7 @@ class _RmpScreenState extends State<RmpScreen>
                       borderRadius: BorderRadius.circular(6),
                       color: isActive
                           ? color.withValues(alpha: 0.15)
-                          : Colors.grey.shade100,
+                          : AppColors.surfaceLow,
                     ),
                     child: Center(
                       child: Text(
@@ -803,7 +877,7 @@ class _RmpScreenState extends State<RmpScreen>
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: isActive ? color : Colors.grey.shade400,
+                          color: isActive ? color : AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -813,7 +887,7 @@ class _RmpScreenState extends State<RmpScreen>
                       e.value,
                       style: TextStyle(
                         fontSize: 14,
-                        color: isActive ? color : Colors.grey.shade400,
+                        color: isActive ? color : AppColors.textSecondary,
                         height: 1.4,
                       ),
                     ),
@@ -835,7 +909,7 @@ class _RmpScreenState extends State<RmpScreen>
           child: LinearProgressIndicator(
             value: _progressFraction,
             minHeight: 6,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: AppColors.surfaceHigh,
             valueColor: AlwaysStoppedAnimation<Color>(_phaseColor),
           ),
         ),
@@ -865,8 +939,8 @@ class _RmpScreenState extends State<RmpScreen>
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7B61FF),
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.buttonPrimary,
+            foregroundColor: AppColors.buttonPrimaryText,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -889,8 +963,8 @@ class _RmpScreenState extends State<RmpScreen>
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.black87,
-              side: BorderSide(color: Colors.grey.shade300),
+              foregroundColor: AppColors.textPrimary,
+              side: BorderSide(color: AppColors.outlineVariant),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -908,8 +982,8 @@ class _RmpScreenState extends State<RmpScreen>
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE53935),
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.surfaceLowest,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -943,10 +1017,10 @@ class _RmpScreenState extends State<RmpScreen>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: active
-                        ? const Color(0xFF7B61FF)
+                        ? AppColors.lavender
                         : done
-                        ? const Color(0xFF7B61FF).withValues(alpha: 0.45)
-                        : Colors.grey.shade300,
+                        ? AppColors.lavender.withValues(alpha: 0.45)
+                        : AppColors.surfaceHighest,
                   ),
                 ),
               );
@@ -956,7 +1030,7 @@ class _RmpScreenState extends State<RmpScreen>
         const SizedBox(height: 6),
         Text(
           'Grupo ${_groupIndex + 1}/${kActiveGroups.length}',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -966,8 +1040,8 @@ class _RmpScreenState extends State<RmpScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.outlineVariant)),
       ),
       child: Row(
         children: [
@@ -983,8 +1057,8 @@ class _RmpScreenState extends State<RmpScreen>
               icon: const Icon(Icons.arrow_back, size: 16),
               label: const Text('Atrás'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black87,
-                side: BorderSide(color: Colors.grey.shade300),
+                foregroundColor: AppColors.textPrimary,
+                side: BorderSide(color: AppColors.outlineVariant),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1004,8 +1078,8 @@ class _RmpScreenState extends State<RmpScreen>
               icon: const Icon(Icons.arrow_forward, size: 16),
               label: const Text('Siguiente'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black87,
-                side: BorderSide(color: Colors.grey.shade300),
+                foregroundColor: AppColors.textPrimary,
+                side: BorderSide(color: AppColors.outlineVariant),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

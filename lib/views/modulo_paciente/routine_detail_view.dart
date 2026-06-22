@@ -147,7 +147,7 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
                     _SurfaceSection(
                       title: 'Cuidado',
                       child: Text(
-                        'Si aparece mareo, incomodidad o ansiedad, detente y vuelve a tu respiracion natural.',
+                        'Si aparece mareo, incomodidad o ansiedad, detente y vuelve a tu respiración natural.',
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 16,
@@ -207,27 +207,27 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
   List<String> _stepsFor(RoutineModel routine) {
     return switch (routine.category) {
       RoutineCategory.breathing => const [
-        'Sientate o recuestate con los hombros relajados.',
-        'Sigue el circulo de respiracion sin forzar el aire.',
+        'Siéntate o recuéstate con los hombros relajados.',
+        'Sigue el círculo de respiración sin forzar el aire.',
         'Termina con tres respiraciones naturales antes de salir.',
       ],
       RoutineCategory.relaxation => const [
-        'Lleva la atencion a una zona del cuerpo.',
+        'Lleva la atención a una zona del cuerpo.',
         'Contrae suavemente por unos segundos y suelta.',
         'Avanza con calma hasta relajar rostro, hombros, manos y piernas.',
       ],
       RoutineCategory.sleepInduction => const [
-        'Reduce la luz y deja el celular en una posicion estable.',
+        'Reduce la luz y deja el celular en una posición estable.',
         'Observa sensaciones corporales sin intentar cambiarlas.',
-        'Cierra la practica con una frase corta de descanso.',
+        'Cierra la práctica con una frase corta de descanso.',
       ],
       RoutineCategory.soundscape => const [
-        'Permanece en una postura comoda.',
-        'Usa el temporizador como guia silenciosa.',
-        'Vuelve a la respiracion cada vez que aparezcan distracciones.',
+        'Permanece en una postura cómoda.',
+        'Usa el temporizador como guía silenciosa.',
+        'Vuelve a la respiración cada vez que aparezcan distracciones.',
       ],
       RoutineCategory.terapiaSonido => const [
-        'Usa audifonos para una mejor experiencia.',
+        'Usa audífonos para una mejor experiencia.',
         'Cierra los ojos y concentrate en las vibraciones.',
         'Deja que el sonido limpie tus pensamientos.',
       ],

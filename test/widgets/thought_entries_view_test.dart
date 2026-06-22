@@ -81,6 +81,11 @@ Widget _buildApp(ThoughtEntriesRepository repository) {
   );
 }
 
+Future<void> _scrollToHistory(WidgetTester tester) async {
+  await tester.drag(find.byType(CustomScrollView), const Offset(0, -650));
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('renders composer and history', (tester) async {
     final repository = FakeThoughtEntriesRepository(
@@ -99,6 +104,9 @@ void main() {
     expect(find.text('Descarga emocional'), findsOneWidget);
     expect(find.text('Guardar pensamiento'), findsOneWidget);
     expect(find.text('Historial privado'), findsOneWidget);
+
+    await _scrollToHistory(tester);
+
     expect(find.text('entrada reciente'), findsOneWidget);
   });
 
@@ -120,6 +128,7 @@ void main() {
 
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
+    await _scrollToHistory(tester);
 
     expect(find.byTooltip('Editar entrada'), findsOneWidget);
     expect(find.byTooltip('Eliminar entrada'), findsOneWidget);
@@ -138,6 +147,7 @@ void main() {
 
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
+    await _scrollToHistory(tester);
 
     expect(find.text('se elimina'), findsOneWidget);
     await tester.tap(find.byTooltip('Eliminar entrada'));

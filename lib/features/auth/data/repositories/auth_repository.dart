@@ -78,7 +78,7 @@ class AuthRepository implements IAuthRepository {
       if (!userEntity.canAccessProtectedFeatures) {
         await Supabase.instance.client.auth.signOut();
         throw Exception(
-          'Tu cuenta esta desactivada o bloqueada. Contacta al administrador.',
+          'Tu cuenta está desactivada o bloqueada. Contacta al administrador.',
         );
       }
 
@@ -87,9 +87,36 @@ class AuthRepository implements IAuthRepository {
       final message = e.toString();
       if (message.contains('Invalid login') ||
           message.contains('credentials')) {
-        throw Exception('Correo o contraseña incorrectos');
+        throw Exception(
+          'No encontramos una cuenta con estos datos. Regístrate primero o verifica tus credenciales.',
+        );
       }
       throw Exception('Error al iniciar sesión: $message');
+    }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await Supabase.instance.client.auth.resetPasswordForEmail(email.trim());
+    } catch (e) {
+      final message = e.toString();
+      if (message.contains('email_rate_limit') ||
+          message.contains('rate limit')) {
+        throw Exception(
+          'Ya enviamos varios correos. Espera unos minutos e intenta nuevamente.',
+        );
+      }
+      if (message.contains('network') ||
+          message.contains('connect') ||
+          message.contains('fetch')) {
+        throw Exception(
+          'No se pudo conectar. Revisa tu internet e intenta nuevamente.',
+        );
+      }
+      throw Exception(
+        'No se pudo enviar el correo de recuperación. Verifica el correo e intenta nuevamente.',
+      );
     }
   }
 
