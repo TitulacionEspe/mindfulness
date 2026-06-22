@@ -198,11 +198,21 @@ class PatientHistoryViewModel extends ChangeNotifier {
       if (sessionId == null || !completedSessionIds.contains(sessionId)) {
         continue;
       }
-      if (!emotion.hasPost) continue;
-      assessableSessions += 1;
-      if ((emotion.postIntensity ?? emotion.preIntensity) <
-          emotion.preIntensity) {
-        improvedSessions += 1;
+
+      if (emotion.preEmotion == 'likert_scale' ||
+          emotion.postEmotion == 'likert_scale') {
+        assessableSessions += 1;
+        final score = emotion.postIntensity ?? emotion.preIntensity;
+        if (score >= 3) {
+          improvedSessions += 1;
+        }
+      } else {
+        if (!emotion.hasPost) continue;
+        assessableSessions += 1;
+        if ((emotion.postIntensity ?? emotion.preIntensity) <
+            emotion.preIntensity) {
+          improvedSessions += 1;
+        }
       }
     }
 

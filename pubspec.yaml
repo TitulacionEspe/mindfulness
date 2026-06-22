@@ -38,5 +38,6 @@ flutter:
     - .env
     - assets/sounds/bell.wav
     - assets/img/Icono_Minfulnes.png
+    - assets/img/Calma_Icon.png
     - assets/sounds/burbuja.wav
     - assets/sounds/platillo.wav

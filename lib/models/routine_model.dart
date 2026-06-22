@@ -118,11 +118,11 @@ extension RoutineCategoryX on RoutineCategory {
   String get label {
     return switch (this) {
       RoutineCategory.all => 'Todas',
-      RoutineCategory.breathing => 'Respiracion',
-      RoutineCategory.relaxation => 'Relajacion',
+      RoutineCategory.breathing => 'Respiración',
+      RoutineCategory.relaxation => 'Relajación',
       RoutineCategory.sleepInduction => 'Descanso',
       RoutineCategory.soundscape => 'Ambiente',
-      RoutineCategory.terapiaSonido => 'Terapia de Sonido',
+      RoutineCategory.terapiaSonido => 'Sonidos guiados',
     };
   }
 }

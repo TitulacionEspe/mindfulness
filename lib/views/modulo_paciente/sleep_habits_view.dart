@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
+import '../../viewmodels/theme_viewmodel.dart';
 
 class SleepHabitsView extends StatefulWidget {
   final bool showBackButton;
-  const SleepHabitsView({super.key, this.showBackButton = false});
+  final bool showAppBar;
+  const SleepHabitsView({
+    super.key,
+    this.showBackButton = false,
+    this.showAppBar = true,
+  });
 
   @override
   State<SleepHabitsView> createState() => _SleepHabitsViewState();
@@ -27,7 +33,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: viewModel.hasCompletedOnboarding
+      appBar: (viewModel.hasCompletedOnboarding && widget.showAppBar)
           ? AppBar(
               backgroundColor: AppColors.background.withValues(alpha: 0),
               elevation: 0,
@@ -52,21 +58,31 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
             ? Center(child: CircularProgressIndicator(color: AppColors.mint))
             : CustomScrollView(
                 slivers: [
-                  if (!viewModel.hasCompletedOnboarding)
+                  if (!viewModel.hasCompletedOnboarding || !widget.showAppBar)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Personaliza tu descanso',
-                              style: Theme.of(context).textTheme.displayMedium,
+                              viewModel.hasCompletedOnboarding
+                                  ? 'Ajustes de Sueño'
+                                  : 'Personaliza tu descanso',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Configura tus hábitos para que el sistema se adapte a tu ritmo universitario.',
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                                height: 1.35,
+                              ),
                             ),
                           ],
                         ),
@@ -77,7 +93,15 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                       _buildConfigCard(
                         title: 'Horarios habituales',
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              'Te enviaremos una notificación suave para ayudarte a descansar por la noche y un saludo calmado al despertar.',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 13),
+                            ),
+                            const SizedBox(height: 16),
                             _buildTimeTile(
                               label: 'Hora de dormir',
                               icon: Icons.bedtime_outlined,
@@ -112,7 +136,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Selecciona los días en los que sueles tener más estrés o clases tarde.',
+                              'En los días seleccionados, recibirás una notificación motivacional por la mañana a las 8:00 AM para recordarte respirar y cuidar tu bienestar.',
                               style: Theme.of(
                                 context,
                               ).textTheme.bodyMedium?.copyWith(fontSize: 13),
@@ -135,29 +159,53 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                         ),
                       ),
                       _buildConfigCard(
-                        title: 'Preferencias',
-                        child: SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            'Forzar modo oscuro',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textPrimary,
+                        title: 'Tono acústico de transición',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Elige el efecto de sonido que se reproducirá como guía al iniciar o cambiar de fase en tus ejercicios.',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 13),
                             ),
-                          ),
-                          subtitle: Text(
-                            'Ideal para reducir la fatiga visual nocturna.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
+                            const SizedBox(height: 16),
+                            Semantics(
+                              label:
+                                  'Selector de tono de transición de rutinas',
+                              child: Row(
+                                children: [
+                                  _buildToneCard(
+                                    context: context,
+                                    label: 'Burbuja',
+                                    value: 'femenina',
+                                    icon: Icons.bubble_chart_outlined,
+                                    viewModel: viewModel,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildToneCard(
+                                    context: context,
+                                    label: 'Platillo',
+                                    value: 'masculina',
+                                    icon: Icons.graphic_eq_outlined,
+                                    viewModel: viewModel,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildToneCard(
+                                    context: context,
+                                    label: 'Campana',
+                                    value: 'ambient',
+                                    icon: Icons.notifications_active_outlined,
+                                    viewModel: viewModel,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          value: viewModel.darkModeEnforced,
-                          activeThumbColor: AppColors.mint,
-                          onChanged: (val) => viewModel.setDarkMode(val),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 100),
+                      _buildThemeSelectorCard(context),
+                      const SizedBox(height: 100),
                     ]),
                   ),
                 ],
@@ -277,6 +325,130 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
         color: isSelected ? AppColors.mint : AppColors.navBorder,
       ),
       showCheckmark: false,
+    );
+  }
+
+  Widget _buildThemeSelectorCard(BuildContext context) {
+    final themeViewModel = context.watch<ThemeViewModel>();
+    return _buildConfigCard(
+      title: 'Tema preferencial / Descanso visual',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Elige la apariencia que mejor se adapte a tu fatiga visual o luz ambiental. El modo claro es ideal para el día y el modo oscuro ayuda a descansar la vista por la noche.',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Semantics(
+            label: 'Selector de tema preferencial',
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<ThemeMode>(
+                showSelectedIcon: false,
+                segments: const [
+                  ButtonSegment(
+                    value: ThemeMode.light,
+                    icon: Icon(Icons.light_mode_outlined),
+                    label: Text('Claro'),
+                  ),
+                  ButtonSegment(
+                    value: ThemeMode.dark,
+                    icon: Icon(Icons.dark_mode_outlined),
+                    label: Text('Oscuro'),
+                  ),
+                ],
+                selected: {themeViewModel.themeMode},
+                onSelectionChanged: themeViewModel.isLoading
+                    ? null
+                    : (selection) async {
+                        final mode = selection.first;
+                        await context.read<ThemeViewModel>().setThemeMode(mode);
+                        if (!context.mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              mode == ThemeMode.dark
+                                  ? 'Modo oscuro activado'
+                                  : 'Modo claro activado',
+                            ),
+                          ),
+                        );
+                      },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToneCard({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required IconData icon,
+    required SleepHabitsViewModel viewModel,
+  }) {
+    final isSelected = viewModel.preferredVoice == value;
+
+    final (accentColor, bgColor) = switch (value) {
+      'femenina' => (AppColors.mint, AppColors.successBg),
+      'masculina' => (AppColors.lavender, AppColors.warningBg),
+      'ambient' || _ => (AppColors.tertiary, AppColors.tertiaryBg),
+    };
+
+    return Expanded(
+      child: Semantics(
+        selected: isSelected,
+        button: true,
+        label: 'Tono $label',
+        child: InkWell(
+          onTap: () => viewModel.setPreferredVoice(value),
+          borderRadius: BorderRadius.circular(16),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? bgColor : AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? accentColor : AppColors.outlineVariant,
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 22,
+                  color: isSelected ? accentColor : AppColors.textSecondary,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected
+                        ? AppColors.textPrimary
+                        : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
