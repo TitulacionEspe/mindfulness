@@ -65,10 +65,10 @@ class AcesfastView extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Color.fromARGB(221, 84, 201, 201),
+        color: AppColors.mint,
       ),
     );
   }

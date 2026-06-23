@@ -22,12 +22,12 @@ class SoundCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text("Guardar Recurso"),
+          title: const Text('Guardar recurso'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Elige una categoría o escribe una nueva:"),
+              const Text('Elige una categoría o escribe una nueva:'),
               const SizedBox(height: 15),
               TextField(
                 controller: customController,
@@ -38,7 +38,7 @@ class SoundCard extends StatelessWidget {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: "Ej: Insomnio, Ansiedad...",
+                  hintText: 'Ej.: insomnio, ansiedad...',
                   filled: true,
                   fillColor: AppColors.surfaceLow,
                   border: OutlineInputBorder(
@@ -48,15 +48,14 @@ class SoundCard extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               const Text(
-                "Sugerencias:",
+                'Sugerencias:',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              // Chips de selección (ChoiceChip)
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: ["Relajación", "Naturaleza", "Focalización"].map((
+                children: ['Relajación', 'Naturaleza', 'Focalización'].map((
                   cat,
                 ) {
                   final isSelected = selectedFromChips == cat;
@@ -75,7 +74,9 @@ class SoundCard extends StatelessWidget {
                     },
                     selectedColor: AppColors.lavender.withValues(alpha: 0.3),
                     labelStyle: TextStyle(
-                      color: isSelected ? AppColors.lavender : Colors.black87,
+                      color: isSelected
+                          ? AppColors.lavender
+                          : AppColors.textPrimary,
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
@@ -88,27 +89,27 @@ class SoundCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancelar", style: TextStyle(color: AppColors.error)),
+              child: Text('Cancelar', style: TextStyle(color: AppColors.error)),
             ),
             ElevatedButton(
               onPressed: () {
                 final text = customController.text.trim();
                 if (text.isNotEmpty) {
-                  // Capturamos el messenger ANTES de cerrar el diálogo
+                  // Capturamos el messenger antes de cerrar el diálogo.
                   final messenger = ScaffoldMessenger.of(context);
                   Navigator.pop(context);
                   _handleSave(messenger, vm, text);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Escribe una categoría")),
+                    const SnackBar(content: Text('Escribe una categoría.')),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.mint,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.buttonPrimaryText,
               ),
-              child: const Text("Guardar"),
+              child: const Text('Guardar'),
             ),
           ],
         ),
@@ -116,7 +117,7 @@ class SoundCard extends StatelessWidget {
     );
   }
 
-  // --- LÓGICA DE PERSISTENCIA CON CONFIRMACIONES ---
+  // --- Lógica de persistencia con confirmaciones ---
   void _handleSave(
     ScaffoldMessengerState messenger,
     FreesoundViewModel vm,
@@ -130,9 +131,9 @@ class SoundCard extends StatelessWidget {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.white),
+              Icon(Icons.check_circle, color: AppColors.buttonPrimaryText),
               const SizedBox(width: 10),
-              Text("✅ Guardado en '$category'"),
+              Text("Guardado en '$category'."),
             ],
           ),
           backgroundColor: AppColors.mint,
@@ -143,7 +144,9 @@ class SoundCard extends StatelessWidget {
     } catch (e) {
       messenger.showSnackBar(
         SnackBar(
-          content: Text("❌ Error: ${e.toString()}"),
+          content: const Text(
+            'No se pudo guardar el recurso. Intenta nuevamente.',
+          ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),

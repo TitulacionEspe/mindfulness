@@ -5,6 +5,7 @@ import '../../../../core/constants/app_brand.dart';
 import '../../../../core/presentation/widgets/nidara_brand_mark.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
+import '../domain/validators/auth_validators.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,10 +15,15 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _fullNameFocus = FocusNode();
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+  final _confirmPasswordFocus = FocusNode();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
@@ -27,210 +33,216 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _fullNameFocus.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _confirmPasswordFocus.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSignUp(
-    AuthViewModel viewModel,
-    BuildContext context,
-  ) async {
-    final fullName = _fullNameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
-
-    if (fullName.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, completa todos los campos.')),
-      );
+  Future<void> _handleSignUp(AuthViewModel viewModel) async {
+    if (!_formKey.currentState!.validate()) {
+      _focusFirstInvalidField();
       return;
     }
 
-    if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Las contraseñas no coinciden.')),
+    await viewModel.signUp(
+      AuthValidators.normalizeEmail(_emailController.text),
+      _passwordController.text,
+      AuthValidators.normalizeName(_fullNameController.text),
+    );
+
+    if (!mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    if (viewModel.errorMessage == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Registro exitoso. Inicia sesión.')),
       );
+      Navigator.of(context).pop();
       return;
     }
 
-    await viewModel.signUp(email, password, fullName);
+    messenger.showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
+  }
 
-    if (context.mounted) {
-      if (viewModel.errorMessage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registro exitoso. Inicia sesión.')),
-        );
-        Navigator.of(context).pop();
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
-      }
+  void _focusFirstInvalidField() {
+    if (AuthValidators.fullName(_fullNameController.text) != null) {
+      _fullNameFocus.requestFocus();
+      return;
     }
+    if (AuthValidators.email(_emailController.text) != null) {
+      _emailFocus.requestFocus();
+      return;
+    }
+    if (AuthValidators.securePassword(_passwordController.text) != null) {
+      _passwordFocus.requestFocus();
+      return;
+    }
+    _confirmPasswordFocus.requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background.withValues(alpha: 0),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        title: const Text('Crear cuenta'),
+        backgroundColor: AppColors.background,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const NidaraBrandMark(iconSize: 72, showName: false),
-              const SizedBox(height: 16),
-              Text(
-                'Crea tu cuenta en ${AppBrand.name}',
-                style: Theme.of(
-                  context,
-                ).textTheme.displayLarge?.copyWith(fontSize: 28),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Únete para cuidar tu higiene del sueño y bienestar.',
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              _buildInputField(
-                controller: _fullNameController,
-                label: 'Nombre completo',
-                hint: 'Ej. Juan Pérez',
-                icon: Icons.person_outline,
-              ),
-              const SizedBox(height: 20),
-              _buildInputField(
-                controller: _emailController,
-                label: 'Correo personal o institucional',
-                hint: 'nombre@correo.com',
-                helperText:
-                    'Usa un correo activo para confirmar tu cuenta o recuperar el acceso.',
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 20),
-              _buildInputField(
-                controller: _passwordController,
-                label: 'Contraseña',
-                hint: '••••••••',
-                icon: Icons.lock_outlined,
-                obscureText: _obscurePassword,
-                suffixIcon: IconButton(
-                  onPressed: () =>
-                      setState(() => _obscurePassword = !_obscurePassword),
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildInputField(
-                controller: _confirmPasswordController,
-                label: 'Confirmar contraseña',
-                hint: '••••••••',
-                icon: Icons.lock_outlined,
-                obscureText: _obscureConfirm,
-                suffixIcon: IconButton(
-                  onPressed: () =>
-                      setState(() => _obscureConfirm = !_obscureConfirm),
-                  icon: Icon(
-                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              Consumer<AuthViewModel>(
-                builder: (context, viewModel, _) => ElevatedButton(
-                  onPressed: viewModel.isLoading
-                      ? null
-                      : () => _handleSignUp(viewModel, context),
-                  child: viewModel.isLoading
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.buttonPrimaryText,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const NidaraBrandMark(iconSize: 72, showName: false),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Crea tu cuenta en ${AppBrand.name}',
+                      style: textTheme.displayLarge?.copyWith(fontSize: 28),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Únete para cuidar tu higiene del sueño y bienestar.',
+                      style: textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    TextFormField(
+                      controller: _fullNameController,
+                      focusNode: _fullNameFocus,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
+                      autofillHints: const [AutofillHints.name],
+                      maxLength: AuthValidators.maxFullNameLength,
+                      decoration: const InputDecoration(
+                        labelText: 'Nombre completo',
+                        hintText: 'Ej. Juan Pérez',
+                        prefixIcon: Icon(Icons.person_outline_rounded),
+                        counterText: '',
+                      ),
+                      validator: AuthValidators.fullName,
+                      onFieldSubmitted: (_) => _emailFocus.requestFocus(),
+                    ),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _emailController,
+                      focusNode: _emailFocus,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
+                      maxLength: AuthValidators.maxEmailLength,
+                      decoration: const InputDecoration(
+                        labelText: 'Correo personal o institucional',
+                        hintText: 'nombre@correo.com',
+                        helperText:
+                            'Usa un correo activo para recuperar tu acceso.',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        counterText: '',
+                      ),
+                      validator: AuthValidators.email,
+                      onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
+                    ),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _passwordController,
+                      focusNode: _passwordFocus,
+                      obscureText: _obscurePassword,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.newPassword],
+                      maxLength: AuthValidators.maxPasswordLength,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        hintText: 'Mínimo 8 caracteres',
+                        helperText: 'Incluye al menos una letra y un número.',
+                        prefixIcon: const Icon(Icons.lock_outlined),
+                        counterText: '',
+                        suffixIcon: IconButton(
+                          tooltip: _obscurePassword
+                              ? 'Mostrar contraseña'
+                              : 'Ocultar contraseña',
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
                           ),
-                        )
-                      : const Text('Registrarse'),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                        ),
+                      ),
+                      validator: AuthValidators.securePassword,
+                      onFieldSubmitted: (_) =>
+                          _confirmPasswordFocus.requestFocus(),
+                    ),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      focusNode: _confirmPasswordFocus,
+                      obscureText: _obscureConfirm,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.newPassword],
+                      maxLength: AuthValidators.maxPasswordLength,
+                      decoration: InputDecoration(
+                        labelText: 'Confirmar contraseña',
+                        prefixIcon: const Icon(Icons.lock_outlined),
+                        counterText: '',
+                        suffixIcon: IconButton(
+                          tooltip: _obscureConfirm
+                              ? 'Mostrar confirmación'
+                              : 'Ocultar confirmación',
+                          onPressed: () => setState(
+                            () => _obscureConfirm = !_obscureConfirm,
+                          ),
+                          icon: Icon(
+                            _obscureConfirm
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                        ),
+                      ),
+                      validator: (value) => AuthValidators.confirmPassword(
+                        value,
+                        _passwordController.text,
+                      ),
+                      onFieldSubmitted: (_) =>
+                          _handleSignUp(context.read<AuthViewModel>()),
+                    ),
+                    const SizedBox(height: 28),
+                    Consumer<AuthViewModel>(
+                      builder: (context, viewModel, _) => ElevatedButton.icon(
+                        onPressed: viewModel.isLoading
+                            ? null
+                            : () => _handleSignUp(viewModel),
+                        icon: viewModel.isLoading
+                            ? SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.buttonPrimaryText,
+                                ),
+                              )
+                            : const Icon(Icons.person_add_alt_rounded),
+                        label: const Text('Crear cuenta'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
-            ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    String? helperText,
-    TextInputType? keyboardType,
-    bool obscureText = false,
-    Widget? suffixIcon,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          style: TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: hint,
-            helperText: helperText,
-            helperMaxLines: 2,
-            helperStyle: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-              height: 1.25,
-            ),
-            hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
-            suffixIcon: suffixIcon,
-            filled: true,
-            fillColor: AppColors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-        ),
-      ],
     );
   }
 }

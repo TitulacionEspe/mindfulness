@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../componets_ps/sound_card.dart';
@@ -70,7 +71,7 @@ class _RecursosViewState extends State<RecursosView> {
     final viewModel = context.watch<FreesoundViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Buscador de Sonidos")),
+      appBar: AppBar(title: const Text('Buscador de sonidos')),
       body: Column(
         children: [
           // BARRA DE CATEGORÍAS
@@ -97,10 +98,12 @@ class _RecursosViewState extends State<RecursosView> {
                         setState(() => _selectedCategory = '');
                       }
                     },
-                    selectedColor: Colors.blue.withValues(alpha: 0.2),
-                    checkmarkColor: Colors.blue,
+                    selectedColor: AppColors.successBg,
+                    checkmarkColor: AppColors.mint,
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.blue : Colors.black87,
+                      color: isSelected
+                          ? AppColors.mint
+                          : AppColors.textPrimary,
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,

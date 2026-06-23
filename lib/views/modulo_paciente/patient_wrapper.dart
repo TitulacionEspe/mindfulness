@@ -32,7 +32,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
   int _selectedIndex = 0;
   bool _isLoadingFeatureGuide = true;
   bool _showFeatureGuide = false;
-  final bool _showCalmaTooltip = true;
+  final bool _showAssistantTooltip = true;
 
   @override
   void initState() {
@@ -188,7 +188,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
         backgroundColor: AppColors.background,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors.textPrimary),
-        actions: [_buildCalmaBubbleButton(), const SizedBox(width: 8)],
+        actions: [_buildAssistantBubbleButton(), const SizedBox(width: 8)],
       ),
       drawer: NocturneDrawer(
         userName:
@@ -293,7 +293,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
     );
   }
 
-  void _openCalmaChatBubble(BuildContext context) {
+  void _openAssistantChatBubble(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -314,20 +314,20 @@ class _PatientWrapperState extends State<PatientWrapper> {
     );
   }
 
-  Widget _buildCalmaBubbleButton() {
+  Widget _buildAssistantBubbleButton() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         AnimatedOpacity(
-          opacity: _showCalmaTooltip ? 1.0 : 0.0,
+          opacity: _showAssistantTooltip ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 500),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 500),
             curve: Curves.easeInOut,
-            margin: EdgeInsets.only(right: _showCalmaTooltip ? 8.0 : 0.0),
-            width: _showCalmaTooltip ? 165 : 0,
-            height: _showCalmaTooltip ? 32 : 0,
-            child: _showCalmaTooltip
+            margin: EdgeInsets.only(right: _showAssistantTooltip ? 8.0 : 0.0),
+            width: _showAssistantTooltip ? 165 : 0,
+            height: _showAssistantTooltip ? 32 : 0,
+            child: _showAssistantTooltip
                 ? Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
@@ -336,7 +336,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
                       border: Border.all(color: AppColors.outlineVariant),
                     ),
                     child: Text(
-                      '¿Cómo te sientes hoy? 💬',
+                      '¿Cómo te sientes hoy?',
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 11,
@@ -348,7 +348,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
           ),
         ),
         GestureDetector(
-          onTap: () => _openCalmaChatBubble(context),
+          onTap: () => _openAssistantChatBubble(context),
           child: Container(
             width: 40,
             height: 40,
@@ -359,7 +359,7 @@ class _PatientWrapperState extends State<PatientWrapper> {
             ),
             child: ClipOval(
               child: Image.asset(
-                'assets/img/Calma_Icon.png',
+                'assets/img/Icono_Minfulnes.png',
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Icon(
                   Icons.chat_bubble_outline_rounded,

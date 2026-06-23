@@ -4,8 +4,8 @@ import 'package:mindfulness_app/features/auth/domain/entities/user_role.dart';
 import 'package:mindfulness_app/features/auth/domain/repositories/i_auth_repository.dart';
 import 'package:mindfulness_app/features/auth/domain/use_cases/register_use_case.dart';
 
-/// Manual Mock for IAuthRepository
 class MockAuthRepository implements IAuthRepository {
+  String? lastRegisteredEmail;
   String? lastRegisteredFullName;
   bool registerCalled = false;
 
@@ -16,6 +16,7 @@ class MockAuthRepository implements IAuthRepository {
     String fullName,
   ) async {
     registerCalled = true;
+    lastRegisteredEmail = email;
     lastRegisteredFullName = fullName;
     return UserEntity(
       id: '123',
@@ -28,15 +29,23 @@ class MockAuthRepository implements IAuthRepository {
 
   @override
   Future<UserEntity?> getCurrentUser() async => null;
+
   @override
   Future<bool> hasAcceptedConsent(String userId, String version) async => false;
+
   @override
   Future<void> saveConsent(String userId, String version) async {}
+
   @override
   Future<void> sendPasswordResetEmail(String email) async {}
+
+  @override
+  Future<void> updatePassword(String password) async {}
+
   @override
   Future<UserEntity> signIn(String email, String password) async =>
       throw UnimplementedError();
+
   @override
   Future<void> signOut() async {}
 }
@@ -50,27 +59,53 @@ void main() {
     useCase = RegisterUseCase(mockRepository);
   });
 
-  group('RegisterUseCase - PGS-6 Validation', () {
-    test('should call repository with correct fullName', () async {
-      // Arrange
-      const tEmail = 'test@espe.edu.ec';
-      const tPassword = 'password123';
-      const tFullName = 'Juan Pérez';
+  group('RegisterUseCase validation', () {
+    test('calls repository with valid normalized data', () async {
+      await useCase(
+        email: ' TEST@ESPE.EDU.EC ',
+        password: 'password123',
+        fullName: '  Juan   Pérez  ',
+      );
 
-      // Act
-      await useCase(email: tEmail, password: tPassword, fullName: tFullName);
-
-      // Assert
       expect(mockRepository.registerCalled, true);
-      expect(mockRepository.lastRegisteredFullName, tFullName);
+      expect(mockRepository.lastRegisteredEmail, 'test@espe.edu.ec');
+      expect(mockRepository.lastRegisteredFullName, 'Juan Pérez');
     });
 
-    test('should throw error if fullName is empty', () async {
-      // Act & Assert
+    test('throws error if fullName is empty', () async {
       expect(
-        () => useCase(email: 'a@a.com', password: '123', fullName: ''),
+        () => useCase(
+          email: 'test@espe.edu.ec',
+          password: 'password123',
+          fullName: '',
+        ),
         throwsA(isA<Exception>()),
       );
+      expect(mockRepository.registerCalled, false);
+    });
+
+    test('throws error if password has fewer than 8 characters', () async {
+      expect(
+        () => useCase(
+          email: 'test@espe.edu.ec',
+          password: 'abc123',
+          fullName: 'Juan Pérez',
+        ),
+        throwsA(isA<Exception>()),
+      );
+      expect(mockRepository.registerCalled, false);
+    });
+
+    test('throws error if password has no number', () async {
+      expect(
+        () => useCase(
+          email: 'test@espe.edu.ec',
+          password: 'password',
+          fullName: 'Juan Pérez',
+        ),
+        throwsA(isA<Exception>()),
+      );
+      expect(mockRepository.registerCalled, false);
     });
   });
 }

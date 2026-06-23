@@ -25,12 +25,12 @@ class EmotionalDumpCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF3CC),
+                  color: AppColors.tertiaryBg,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.edit_note_rounded,
-                  color: Color(0xFFF57F17),
+                  color: AppColors.tertiary,
                   size: 22,
                 ),
               ),

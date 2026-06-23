@@ -89,7 +89,7 @@ class CategoryFilters extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textPrimary,
+          color: isActive ? AppColors.buttonPrimaryText : AppColors.textPrimary,
           fontSize: 13,
           fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
         ),
@@ -104,7 +104,11 @@ class CategoryFilters extends StatelessWidget {
         color: AppColors.textPrimary,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Icon(Icons.add_rounded, color: Colors.white, size: 22),
+      child: Icon(
+        Icons.add_rounded,
+        color: AppColors.buttonPrimaryText,
+        size: 22,
+      ),
     );
   }
 }

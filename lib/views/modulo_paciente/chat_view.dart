@@ -6,7 +6,7 @@ import '../../models/chat_message_model.dart';
 import '../../viewmodels/chat_viewmodel.dart';
 import 'solicitar_cita_view.dart';
 
-/// Chatbot de acompanamiento emocional "Calma".
+/// Chatbot de acompanamiento emocional de Nidara.
 /// No diagnostica: escucha, comprende y alienta. Ante senales de riesgo
 /// sugiere agendar una cita con un psicologo.
 class ChatView extends StatefulWidget {
@@ -70,14 +70,16 @@ class _ChatViewState extends State<ChatView> {
             CircleAvatar(
               radius: 18,
               backgroundColor: AppColors.surfaceHigh,
-              backgroundImage: const AssetImage('assets/img/Calma_Icon.png'),
+              backgroundImage: const AssetImage(
+                'assets/img/Icono_Minfulnes.png',
+              ),
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Calma',
+                  'Asistente de Nidara',
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -268,14 +270,14 @@ class _EmptyChatState extends StatelessWidget {
               ),
               child: ClipOval(
                 child: Image.asset(
-                  'assets/img/Calma_Icon.png',
+                  'assets/img/Icono_Minfulnes.png',
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              'Hola, soy Calma',
+              'Hola, soy el asistente de Nidara',
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 24,
@@ -353,7 +355,9 @@ class _MessageBubble extends StatelessWidget {
             CircleAvatar(
               radius: 16,
               backgroundColor: AppColors.surfaceHigh,
-              backgroundImage: const AssetImage('assets/img/Calma_Icon.png'),
+              backgroundImage: const AssetImage(
+                'assets/img/Icono_Minfulnes.png',
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -451,7 +455,7 @@ class _TypingIndicator extends StatelessWidget {
           CircleAvatar(
             radius: 16,
             backgroundColor: AppColors.surfaceHigh,
-            backgroundImage: const AssetImage('assets/img/Calma_Icon.png'),
+            backgroundImage: const AssetImage('assets/img/Icono_Minfulnes.png'),
           ),
           const SizedBox(width: 8),
           Container(
@@ -472,7 +476,7 @@ class _TypingIndicator extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            'Calma está escribiendo...',
+            'El asistente de Nidara está escribiendo...',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13,

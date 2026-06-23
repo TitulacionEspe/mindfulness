@@ -214,12 +214,12 @@ Widget _buildEmotionComparison(List<HistoryEmotionItem> emotions) {
         AppColors.lavender,
       ),
       if (hasPost) ...[
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Icon(
             Icons.arrow_forward_rounded,
             size: 16,
-            color: Colors.grey,
+            color: AppColors.textSecondary,
           ),
         ),
         _buildEmotionPill(
@@ -256,8 +256,8 @@ Widget _buildEmotionPill(String label, int intensity, Color color) {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           child: Text(
             intensity.toString(),
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppColors.buttonPrimaryText,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),

@@ -13,8 +13,13 @@ import '../features/auth/domain/use_cases/register_use_case.dart';
 /// - Tracks loading and error states for UI feedback
 /// - Exposes authentication state to Views (decouples UI from logic)
 class AuthViewModel extends ChangeNotifier {
-  late RegisterUseCase _registerUseCase;
-  late AuthRepository _authRepository;
+  AuthViewModel({AuthRepository? authRepository}) {
+    _authRepository = authRepository ?? AuthRepository();
+    _registerUseCase = RegisterUseCase(_authRepository);
+  }
+
+  late final RegisterUseCase _registerUseCase;
+  late final AuthRepository _authRepository;
 
   // State variables
   User? _currentUser;
@@ -45,9 +50,6 @@ class AuthViewModel extends ChangeNotifier {
 
   /// Initializes the ViewModel with use cases and repositories.
   Future<void> initialize() async {
-    _authRepository = AuthRepository();
-    _registerUseCase = RegisterUseCase(_authRepository);
-
     // Only try to access Supabase if it was properly initialized in main()
     if (SupabaseConfig.isConfigured) {
       try {
@@ -94,9 +96,9 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       await _registerUseCase(
-        email: email.trim(),
-        password: password.trim(),
-        fullName: fullName.trim(),
+        email: email,
+        password: password,
+        fullName: fullName,
       );
       _errorMessage = null;
     } catch (e) {
@@ -119,10 +121,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       // Call repository to handle logic and role fetching
-      final userEntity = await _authRepository.signIn(
-        email.trim(),
-        password.trim(),
-      );
+      final userEntity = await _authRepository.signIn(email.trim(), password);
 
       _currentUser = Supabase.instance.client.auth.currentUser;
       _userRole = userEntity.role;
@@ -155,6 +154,24 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       await _authRepository.sendPasswordResetEmail(email.trim());
+      _errorMessage = null;
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updatePassword(String password) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authRepository.updatePassword(password);
       _errorMessage = null;
       return true;
     } catch (e) {
