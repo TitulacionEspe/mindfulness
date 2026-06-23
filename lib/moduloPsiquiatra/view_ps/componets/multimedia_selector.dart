@@ -44,7 +44,7 @@ class MultimediaSelector extends StatelessWidget {
                 children: [
                   Icon(
                     selectedExternalUrl != null ? Icons.star : Icons.audio_file,
-                    color: Colors.blue,
+                    color: AppColors.mint,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -60,21 +60,21 @@ class MultimediaSelector extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: onClear,
-                    icon: const Icon(Icons.close, color: Colors.red),
+                    icon: Icon(Icons.close, color: AppColors.error),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
             ],
 
-            // Botón Favoritos
+            // Botón de favoritos.
             ElevatedButton.icon(
               onPressed: () => onShowFavorites(viewModel),
               icon: const Icon(Icons.favorite_border),
-              label: const Text("Elegir de mis Favoritos"),
+              label: const Text('Elegir de mis favoritos'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.lavender,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.buttonPrimaryText,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -83,17 +83,17 @@ class MultimediaSelector extends StatelessWidget {
             ),
 
             const SizedBox(height: 12),
-            const Text(
-              "o también puedes",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            Text(
+              'o también puedes',
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
 
-            // Botón Subir Archivo
+            // Botón para subir archivo.
             OutlinedButton.icon(
               onPressed: onPickLocal,
               icon: const Icon(Icons.cloud_upload_outlined),
-              label: const Text("Subir Archivo Local"),
+              label: const Text('Subir archivo local'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.lavender,
                 side: BorderSide(color: AppColors.lavender),

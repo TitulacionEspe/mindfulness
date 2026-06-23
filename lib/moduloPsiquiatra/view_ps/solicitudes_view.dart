@@ -177,13 +177,15 @@ class _SolicitudesViewState extends State<SolicitudesView> {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Error al rechazar: $e'),
-                        backgroundColor: Colors.red,
+                        content: const Text(
+                          'No se pudo rechazar la solicitud. Intenta nuevamente.',
+                        ),
+                        backgroundColor: AppColors.error,
                       ),
                     );
                   }
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
                 child: const Text('Rechazar'),
               ),
               ElevatedButton(
@@ -217,9 +219,11 @@ class _SolicitudesViewState extends State<SolicitudesView> {
                           Navigator.of(context).pop();
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Propuesta enviada al paciente.'),
-                              backgroundColor: Colors.green,
+                            SnackBar(
+                              content: const Text(
+                                'Propuesta enviada al paciente.',
+                              ),
+                              backgroundColor: AppColors.mint,
                             ),
                           );
                         } catch (e) {

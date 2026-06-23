@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
 import 'breathing_sphere.dart';
 import 'session_progress_widgets.dart';
 
@@ -33,8 +34,7 @@ class TimedSessionUI extends StatelessWidget {
         BreathingSphere(animation: animationController, label: ''),
         const Spacer(),
         PhaseProgressBar(
-          label:
-              'Sesión de seguridad por si algo falla en la principal o no alla nada ok',
+          label: 'Sesión de respaldo activa',
           time: '$minutes:${seconds.toString().padLeft(2, '0')}',
           progress: progress,
         ),
@@ -51,15 +51,12 @@ class TimedSessionUI extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onFinish,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.cyanAccent.withValues(alpha: 0.2),
-          side: const BorderSide(color: Colors.cyanAccent, width: 1),
+          backgroundColor: AppColors.successBg,
+          side: BorderSide(color: AppColors.mint, width: 1),
         ),
-        child: const Text(
-          "FINALIZAR",
-          style: TextStyle(
-            color: Colors.cyanAccent,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Text(
+          'Finalizar',
+          style: TextStyle(color: AppColors.mint, fontWeight: FontWeight.bold),
         ),
       ),
     );

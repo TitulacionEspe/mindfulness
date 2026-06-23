@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindfulness_app/core/theme/app_colors.dart';
 
 class PsychiatristActionCard extends StatelessWidget {
   final String title;
@@ -29,7 +30,7 @@ class PsychiatristActionCard extends StatelessWidget {
         contentPadding: const EdgeInsets.all(20),
         leading: CircleAvatar(
           backgroundColor: color,
-          child: Icon(icon, color: Colors.white),
+          child: Icon(icon, color: AppColors.buttonPrimaryText),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),

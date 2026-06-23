@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../moduloTareas/model/assignment_model.dart';
 
 class TareaCardWidget extends StatelessWidget {
@@ -15,8 +16,7 @@ class TareaCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definir colores basados en el estado
-    final Color color = isPending ? Colors.indigo : Colors.teal;
+    final Color color = isPending ? AppColors.lavender : AppColors.mint;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -25,7 +25,7 @@ class TareaCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.outlineVariant.withValues(alpha: 0.16),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -71,7 +71,10 @@ class TareaCardWidget extends StatelessWidget {
                     tarea.description.isNotEmpty
                         ? tarea.description
                         : "Sin descripción",
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -90,7 +93,7 @@ class TareaCardWidget extends StatelessWidget {
                   onPressed: onTap,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: color,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.buttonPrimaryText,
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -104,7 +107,7 @@ class TareaCardWidget extends StatelessWidget {
                 ),
               )
             else
-              const Icon(Icons.verified, color: Colors.green, size: 28),
+              Icon(Icons.verified, color: AppColors.mint, size: 28),
           ],
         ),
       ),

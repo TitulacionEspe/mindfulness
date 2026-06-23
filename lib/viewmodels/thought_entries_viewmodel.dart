@@ -104,7 +104,7 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
       }
     } catch (e) {
       _aiRetrospect =
-          'He guardado tu pensamiento con éxito. Calma no pudo generar una retrospectiva en este momento debido a un problema de conexión, pero recuerda que estás haciendo un gran esfuerzo por cuidar de ti.';
+          'He guardado tu pensamiento con éxito. El asistente de Nidara no pudo generar una retrospectiva en este momento por un problema de conexión, pero recuerda que estás haciendo un esfuerzo valioso por cuidar de ti.';
     } finally {
       _isAnalyzing = false;
       notifyListeners();

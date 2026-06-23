@@ -257,7 +257,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Calma está analizando tu pensamiento...',
+                            'El asistente de Nidara está analizando tu pensamiento...',
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 14,
@@ -290,7 +290,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Retrospectiva de Calma 🌟',
+                              'Retrospectiva de Nidara',
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 16,

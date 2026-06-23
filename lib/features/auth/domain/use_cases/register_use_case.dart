@@ -1,48 +1,34 @@
 import '../entities/user_entity.dart';
 import '../repositories/i_auth_repository.dart';
+import '../validators/auth_validators.dart';
 
 /// Use case: Register a new user.
-/// Validates input and delegates to repository.
+/// Validates input and delegates persistence to the repository.
 class RegisterUseCase {
   final IAuthRepository _repository;
 
   RegisterUseCase(this._repository);
 
-  /// Execute registration.
-  /// Throws Exception if:
-  /// - El nombre completo está vacío
-  /// - El correo electrónico tiene formato inválido
-  /// - La contraseña tiene menos de 6 caracteres
-  /// - Supabase rechaza el registro (correo ya registrado, error de red, etc.)
+  /// Throws [Exception] with a user-facing validation message when input is
+  /// invalid. Repository errors are mapped in the data layer.
   Future<UserEntity> call({
     required String email,
     required String password,
     required String fullName,
   }) async {
-    // Validate fullName
-    if (fullName.trim().isEmpty) {
-      throw Exception('El nombre completo es obligatorio');
-    }
+    final nameError = AuthValidators.fullName(fullName);
+    if (nameError != null) throw Exception(nameError);
 
-    // Validate email format
-    if (!_isValidEmail(email)) {
-      throw Exception('El correo electrónico no tiene un formato válido');
-    }
+    final emailError = AuthValidators.email(email);
+    if (emailError != null) throw Exception(emailError);
 
-    // Validate password length
-    if (password.length < 6) {
-      throw Exception('La contraseña debe tener al menos 6 caracteres');
-    }
+    final passwordError = AuthValidators.securePassword(password);
+    if (passwordError != null) throw Exception(passwordError);
 
-    // Delegate to repository (handles Supabase Auth + profile creation via trigger)
-    return await _repository.register(email, password, fullName.trim());
-  }
-
-  /// Simple email validation
-  bool _isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    return await _repository.register(
+      AuthValidators.normalizeEmail(email),
+      password,
+      AuthValidators.normalizeName(fullName),
     );
-    return emailRegex.hasMatch(email.trim());
   }
 }

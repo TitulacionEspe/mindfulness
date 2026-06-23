@@ -21,6 +21,7 @@ import 'core/constants/app_brand.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/presentation/password_reset_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/admin_home_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
@@ -31,6 +32,7 @@ import 'viewmodels/psicologa_nav_viewmodel.dart';
 import 'viewmodels/routines_viewmodel.dart';
 import 'viewmodels/self_assessments_viewmodel.dart';
 import 'viewmodels/sleep_habits_viewmodel.dart';
+import 'viewmodels/sleep_logs_viewmodel.dart';
 import 'viewmodels/theme_viewmodel.dart';
 import 'viewmodels/thought_entries_viewmodel.dart';
 
@@ -83,6 +85,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppointmentsViewModel()),
         ChangeNotifierProvider(create: (_) => FavoritesViewModel()),
         ChangeNotifierProvider(create: (_) => SleepHabitsViewModel()),
+        ChangeNotifierProvider(create: (_) => SleepLogsViewModel()),
         ChangeNotifierProvider(create: (_) => RoutinesViewModel()),
         ChangeNotifierProvider(create: (_) => RemindersViewModel()),
         ChangeNotifierProvider(create: (_) => ThoughtEntriesViewModel()),
@@ -139,6 +142,7 @@ class MyApp extends StatelessWidget {
             routes: {
               '/login': (_) => const LoginScreen(),
               '/register': (_) => const RegisterScreen(),
+              '/reset-password': (_) => const PasswordResetScreen(),
               '/home': (_) => const HomeSwitcher(),
               '/admin': (_) => const AdminHomeScreen(),
             },

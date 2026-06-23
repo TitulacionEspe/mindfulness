@@ -102,10 +102,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                     itemBuilder: (context, i) {
                       final fav = vm.favorites[i];
                       return ListTile(
-                        leading: const Icon(
-                          Icons.music_note,
-                          color: Colors.blue,
-                        ),
+                        leading: Icon(Icons.music_note, color: AppColors.mint),
                         title: Text(fav['name'] ?? "Sin nombre"),
                         subtitle: Text(fav['category'] ?? ""),
                         onTap: () {
@@ -152,16 +149,16 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       if (success) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("✅ Rutina creada y guardada correctamente"),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Rutina creada y guardada correctamente.'),
+            backgroundColor: AppColors.mint,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("❌ Error: ${vm.errorMessage}"),
-            backgroundColor: Colors.red,
+            content: Text(vm.errorMessage ?? 'No se pudo guardar la rutina.'),
+            backgroundColor: AppColors.error,
           ),
         );
       }

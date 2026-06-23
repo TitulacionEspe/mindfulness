@@ -24,7 +24,7 @@ class WelcomeOnboardingCard extends StatelessWidget {
         border: Border.all(color: AppColors.mint.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.outlineVariant.withValues(alpha: 0.16),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -62,7 +62,7 @@ class WelcomeOnboardingCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Para que tus pacientes puedan realizar actividades, primero necesitas crear tu catálogo de rutinas (Respiración o Sonoterapia).',
+            'Para que tus pacientes puedan realizar actividades, primero necesitas crear tu catálogo de rutinas (respiración o sonoterapia).',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,
@@ -81,7 +81,7 @@ class WelcomeOnboardingCard extends StatelessWidget {
                   label: const Text('CREAR MI PRIMERA RUTINA'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.mint,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.buttonPrimaryText,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -90,7 +90,7 @@ class WelcomeOnboardingCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Dedo apuntando con animación
+              // Indicador animado para guiar la primera acción.
               const Positioned(right: 10, top: -45, child: _PointingHand()),
             ],
           ),
@@ -153,11 +153,11 @@ class _PointingHandState extends State<_PointingHand>
           child: Icon(
             Icons.touch_app,
             size: 60,
-            color: Colors.orange.shade400,
-            shadows: const [
+            color: AppColors.tertiary,
+            shadows: [
               Shadow(
                 blurRadius: 15,
-                color: Colors.black12,
+                color: AppColors.outlineVariant,
                 offset: Offset(0, 8),
               ),
             ],
