@@ -67,7 +67,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
               const SizedBox(height: 12),
               Text(
                 isReadOnly
-                    ? 'Consulta la información vigente que ya aceptaste para usar el sistema.'
+                    ? 'Consulta la información vigente que ya aceptaste para usar la aplicación.'
                     : 'Por favor, lee atentamente antes de continuar.',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
               ),

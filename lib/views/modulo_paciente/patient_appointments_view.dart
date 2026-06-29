@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/text_limit_utils.dart';
 import '../../moduloCitas/model/appointment_model.dart';
 import '../../moduloCitas/viewmodels/appointments_viewmodel.dart';
 import 'componet/patient_navigation_helper.dart';
@@ -1009,10 +1010,23 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
   DateTime? _suggestedDate;
 
   @override
+  void initState() {
+    super.initState();
+    _motiveController.addListener(_handleMotiveChanged);
+  }
+
+  @override
   void dispose() {
+    _motiveController.removeListener(_handleMotiveChanged);
     _motiveController.dispose();
     super.dispose();
   }
+
+  void _handleMotiveChanged() {
+    if (mounted) setState(() {});
+  }
+
+  int get _motiveWordCount => TextLimitUtils.wordCount(_motiveController.text);
 
   @override
   Widget build(BuildContext context) {
@@ -1042,7 +1056,7 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Describe brevemente qué necesitas conversar para que la psicóloga proponga un horario.',
+                'Describe brevemente qué necesitas conversar para que el personal de Psicología proponga un horario.',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 16),
@@ -1095,17 +1109,27 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                 controller: _motiveController,
                 minLines: 3,
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Descríbeme lo que sucede',
+                decoration: InputDecoration(
+                  labelText: 'Motivo breve de la cita',
                   hintText:
                       'Ej: Me gustaría conversar sobre mi descanso y carga académica.',
+                  helperText:
+                      'Máximo ${AppointmentsViewModel.maxMotiveWords} palabras. $_motiveWordCount/${AppointmentsViewModel.maxMotiveWords}',
+                  semanticCounterText:
+                      '$_motiveWordCount de ${AppointmentsViewModel.maxMotiveWords} palabras',
+                  errorMaxLines: 2,
                 ),
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Ingresa el motivo de la cita';
-                  }
-                  if (value.trim().length < 10) {
-                    return 'Describe un poco más tu situación';
+                  final trimmed = value?.trim() ?? '';
+                  final limitError = TextLimitUtils.requiredMaxWordsError(
+                    trimmed,
+                    maxWords: AppointmentsViewModel.maxMotiveWords,
+                    emptyMessage: 'Ingresa el motivo de la cita.',
+                    fieldName: 'El motivo de la cita',
+                  );
+                  if (limitError != null) return limitError;
+                  if (trimmed.length < 10) {
+                    return 'Describe un poco más tu situación.';
                   }
                   return null;
                 },
@@ -1163,13 +1187,12 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                       return;
                     }
 
-                    String finalMotive = _motiveController.text.trim();
+                    String? extraNote;
                     if (_suggestedDate != null) {
                       final dateStr = DateFormat(
                         'dd/MM/yyyy',
                       ).format(_suggestedDate!);
-                      finalMotive +=
-                          '\n\n(Fecha sugerida por el paciente: $dateStr)';
+                      extraNote = '(Fecha sugerida por el paciente: $dateStr)';
                     }
 
                     try {
@@ -1178,7 +1201,8 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                       await vm.createNewRequest(
                         _selectedProfessionalId!,
                         _appointmentType,
-                        finalMotive,
+                        _motiveController.text.trim(),
+                        extraNote: extraNote,
                       );
                       if (!context.mounted) return;
                       navigator.pop();

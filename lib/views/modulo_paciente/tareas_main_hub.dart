@@ -219,7 +219,7 @@ class _TaskListView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
                     isPending
-                        ? "No tienes tareas pendientes asignadas por tu psicóloga."
+                        ? "No tienes actividades pendientes asignadas por el personal de Psicología."
                         : "Tus actividades terminadas aparecerán aquí.",
                     textAlign: TextAlign.center,
                     style: TextStyle(

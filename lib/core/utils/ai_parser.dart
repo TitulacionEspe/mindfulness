@@ -1,70 +1,158 @@
 import 'dart:convert';
 
 class AiParser {
-  /// Sanea y extrae la respuesta legible de la IA, previniendo que se muestren
-  /// llaves, comillas o trazas de JSON en caso de respuestas truncadas o incorrectas.
+  static const supportFallbackReply =
+      'Estoy aquí para acompañarte. Cuéntame un poco más, con calma.';
+
+  static const assistantUnavailableReply =
+      'El asistente de Nidara no está disponible en este momento. Intenta nuevamente más tarde.';
+
+  static const _minimumUsefulCharacters = 12;
+
+  static final RegExp _hasLetterPattern = RegExp(r'[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]');
+
+  static final List<RegExp> _romanticAddressPatterns = [
+    RegExp(
+      r'(^|,\s*|\s+)mi\s+(amor|corazón|corazon|vida|cielo|rey|reina)\b[,.!¡¿?\s]*',
+      caseSensitive: false,
+    ),
+    RegExp(
+      r'(^|,\s*|\s+)(amor|corazón|corazon|cariño|cariña|corazoncito)\b[,.!¡¿?\s]*',
+      caseSensitive: false,
+    ),
+  ];
+
+  /// Sanea y extrae la respuesta legible de la IA.
+  ///
+  /// Si la respuesta parece JSON pero está incompleta, devuelve una cadena vacía.
+  /// Esto evita que la UI muestre fragmentos como `{ "reply": "` o `Mi`.
   static String cleanAiResponse(String rawText) {
-    final trimmed = rawText.trim();
+    final extracted = _extractReply(rawText);
+    return normalizeSupportTone(extracted);
+  }
+
+  static String cleanAssistantReply(
+    String rawText, {
+    String fallback = supportFallbackReply,
+  }) {
+    final cleanReply = cleanAiResponse(rawText);
+    if (!isUsableAssistantReply(cleanReply)) return fallback;
+    return cleanReply;
+  }
+
+  static bool isUnavailablePayload(Map<String, dynamic> payload) {
+    final available = payload['available'];
+    final error = payload['error'];
+    return available == false || error != null;
+  }
+
+  static bool isUsableAssistantReply(String text) {
+    final clean = normalizeSupportTone(text).trim();
+    if (clean.isEmpty) return false;
+    if (!_hasLetterPattern.hasMatch(clean)) return false;
+    if (_looksLikeBrokenStructuredPayload(clean)) return false;
+
+    final lower = clean.toLowerCase();
+    if (lower == 'mi' ||
+        lower == 'null' ||
+        lower == 'undefined' ||
+        lower == 'reply') {
+      return false;
+    }
+
+    final wordCount = RegExp(r'\S+').allMatches(clean).length;
+    return clean.length >= _minimumUsefulCharacters || wordCount >= 3;
+  }
+
+  static String normalizeSupportTone(String text) {
+    var clean = text.trim();
+    if (clean.isEmpty) return '';
+
+    for (final pattern in _romanticAddressPatterns) {
+      clean = clean.replaceAllMapped(pattern, (match) {
+        final prefix = match.group(1) ?? '';
+        if (prefix.contains(',')) return '. ';
+        return prefix;
+      });
+    }
+
+    clean = clean.replaceAllMapped(
+      RegExp(r'\s+([,.!?])'),
+      (match) => match.group(1) ?? '',
+    );
+    return clean
+        .replaceAllMapped(
+          RegExp(r'([,.!?])([A-Za-zÁÉÍÓÚÜÑáéíóúüñ])'),
+          (match) => '${match.group(1)} ${match.group(2)}',
+        )
+        .replaceAll(RegExp(r'\s{2,}'), ' ')
+        .replaceAll(RegExp(r'^\s*[,.!?]+\s*'), '')
+        .trim();
+  }
+
+  static String _extractReply(String rawText) {
+    final trimmed = _stripMarkdownFence(rawText.trim());
     if (trimmed.isEmpty) return '';
 
-    // Si el texto tiene trazas de estructura JSON (completa o parcial)
-    if (trimmed.startsWith('{') || trimmed.contains('"reply"')) {
-      // 1. Decodificar directamente si es un JSON completo y válido
-      try {
-        final decoded = jsonDecode(trimmed);
-        if (decoded is Map && decoded.containsKey('reply')) {
-          return (decoded['reply'] as String? ?? '').trim();
-        }
-      } catch (_) {
-        // Proceder a extracción alternativa si el JSON está incompleto o corrupto
-      }
+    if (_looksLikeStructuredPayload(trimmed)) {
+      final decoded = _decodeJsonMap(trimmed);
+      if (decoded == null) return '';
 
-      // 2. Extraer por Expresión Regular para soportar JSON truncado
-      // Busca la clave "reply" y captura su valor de cadena con escapes de comillas
-      final regExp = RegExp(r'"reply"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"?');
-      final match = regExp.firstMatch(trimmed);
-      if (match != null && match.groupCount >= 1) {
-        String extracted = match.group(1) ?? '';
-        extracted = extracted.replaceAll(r'\"', '"').replaceAll(r'\n', '\n');
-        if (extracted.trim().isNotEmpty) {
-          return extracted.trim();
-        }
-      }
+      final reply = decoded['reply'];
+      if (reply is String) return reply.trim();
 
-      // 3. Extracción de subcadena heurística si la RegExp falla
-      final index = trimmed.indexOf('"reply"');
-      if (index != -1) {
-        final afterReply = trimmed.substring(index + 7);
-        final firstQuote = afterReply.indexOf('"');
-        if (firstQuote != -1) {
-          final content = afterReply.substring(firstQuote + 1);
-          final lastQuote = content.lastIndexOf('"');
-          String clean = lastQuote != -1
-              ? content.substring(0, lastQuote)
-              : content;
-          clean = clean.replaceAll(r'\"', '"').replaceAll(r'\n', '\n');
-          // Quitar caracteres residuales de JSON al final
-          clean = clean.replaceAll(RegExp(r'[}"]+$'), '').trim();
-          if (clean.isNotEmpty) return clean;
+      for (final value in decoded.values) {
+        if (value is String && value.trim().isNotEmpty) {
+          return value.trim();
         }
       }
+      return '';
     }
 
-    // 4. Si es una estructura JSON válida pero no tiene la clave 'reply'
-    if (trimmed.startsWith('{')) {
-      try {
-        final decoded = jsonDecode(trimmed);
-        if (decoded is Map) {
-          for (final value in decoded.values) {
-            if (value is String && value.trim().isNotEmpty) {
-              return value.trim();
-            }
-          }
-        }
-      } catch (_) {}
-    }
-
-    // 5. Devolución de texto plano si no cumple patrones de JSON
     return trimmed;
+  }
+
+  static bool _looksLikeStructuredPayload(String text) {
+    final trimmed = text.trimLeft();
+    return trimmed.startsWith('{') ||
+        trimmed.startsWith('[') ||
+        trimmed.contains('"reply"') ||
+        trimmed.contains("'reply'");
+  }
+
+  static bool _looksLikeBrokenStructuredPayload(String text) {
+    final trimmed = text.trimLeft();
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) return true;
+    if (trimmed.contains('"reply"') || trimmed.contains("'reply'")) return true;
+    return false;
+  }
+
+  static Map<String, dynamic>? _decodeJsonMap(String text) {
+    final candidates = <String>[text];
+    final firstBrace = text.indexOf('{');
+    final lastBrace = text.lastIndexOf('}');
+    if (firstBrace >= 0 && lastBrace > firstBrace) {
+      candidates.add(text.substring(firstBrace, lastBrace + 1));
+    }
+
+    for (final candidate in candidates) {
+      try {
+        final decoded = jsonDecode(candidate);
+        if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      } catch (_) {
+        // Try next candidate.
+      }
+    }
+    return null;
+  }
+
+  static String _stripMarkdownFence(String text) {
+    if (!text.startsWith('```')) return text;
+
+    final withoutOpening = text.replaceFirst(
+      RegExp(r'^```(?:json)?\s*', caseSensitive: false),
+      '',
+    );
+    return withoutOpening.replaceFirst(RegExp(r'\s*```$'), '').trim();
   }
 }

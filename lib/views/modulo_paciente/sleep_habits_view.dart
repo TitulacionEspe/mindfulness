@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../models/sleep_log_model.dart';
 import '../../core/theme/app_colors.dart';
+import '../../services/transition_tone_preview_service.dart';
 import '../../viewmodels/sleep_habits_viewmodel.dart';
 import '../../viewmodels/sleep_logs_viewmodel.dart';
 import '../../viewmodels/theme_viewmodel.dart';
@@ -10,10 +11,12 @@ import '../../viewmodels/theme_viewmodel.dart';
 class SleepHabitsView extends StatefulWidget {
   final bool showBackButton;
   final bool showAppBar;
+  final TransitionTonePreviewService? tonePreviewService;
   const SleepHabitsView({
     super.key,
     this.showBackButton = false,
     this.showAppBar = true,
+    this.tonePreviewService,
   });
 
   @override
@@ -21,9 +24,16 @@ class SleepHabitsView extends StatefulWidget {
 }
 
 class _SleepHabitsViewState extends State<SleepHabitsView> {
+  late final TransitionTonePreviewService _tonePreviewService;
+  late final bool _ownsTonePreviewService;
+  String? _previewingToneValue;
+
   @override
   void initState() {
     super.initState();
+    _ownsTonePreviewService = widget.tonePreviewService == null;
+    _tonePreviewService =
+        widget.tonePreviewService ?? TransitionTonePreviewService();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<SleepHabitsViewModel>().loadSettings();
@@ -33,6 +43,51 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
         // Tests or isolated previews may render this view without sleep logs.
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _tonePreviewService.stop();
+    if (_ownsTonePreviewService) {
+      _tonePreviewService.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _selectTone({
+    required SleepHabitsViewModel viewModel,
+    required String value,
+    required String label,
+  }) async {
+    viewModel.setPreferredVoice(value);
+    setState(() => _previewingToneValue = value);
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('Tono $label seleccionado. Reproduciendo muestra.'),
+      ),
+    );
+
+    try {
+      await _tonePreviewService.playTone(value);
+    } catch (_) {
+      if (!mounted) return;
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No se pudo reproducir la muestra. La preferencia quedó seleccionada.',
+            ),
+          ),
+        );
+    } finally {
+      if (mounted && _previewingToneValue == value) {
+        setState(() => _previewingToneValue = null);
+      }
+    }
   }
 
   @override
@@ -62,7 +117,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                     )
                   : null,
               title: Text(
-                'Ajustes de Sueño',
+                'Ajustes de sueño',
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
               ),
             )
@@ -81,7 +136,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                           children: [
                             Text(
                               viewModel.hasCompletedOnboarding
-                                  ? 'Ajustes de Sueño'
+                                  ? 'Ajustes de sueño'
                                   : 'Personaliza tu descanso',
                               style: TextStyle(
                                 color: AppColors.textPrimary,
@@ -91,7 +146,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Configura tus hábitos para que el sistema se adapte a tu ritmo universitario.',
+                              'Configura tus hábitos para que Nidara se adapte a tu ritmo universitario.',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 14,
@@ -200,6 +255,8 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                                     value: 'femenina',
                                     icon: Icons.bubble_chart_outlined,
                                     viewModel: viewModel,
+                                    isPreviewing:
+                                        _previewingToneValue == 'femenina',
                                   ),
                                   const SizedBox(width: 8),
                                   _buildToneCard(
@@ -208,6 +265,8 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                                     value: 'masculina',
                                     icon: Icons.graphic_eq_outlined,
                                     viewModel: viewModel,
+                                    isPreviewing:
+                                        _previewingToneValue == 'masculina',
                                   ),
                                   const SizedBox(width: 8),
                                   _buildToneCard(
@@ -216,6 +275,8 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                                     value: 'ambient',
                                     icon: Icons.notifications_active_outlined,
                                     viewModel: viewModel,
+                                    isPreviewing:
+                                        _previewingToneValue == 'ambient',
                                   ),
                                 ],
                               ),
@@ -244,7 +305,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                         content: Text('Configuración guardada correctamente'),
                       ),
                     );
-                    // Si ya estaba en el sistema (editando), regresar atrás
+                    // Si ya estaba en la aplicación (editando), regresar atrás
                     if (viewModel.hasCompletedOnboarding &&
                         Navigator.of(context).canPop()) {
                       Navigator.of(context).pop();
@@ -253,8 +314,8 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                 },
           child: Text(
             viewModel.hasCompletedOnboarding
-                ? 'Guardar Cambios'
-                : 'Guardar y Continuar',
+                ? 'Guardar cambios'
+                : 'Guardar y continuar',
           ),
         ),
       ),
@@ -534,6 +595,7 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
     required String value,
     required IconData icon,
     required SleepHabitsViewModel viewModel,
+    required bool isPreviewing,
   }) {
     final isSelected = viewModel.preferredVoice == value;
 
@@ -547,9 +609,12 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
       child: Semantics(
         selected: isSelected,
         button: true,
-        label: 'Tono $label',
+        label: isSelected
+            ? 'Tono $label seleccionado. Toca para escuchar una muestra.'
+            : 'Tono $label. Toca para seleccionar y escuchar una muestra.',
         child: InkWell(
-          onTap: () => viewModel.setPreferredVoice(value),
+          onTap: () =>
+              _selectTone(viewModel: viewModel, value: value, label: label),
           borderRadius: BorderRadius.circular(16),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
@@ -565,11 +630,22 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  icon,
-                  size: 22,
-                  color: isSelected ? accentColor : AppColors.textSecondary,
-                ),
+                isPreviewing
+                    ? SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: accentColor,
+                        ),
+                      )
+                    : Icon(
+                        icon,
+                        size: 22,
+                        color: isSelected
+                            ? accentColor
+                            : AppColors.textSecondary,
+                      ),
                 const SizedBox(height: 8),
                 Text(
                   label,

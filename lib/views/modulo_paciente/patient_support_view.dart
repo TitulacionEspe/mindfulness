@@ -46,7 +46,7 @@ class PatientSupportView extends StatelessWidget {
             icon: Icons.calendar_month_outlined,
             title: 'Solicitud de citas de psicología',
             subtitle:
-                'Dirígete al apartado de "Citas con Psicología", pulsa el botón "+" y detalla tu motivo. La psicóloga asignada recibirá tu solicitud y te propondrá un horario que podrás confirmar directamente desde la aplicación.',
+                'Dirígete al apartado de "Citas con Psicología", pulsa el botón "+" y detalla tu motivo. El personal de Psicología recibirá tu solicitud y te propondrá un horario que podrás confirmar directamente desde la aplicación.',
           ),
           const SizedBox(height: 12),
           _SupportCard(

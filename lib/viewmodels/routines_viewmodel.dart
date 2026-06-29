@@ -73,7 +73,7 @@ class RoutinesViewModel extends ChangeNotifier {
     } catch (_) {
       _assignedActivities = const [];
       _errorMessage ??=
-          'No se pudo cargar actividades asignadas por tu psicóloga.';
+          'No se pudo cargar actividades asignadas por el personal de Psicología.';
     } finally {
       _hasLoadedData = true;
       _isLoading = false;

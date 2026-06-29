@@ -342,7 +342,7 @@ class _EmptyAssignedState extends StatelessWidget {
         border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Text(
-        'Aún no tienes actividades asignadas por tu psicóloga. Esta sección queda lista para integrarse con asignaciones reales.',
+        'Aún no tienes actividades asignadas por el personal de Psicología. Esta sección queda lista para integrarse con asignaciones reales.',
         style: TextStyle(
           color: AppColors.textSecondary,
           fontSize: 15,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mindfulness_app/core/theme/app_colors.dart';
 import 'package:mindfulness_app/core/theme/app_theme.dart';
+import 'package:mindfulness_app/services/transition_tone_preview_service.dart';
 import 'package:mindfulness_app/services/theme_preferences_repository.dart';
 import 'package:mindfulness_app/viewmodels/auth_viewmodel.dart';
 import 'package:mindfulness_app/viewmodels/sleep_habits_viewmodel.dart';
@@ -34,6 +35,27 @@ class FakeSleepHabitsViewModel extends SleepHabitsViewModel {
 
   @override
   bool get hasCompletedOnboarding => true;
+}
+
+class FakeTransitionTonePreviewService implements TransitionTonePreviewService {
+  final playedValues = <String>[];
+  int stopCalls = 0;
+  int disposeCalls = 0;
+
+  @override
+  Future<void> playTone(String value) async {
+    playedValues.add(value);
+  }
+
+  @override
+  Future<void> stop() async {
+    stopCalls += 1;
+  }
+
+  @override
+  Future<void> dispose() async {
+    disposeCalls += 1;
+  }
 }
 
 void main() {
@@ -91,5 +113,53 @@ void main() {
 
     expect(themeViewModel.themeMode, ThemeMode.dark);
     expect(repository.savedMode, ThemeMode.dark);
+  });
+
+  testWidgets('tone selector previews selected sound', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final themeRepository = FakeThemePreferencesRepository();
+    final themeViewModel = ThemeViewModel(repository: themeRepository);
+    final sleepHabitsViewModel = FakeSleepHabitsViewModel();
+    final previewService = FakeTransitionTonePreviewService();
+    AppColors.useLight();
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthViewModel()),
+          ChangeNotifierProvider<SleepHabitsViewModel>.value(
+            value: sleepHabitsViewModel,
+          ),
+          ChangeNotifierProvider.value(value: themeViewModel),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeViewModel.themeMode,
+          home: SleepHabitsView(tonePreviewService: previewService),
+        ),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.text('Campana'));
+    await tester.pumpAndSettle();
+
+    expect(sleepHabitsViewModel.preferredVoice, 'ambient');
+    expect(previewService.playedValues, ['ambient']);
+    expect(
+      find.text('Tono Campana seleccionado. Reproduciendo muestra.'),
+      findsOneWidget,
+    );
   });
 }

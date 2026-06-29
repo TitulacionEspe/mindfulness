@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/utils/ai_parser.dart';
+import '../core/utils/text_limit_utils.dart';
 import '../models/thought_entry_model.dart';
 import '../services/thought_entries_repository.dart';
 
@@ -10,6 +11,7 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
     : _repository = repository ?? SupabaseThoughtEntriesRepository();
 
   static const Duration editableWindow = Duration(hours: 24);
+  static const int maxThoughtWords = 30;
 
   final ThoughtEntriesRepository _repository;
 
@@ -50,7 +52,7 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
       );
     } catch (_) {
       _errorMessage =
-          'No se pudo cargar tu historial de pensamientos. Intenta nuevamente.';
+          'No se pudo cargar tu historial de notas privadas. Intenta nuevamente.';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -84,27 +86,41 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
         'emotional-chat',
         body: {
           'message':
-              'Analiza el siguiente pensamiento registrado por un estudiante en su diario de descarga emocional: "$normalized". Por favor, responde en español siguiendo estas reglas: \n1. Si el pensamiento es predominantemente positivo, responde con un mensaje alegre, optimista y motivador. \n2. Si el pensamiento es intermedio, neutral o describe un día común con estrés normal, da una respuesta empática y equilibrada. \n3. Si el pensamiento es muy negativo, triste, de alta tensión o sugiere riesgo emocional, bríndale una retrospectiva de por qué puede sentirse así, recuérdale con mucha empatía que no está solo, y recomiéndale de forma cálida solicitar una cita con un profesional de psicología en la aplicación.',
+              'Analiza esta nota privada de un estudiante en Nidara: "$normalized". Responde en español con máximo 30 palabras. No diagnostiques. Recomienda una actividad concreta según el contexto: respiración, relajación, descanso, progreso o cita con personal de Psicología.',
           'history': [],
         },
       );
 
       final data = response.data;
       if (data is Map) {
+        final payload = Map<String, dynamic>.from(data);
         final rawReply = (data['reply'] as String?)?.trim() ?? '';
-        _aiRetrospect = AiParser.cleanAiResponse(rawReply);
-        final riskLevel = data['riskLevel'] as String?;
-        final suggestApp = data['suggestAppointment'] == true;
+        final safeReply = AiParser.isUnavailablePayload(payload)
+            ? AiParser.assistantUnavailableReply
+            : AiParser.cleanAssistantReply(
+                rawReply,
+                fallback: AiParser.assistantUnavailableReply,
+              );
+        _aiRetrospect = TextLimitUtils.truncateWords(
+          safeReply,
+          maxWords: maxThoughtWords,
+        );
+        final riskLevel = payload['riskLevel'] as String?;
+        final suggestApp = payload['suggestAppointment'] == true;
         _aiSuggestsAppointment = suggestApp || riskLevel == 'high';
       } else if (data is String) {
-        _aiRetrospect = AiParser.cleanAiResponse(data);
+        _aiRetrospect = TextLimitUtils.truncateWords(
+          AiParser.cleanAssistantReply(
+            data,
+            fallback: AiParser.assistantUnavailableReply,
+          ),
+          maxWords: maxThoughtWords,
+        );
       } else {
-        _aiRetrospect =
-            'Interesante reflexión. Recuerda que siempre tienes la opción de tomar un momento para respirar y cuidar de ti.';
+        _aiRetrospect = AiParser.assistantUnavailableReply;
       }
     } catch (e) {
-      _aiRetrospect =
-          'He guardado tu pensamiento con éxito. El asistente de Nidara no pudo generar una retrospectiva en este momento por un problema de conexión, pero recuerda que estás haciendo un esfuerzo valioso por cuidar de ti.';
+      _aiRetrospect = AiParser.assistantUnavailableReply;
     } finally {
       _isAnalyzing = false;
       notifyListeners();
@@ -121,8 +137,14 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
     ThoughtEntryModel? existingEntry,
   }) async {
     final normalized = content.trim();
-    if (normalized.isEmpty) {
-      _errorMessage = 'Escribe un pensamiento antes de guardar.';
+    final validationError = TextLimitUtils.requiredMaxWordsError(
+      normalized,
+      maxWords: maxThoughtWords,
+      emptyMessage: 'Escribe una nota privada antes de guardar.',
+      fieldName: 'La nota privada',
+    );
+    if (validationError != null) {
+      _errorMessage = validationError;
       notifyListeners();
       return false;
     }
@@ -146,20 +168,20 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
 
       if (existingEntry == null) {
         _entries = ThoughtEntryModel.sortNewestFirst([..._entries, updated]);
-        _successMessage = 'Pensamiento guardado.';
+        _successMessage = 'Nota privada guardada.';
       } else {
         _entries = ThoughtEntryModel.sortNewestFirst(
           _entries
               .map((entry) => entry.id == updated.id ? updated : entry)
               .toList(),
         );
-        _successMessage = 'Entrada actualizada.';
+        _successMessage = 'Nota privada actualizada.';
       }
       return true;
     } catch (_) {
       _errorMessage = existingEntry == null
-          ? 'No se pudo guardar el pensamiento.'
-          : 'No se pudo actualizar la entrada.';
+          ? 'No se pudo guardar la nota privada. Intenta nuevamente.'
+          : 'No se pudo actualizar la nota privada. Intenta nuevamente.';
       return false;
     } finally {
       _isSaving = false;

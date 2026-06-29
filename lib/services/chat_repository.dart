@@ -79,42 +79,59 @@ class SupabaseChatRepository implements ChatRepository {
       Map<String, dynamic>.from(userRow),
     );
 
-    // 2. Llama a la Edge Function (la API key vive en el servidor).
-    final invokeResponse = await _client.functions.invoke(
-      'emotional-chat',
-      body: {
-        'message': trimmed,
-        'history': history
-            .map(
-              (m) => {
-                'role': ChatMessageModel.roleToString(m.role),
-                'content': m.content,
-              },
-            )
-            .toList(),
-      },
-    );
-
-    final data = invokeResponse.data;
-    String cleanReply = 'Estoy aquí contigo. Cuéntame un poco más, con calma.';
     Map<String, dynamic> map = {};
+    var cleanReply = AiParser.assistantUnavailableReply;
 
-    if (data is Map) {
-      map = Map<String, dynamic>.from(data);
-      final rawReply = (map['reply'] as String?)?.trim() ?? '';
-      cleanReply = AiParser.cleanAiResponse(rawReply);
-    } else if (data is String) {
-      cleanReply = AiParser.cleanAiResponse(data);
-      try {
-        final decoded = jsonDecode(data);
-        if (decoded is Map) {
-          map = Map<String, dynamic>.from(decoded);
+    // 2. Llama a la Edge Function (la API key vive en el servidor).
+    // Si la IA falla por cuota, red o JSON inválido, mantenemos el flujo del
+    // chat con una respuesta clara y no mostramos fragmentos técnicos.
+    try {
+      final invokeResponse = await _client.functions.invoke(
+        'emotional-chat',
+        body: {
+          'message': trimmed,
+          'history': history
+              .map(
+                (m) => {
+                  'role': ChatMessageModel.roleToString(m.role),
+                  'content': m.content,
+                },
+              )
+              .toList(),
+        },
+      );
+
+      final data = invokeResponse.data;
+      if (data is Map) {
+        map = Map<String, dynamic>.from(data);
+        if (AiParser.isUnavailablePayload(map)) {
+          cleanReply = AiParser.assistantUnavailableReply;
+        } else {
+          final rawReply = (map['reply'] as String?)?.trim() ?? '';
+          cleanReply = AiParser.cleanAssistantReply(
+            rawReply,
+            fallback: AiParser.assistantUnavailableReply,
+          );
         }
-      } catch (_) {}
-    }
+      } else if (data is String) {
+        try {
+          final decoded = jsonDecode(data);
+          if (decoded is Map) {
+            map = Map<String, dynamic>.from(decoded);
+          }
+        } catch (_) {}
 
-    if (cleanReply.isEmpty) {
-      cleanReply = 'Estoy aquí contigo. Cuéntame un poco más, con calma.';
+        if (map.isNotEmpty && AiParser.isUnavailablePayload(map)) {
+          cleanReply = AiParser.assistantUnavailableReply;
+        } else {
+          cleanReply = AiParser.cleanAssistantReply(
+            data,
+            fallback: AiParser.assistantUnavailableReply,
+          );
+        }
+      }
+    } catch (_) {
+      cleanReply = AiParser.assistantUnavailableReply;
     }
 
     final riskLevel = ChatMessageModel.riskFromString(

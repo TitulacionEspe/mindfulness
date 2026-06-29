@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/text_limit_utils.dart';
 import '../../models/routine_model.dart';
 import '../../models/thought_entry_model.dart';
 import '../../viewmodels/thought_entries_viewmodel.dart';
@@ -24,6 +25,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
   @override
   void initState() {
     super.initState();
+    _controller.addListener(_handleTextChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<ThoughtEntriesViewModel>().loadEntries();
@@ -32,10 +34,23 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
 
   @override
   void dispose() {
+    _controller.removeListener(_handleTextChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
+
+  void _handleTextChanged() {
+    if (mounted) setState(() {});
+  }
+
+  int get _wordCount => TextLimitUtils.wordCount(_controller.text);
+
+  String? get _wordLimitError => TextLimitUtils.maxWordsError(
+    _controller.text,
+    maxWords: ThoughtEntriesViewModel.maxThoughtWords,
+    fieldName: 'La nota privada',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +120,8 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                     children: [
                       Text(
                         _editingEntry == null
-                            ? 'Escribe y libera la mente antes de dormir.'
-                            : 'Editando una entrada reciente.',
+                            ? 'Escribe una nota privada antes de dormir.'
+                            : 'Editando una nota privada reciente.',
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 18,
@@ -116,7 +131,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tus pensamientos son privados. Solo se permite editar o eliminar durante 24 horas.',
+                        'Tus notas privadas son personales. Solo se permite editar o eliminar durante 24 horas.',
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 14,
@@ -178,7 +193,13 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         ),
                         decoration: InputDecoration(
                           hintText:
-                              'Escribe aquí tus preocupaciones, ideas o reflexiones de hoy.',
+                              'Escribe aquí una preocupación, idea o reflexión breve de hoy.',
+                          helperText:
+                              'Máximo ${ThoughtEntriesViewModel.maxThoughtWords} palabras. $_wordCount/${ThoughtEntriesViewModel.maxThoughtWords}',
+                          errorText: _wordLimitError,
+                          errorMaxLines: 2,
+                          semanticCounterText:
+                              '$_wordCount de ${ThoughtEntriesViewModel.maxThoughtWords} palabras',
                           hintStyle: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
@@ -207,8 +228,8 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                                 ),
                           label: Text(
                             _editingEntry == null
-                                ? 'Guardar pensamiento'
-                                : 'Actualizar entrada',
+                                ? 'Guardar nota privada'
+                                : 'Actualizar nota privada',
                           ),
                         ),
                       ),
@@ -257,7 +278,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'El asistente de Nidara está analizando tu pensamiento...',
+                            'El asistente de Nidara está analizando tu nota privada...',
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 14,
@@ -420,6 +441,11 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
     final viewModel = context.read<ThoughtEntriesViewModel>();
     viewModel.clearMessages();
     final content = _controller.text;
+    if (_wordLimitError != null) {
+      _focusNode.requestFocus();
+      setState(() {});
+      return;
+    }
     final shouldShowSupportNotice = _containsRiskLanguage(content);
     final success = await viewModel.saveEntry(
       content: content,
@@ -514,11 +540,11 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-            'Eliminar entrada',
+            'Eliminar nota privada',
             style: TextStyle(color: AppColors.textPrimary),
           ),
           content: Text(
-            'Esta acción elimina la entrada de forma permanente.',
+            'Esta acción elimina la nota de forma permanente.',
             style: TextStyle(color: AppColors.textSecondary),
           ),
           actions: [
@@ -603,7 +629,7 @@ class _ThoughtEntryCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   child: IconButton(
-                    tooltip: 'Editar entrada',
+                    tooltip: 'Editar nota privada',
                     onPressed: onEdit,
                     icon: Icon(Icons.edit_outlined, color: AppColors.lavender),
                   ),
@@ -612,7 +638,7 @@ class _ThoughtEntryCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   child: IconButton(
-                    tooltip: 'Eliminar entrada',
+                    tooltip: 'Eliminar nota privada',
                     onPressed: onDelete,
                     icon: Icon(
                       Icons.delete_outline_rounded,
@@ -855,7 +881,7 @@ class _EmptyThoughtsState extends StatelessWidget {
             border: Border.all(color: AppColors.outlineVariant),
           ),
           child: Text(
-            'Aún no tienes entradas guardadas. Registra tu primer pensamiento para descargar tensión emocional.',
+            'Aún no tienes notas guardadas. Escribe una nota privada breve para descargar tensión emocional.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.textSecondary,
