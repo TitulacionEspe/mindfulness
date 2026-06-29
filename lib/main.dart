@@ -26,6 +26,7 @@ import 'features/auth/presentation/register_screen.dart';
 import 'features/home/presentation/admin_home_screen.dart';
 import 'features/home/presentation/home_switcher.dart';
 import 'viewmodels/auth_viewmodel.dart';
+import 'viewmodels/accessibility_viewmodel.dart';
 import 'viewmodels/chat_viewmodel.dart';
 import 'viewmodels/patient_history_viewmodel.dart';
 import 'viewmodels/psicologa_nav_viewmodel.dart';
@@ -79,6 +80,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AssignmentsViewModel()),
         ChangeNotifierProvider(create: (_) => RoutinesViewModel2()),
         ChangeNotifierProvider(create: (_) => ThemeViewModel()..initialize()),
+        ChangeNotifierProvider(
+          create: (_) => AccessibilityViewModel()..initialize(),
+        ),
         ChangeNotifierProvider(create: (_) => AuthViewModel()..initialize()),
         ChangeNotifierProvider(create: (_) => PsicologaNavViewModel()),
         ChangeNotifierProvider(create: (_) => FreesoundViewModel()),
@@ -101,16 +105,41 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PatientDetailsViewModel()),
         ChangeNotifierProvider(create: (_) => IAChatViewModel()),
       ],
-      child: Consumer<ThemeViewModel>(
-        builder: (context, themeViewModel, _) {
-          AppColors.useThemeMode(themeViewModel.themeMode);
+      child: Consumer2<ThemeViewModel, AccessibilityViewModel>(
+        builder: (context, themeViewModel, accessibilityViewModel, _) {
+          AppColors.useVisualMode(
+            themeViewModel.themeMode,
+            accessibilityViewModel.colorVisionMode,
+          );
 
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: AppBrand.name,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+            theme: AppTheme.lightThemeFor(
+              accessibilityViewModel.colorVisionMode,
+            ),
+            darkTheme: AppTheme.darkThemeFor(
+              accessibilityViewModel.colorVisionMode,
+            ),
             themeMode: themeViewModel.themeMode,
+            builder: (context, child) {
+              final mediaQuery = MediaQuery.maybeOf(context);
+              if (mediaQuery == null || child == null) {
+                return child ?? const SizedBox.shrink();
+              }
+
+              final systemTextScale = mediaQuery.textScaler.scale(16) / 16;
+              final effectiveScale = accessibilityViewModel.effectiveTextScale(
+                systemTextScale,
+              );
+
+              return MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: TextScaler.linear(effectiveScale),
+                ),
+                child: child,
+              );
+            },
             home: Consumer<AuthViewModel>(
               builder: (context, authViewModel, _) {
                 if (!SupabaseConfig.isConfigured) {

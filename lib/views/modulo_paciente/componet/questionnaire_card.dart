@@ -18,7 +18,7 @@ class QuestionnaireCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Completa el formulario para que el personal de Psicología asigne rutinas personalizadas.',
+            'Completa el formulario para que el personal de Psicología asigne actividades personalizadas.',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 15,

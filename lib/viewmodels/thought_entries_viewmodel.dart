@@ -12,6 +12,8 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
 
   static const Duration editableWindow = Duration(hours: 24);
   static const int maxThoughtWords = 30;
+  static const int maxNoteCharacters = 100;
+  static const int maxNotesPerDay = 10;
 
   final ThoughtEntriesRepository _repository;
 
@@ -132,19 +134,36 @@ class ThoughtEntriesViewModel extends ChangeNotifier {
     return reference.difference(entry.createdAt) <= editableWindow;
   }
 
+  int notesCreatedToday({DateTime? now}) {
+    final reference = (now ?? DateTime.now()).toLocal();
+    return _entries.where((entry) {
+      final created = entry.createdAt.toLocal();
+      return created.year == reference.year &&
+          created.month == reference.month &&
+          created.day == reference.day;
+    }).length;
+  }
+
   Future<bool> saveEntry({
     required String content,
     ThoughtEntryModel? existingEntry,
   }) async {
     final normalized = content.trim();
-    final validationError = TextLimitUtils.requiredMaxWordsError(
+    final validationError = TextLimitUtils.requiredMaxCharactersError(
       normalized,
-      maxWords: maxThoughtWords,
+      maxCharacters: maxNoteCharacters,
       emptyMessage: 'Escribe una nota privada antes de guardar.',
       fieldName: 'La nota privada',
     );
     if (validationError != null) {
       _errorMessage = validationError;
+      notifyListeners();
+      return false;
+    }
+
+    if (existingEntry == null && notesCreatedToday() >= maxNotesPerDay) {
+      _errorMessage =
+          'Hoy ya registraste 10 notas. Puedes volver a escribir mañana.';
       notifyListeners();
       return false;
     }

@@ -25,12 +25,12 @@ void main() {
 
     expect(find.text('¿Qué puedes hacer en Nidara?'), findsOneWidget);
     expect(find.text('Respiración y relajación'), findsOneWidget);
-    expect(find.text('Actividades asignadas'), findsOneWidget);
-    expect(find.text('Nota privada'), findsOneWidget);
+    expect(find.text('Registrar hábitos de sueño'), findsOneWidget);
+    expect(find.text('Diario personal'), findsOneWidget);
     expect(find.text('Solicitar o revisar citas'), findsOneWidget);
-    expect(find.text('Consultar progreso'), findsOneWidget);
+    expect(find.text('Ir a actividades'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
-    expect(find.text('7'), findsOneWidget);
+    expect(find.text('4'), findsOneWidget);
   });
 
   testWidgets('uses application wording in first run CTA', (tester) async {

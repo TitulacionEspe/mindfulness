@@ -121,52 +121,32 @@ class PatientFeatureGuideView extends StatelessWidget {
         title: 'Respiración y relajación',
         description:
             'Explora respiración, mindfulness, sonidos relajantes y sesiones breves para descansar.',
-        buttonLabel: 'Probar rutinas',
+        buttonLabel: 'Ir a actividades',
         action: PatientFeatureAction.routines,
         color: AppColors.mint,
       ),
       _GuideItemData(
         step: 2,
-        icon: Icons.task_alt_outlined,
-        title: 'Actividades asignadas',
-        description:
-            'Consulta actividades enviadas por el personal de Psicología y completa sesiones guiadas.',
-        buttonLabel: 'Ver actividades',
-        action: PatientFeatureAction.tasks,
-        color: AppColors.lavender,
-      ),
-      _GuideItemData(
-        step: 3,
-        icon: Icons.edit_note_rounded,
-        title: 'Nota privada',
-        description:
-            'Realiza una descarga emocional privada antes de dormir o cuando tengas preocupaciones.',
-        buttonLabel: 'Escribir nota',
-        action: PatientFeatureAction.thoughts,
-        color: AppColors.tertiary,
-      ),
-      _GuideItemData(
-        step: 4,
-        icon: Icons.notifications_active_outlined,
-        title: 'Configurar recordatorios',
-        description:
-            'Crea avisos para rutinas nocturnas, respiración breve o hábitos de descanso.',
-        buttonLabel: 'Crear aviso',
-        action: PatientFeatureAction.reminders,
-        color: AppColors.lavender,
-      ),
-      _GuideItemData(
-        step: 5,
         icon: Icons.bedtime_outlined,
         title: 'Registrar hábitos de sueño',
         description:
-            'Ajusta horarios, preferencias de descanso y datos básicos de tu rutina nocturna.',
+            'Ajusta horarios, recordatorios y preferencias para organizar tu descanso nocturno.',
         buttonLabel: 'Ir a hábitos',
         action: PatientFeatureAction.habits,
         color: AppColors.mint,
       ),
       _GuideItemData(
-        step: 6,
+        step: 3,
+        icon: Icons.menu_book_outlined,
+        title: 'Diario personal',
+        description:
+            'Registra notas breves y confidenciales que solo tú puedes consultar.',
+        buttonLabel: 'Abrir diario',
+        action: PatientFeatureAction.thoughts,
+        color: AppColors.tertiary,
+      ),
+      _GuideItemData(
+        step: 4,
         icon: Icons.calendar_month_outlined,
         title: 'Solicitar o revisar citas',
         description:
@@ -174,16 +154,6 @@ class PatientFeatureGuideView extends StatelessWidget {
         buttonLabel: 'Gestionar citas',
         action: PatientFeatureAction.appointments,
         color: AppColors.mint,
-      ),
-      _GuideItemData(
-        step: 7,
-        icon: Icons.trending_up_outlined,
-        title: 'Consultar progreso',
-        description:
-            'Revisa sesiones, emociones registradas y continuidad de uso sin interpretación clínica.',
-        buttonLabel: 'Ver progreso',
-        action: PatientFeatureAction.progress,
-        color: AppColors.tertiary,
       ),
     ];
   }

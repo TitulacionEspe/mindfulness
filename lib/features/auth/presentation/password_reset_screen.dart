@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_brand.dart';
@@ -115,11 +116,14 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                       obscureText: _obscurePassword,
                       autofillHints: const [AutofillHints.newPassword],
                       textInputAction: TextInputAction.next,
+                      maxLength: AuthValidators.maxPasswordLength,
+                      maxLengthEnforcement: MaxLengthEnforcement.none,
                       decoration: InputDecoration(
                         labelText: 'Nueva contraseña',
                         helperText:
-                            'Mínimo 8 caracteres, con una letra y un número.',
+                            'Entre 8 y 30 caracteres, con mayúscula, minúscula, número y *, . o @.',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
+                        counterText: '',
                         suffixIcon: IconButton(
                           tooltip: _obscurePassword
                               ? 'Mostrar contraseña'
@@ -145,9 +149,12 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                       obscureText: _obscureConfirm,
                       autofillHints: const [AutofillHints.newPassword],
                       textInputAction: TextInputAction.done,
+                      maxLength: AuthValidators.maxPasswordLength,
+                      maxLengthEnforcement: MaxLengthEnforcement.none,
                       decoration: InputDecoration(
                         labelText: 'Confirmar contraseña',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
+                        counterText: '',
                         suffixIcon: IconButton(
                           tooltip: _obscureConfirm
                               ? 'Mostrar confirmación'

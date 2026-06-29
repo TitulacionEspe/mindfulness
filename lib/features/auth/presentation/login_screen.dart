@@ -184,11 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const NidaraBrandMark(
-                      iconSize: 104,
-                      subtitle: AppBrand.tagline,
-                    ),
-                    const SizedBox(height: 24),
+                    const NidaraBrandMark(iconSize: 170, showName: false),
+                    const SizedBox(height: 0.1),
                     Text(
                       'Bienvenido a ${AppBrand.name}',
                       style: Theme.of(context).textTheme.displayLarge,
@@ -338,7 +335,7 @@ class _NewAccountCallout extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Crea tu cuenta con un correo activo para acceder a rutinas, hábitos, progreso y citas.',
+            'Crea tu cuenta con un correo activo para acceder a actividades, hábitos, progreso y citas.',
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,

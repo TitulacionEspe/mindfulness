@@ -36,7 +36,7 @@ class LibraryRoutineCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      routine.title,
+                      routine.displayTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -47,10 +47,13 @@ class LibraryRoutineCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${routine.durationLabel} | ${routine.category.label}',
+                      routine.shortDescription,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
+                        height: 1.25,
                       ),
                     ),
                   ],

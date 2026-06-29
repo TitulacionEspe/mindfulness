@@ -65,7 +65,7 @@ class RoutinesViewModel extends ChangeNotifier {
     } catch (_) {
       _routines = RoutinesRepository.fallbackRoutines;
       _errorMessage =
-          'No se pudo sincronizar el catálogo con Supabase. Mostramos rutinas básicas disponibles en el dispositivo.';
+          'No se pudo sincronizar el catálogo con Supabase. Mostramos actividades básicas disponibles en el dispositivo.';
     }
 
     try {
@@ -133,7 +133,7 @@ class RoutinesViewModel extends ChangeNotifier {
       return true;
     } catch (_) {
       _errorMessage =
-          'La rutina terminó, pero no se pudo guardar el registro. Intenta nuevamente con conexión.';
+          'La actividad terminó, pero no se pudo guardar el registro. Intenta nuevamente con conexión.';
       return false;
     } finally {
       _isCompleting = false;

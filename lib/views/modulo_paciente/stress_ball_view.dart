@@ -282,12 +282,6 @@ class _StressBallViewState extends State<StressBallView>
             backgroundColor: AppColors.background,
             elevation: 0,
             leading: BackButton(color: AppColors.textPrimary),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Icon(Icons.info_outline, color: AppColors.textPrimary),
-              ),
-            ],
           ),
           body: Stack(
             children: [

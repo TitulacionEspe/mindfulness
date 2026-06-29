@@ -49,7 +49,7 @@ class CategoryRoutinesView extends StatelessWidget {
         child: categoryRoutines.isEmpty
             ? Center(
                 child: Text(
-                  'No hay rutinas disponibles en esta categoría.',
+                  'No hay actividades disponibles en esta categoría.',
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 15,

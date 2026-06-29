@@ -63,7 +63,7 @@ class _AudioRunnerState extends State<AudioRunner>
           SnackBar(
             backgroundColor: AppColors.error,
             content: Text(
-              "No se pudo cargar el sonido de ${widget.category?.label ?? 'la rutina'}. La sesión continuará sin audio.",
+              "No se pudo cargar el sonido de ${widget.category?.label ?? 'la actividad'}. La sesión continuará sin audio.",
             ),
           ),
         );

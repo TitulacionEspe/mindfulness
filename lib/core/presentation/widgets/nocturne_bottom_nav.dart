@@ -15,6 +15,8 @@ class NocturneBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = items.length >= 6;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
@@ -26,16 +28,19 @@ class NocturneBottomNav extends StatelessWidget {
         currentIndex: currentIndex,
         onTap: onTap,
         type: BottomNavigationBarType.fixed,
+        iconSize: compact ? 21 : 24,
         backgroundColor: AppColors.cardBackground,
         selectedItemColor: AppColors.accent,
         unselectedItemColor: AppColors.textSecondary,
-        selectedLabelStyle: const TextStyle(
+        selectedFontSize: compact ? 10 : 12,
+        unselectedFontSize: compact ? 10 : 12,
+        selectedLabelStyle: TextStyle(
           fontWeight: FontWeight.w600,
-          fontSize: 12,
+          fontSize: compact ? 10 : 12,
         ),
-        unselectedLabelStyle: const TextStyle(
+        unselectedLabelStyle: TextStyle(
           fontWeight: FontWeight.w500,
-          fontSize: 12,
+          fontSize: compact ? 10 : 12,
         ),
         elevation: 0,
         items: items,
