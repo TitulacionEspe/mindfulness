@@ -96,7 +96,7 @@ class AgendaCard extends StatelessWidget {
                   color: AppColors.surfaceLowest,
                 ),
                 label: Text(
-                  "Finalizar Sesión",
+                  "Finalizar sesión",
                   style: TextStyle(color: AppColors.surfaceLowest),
                 ),
                 style: ElevatedButton.styleFrom(

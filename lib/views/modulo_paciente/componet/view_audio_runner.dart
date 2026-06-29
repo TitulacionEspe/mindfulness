@@ -188,8 +188,8 @@ class _AudioRunnerState extends State<AudioRunner>
         },
         icon: const Icon(Icons.check_circle_outline_rounded),
         label: const Text(
-          "FINALIZAR SESIÓN",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          "Finalizar sesión",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.lavender.withValues(alpha: 0.15),

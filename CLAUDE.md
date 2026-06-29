@@ -37,7 +37,7 @@ Ejecutar la app: `fvm flutter run` (requiere `.env` con `SUPABASE_URL` y `SUPABA
 - Credenciales en `.env` (cargado con `flutter_dotenv`), nunca commiteado. No hardcodear claves.
 - **Claves de APIs de IA NO van en la app**: viven como *secrets* de Supabase para las Edge Functions (ver `supabase/functions/`).
 
-## Módulo de chat empático "Calma"
+## Módulo de chat de acompañamiento "Asistente de Nidara"
 
 - Edge Function `supabase/functions/emotional-chat/` → Google Gemini Flash (secret `GEMINI_API_KEY`).
 - Tabla `chat_messages` (migración `008_*`), privada por usuario vía RLS.

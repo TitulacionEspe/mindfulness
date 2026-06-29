@@ -228,7 +228,7 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
       ],
       RoutineCategory.terapiaSonido => const [
         'Usa audífonos para una mejor experiencia.',
-        'Cierra los ojos y concentrate en las vibraciones.',
+        'Cierra los ojos y concéntrate en las vibraciones.',
         'Deja que el sonido limpie tus pensamientos.',
       ],
       RoutineCategory.all => const [],

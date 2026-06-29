@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../core/utils/text_limit_utils.dart';
 import '../model/appointment_model.dart';
 import '../services/appointments_service.dart';
 
 class AppointmentsViewModel extends ChangeNotifier {
-  final AppointmentsService _service = AppointmentsService();
+  AppointmentsViewModel({AppointmentsService? service})
+    : _service = service ?? AppointmentsService();
+
+  static const int maxMotiveWords = 30;
+
+  final AppointmentsService _service;
 
   List<Appointment> allAppointments = [];
   bool isLoading = false;
@@ -59,8 +65,20 @@ class AppointmentsViewModel extends ChangeNotifier {
   Future<void> createNewRequest(
     String proId,
     String type,
-    String motive,
-  ) async {
+    String motive, {
+    String? extraNote,
+  }) async {
+    final normalizedMotive = motive.trim();
+    final validationError = TextLimitUtils.requiredMaxWordsError(
+      normalizedMotive,
+      maxWords: maxMotiveWords,
+      emptyMessage: 'Ingresa el motivo de la cita.',
+      fieldName: 'El motivo de la cita',
+    );
+    if (validationError != null) {
+      throw Exception(validationError);
+    }
+
     // Refrescar datos antes de validar para evitar solicitudes duplicadas
     allAppointments = await _service.getAppointments();
 
@@ -78,7 +96,9 @@ class AppointmentsViewModel extends ChangeNotifier {
       patientId: '', // El servicio lo llenará con el Auth.uid
       professionalId: proId,
       type: type,
-      motive: motive,
+      motive: extraNote == null || extraNote.trim().isEmpty
+          ? normalizedMotive
+          : '$normalizedMotive\n\n${extraNote.trim()}',
     );
     await _service.requestAppointment(appointment);
     await loadAll(notifyStatusChanges: false);

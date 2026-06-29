@@ -34,7 +34,7 @@ class AcesfastView extends StatelessWidget {
 
               // 2. ESPACIO PREPARADO PARA OTROS COMPONENTES
               // Aquí puedes llamar a otros widgets en el futuro
-              _buildSectionTitle("Próximas Citas"),
+              _buildSectionTitle("Próximas citas"),
               SizedBox(height: 10),
 
               // Ejemplo de un componente futuro (un placeholder)

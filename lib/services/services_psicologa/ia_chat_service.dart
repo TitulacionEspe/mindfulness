@@ -49,10 +49,12 @@ class IAChatService {
   static const _model = 'meta-llama/llama-3.1-8b-instruct';
 
   static const _systemPrompt =
-      'Eres un asistente experto en psicología y mindfulness. '
-      'Tu objetivo es ayudar a profesionales de la salud mental a generar contenido '
-      'terapéutico, visualizaciones guiadas, guías de respiración y resúmenes. '
-      'Mantén un tono profesional, empático y técnico. '
+      'Eres el asistente de Nidara para personal de Psicología y salud. '
+      'Ayudas a organizar actividades de acompañamiento, guías de respiración, '
+      'visualizaciones, resúmenes y recomendaciones de bienestar. '
+      'No diagnostiques ni reemplaces criterio profesional. '
+      'Mantén un tono profesional, empático y claro. '
+      'Cuando sugieras una actividad concreta, usa máximo 30 palabras. '
       'Responde siempre en español.';
 
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -163,11 +165,11 @@ class IAChatService {
         return 'La IA no devolvió ninguna respuesta.';
       } else {
         print('OpenRouter error ${response.statusCode}: ${response.body}');
-        return 'Error del servidor IA (${response.statusCode}). Intenta de nuevo.';
+        return 'No pude generar una respuesta en este momento. Intenta nuevamente.';
       }
     } catch (e) {
       print('Error en OpenRouter API: $e');
-      return 'Lo siento, tuve un error al procesar tu solicitud: $e';
+      return 'No pude procesar tu solicitud en este momento. Intenta nuevamente.';
     }
   }
 }

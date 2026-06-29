@@ -18,7 +18,7 @@ class CategoryFilters extends StatelessWidget {
     'relaxation': 'Relajación',
     'sleep_induction': 'Sueño',
     'soundscape': 'Paisajes',
-    'terapia_sonido': 'Terapia',
+    'terapia_sonido': 'Sonidos',
   };
 
   @override

@@ -8,7 +8,7 @@ import 'solicitar_cita_view.dart';
 
 /// Chatbot de acompanamiento emocional de Nidara.
 /// No diagnostica: escucha, comprende y alienta. Ante senales de riesgo
-/// sugiere agendar una cita con un psicologo.
+/// sugiere agendar una cita con personal de Psicología.
 class ChatView extends StatefulWidget {
   const ChatView({super.key});
 
@@ -199,8 +199,8 @@ class _AppointmentSuggestion extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Pedir ayuda es un acto de valentía. Puedes agendar una cita con un '
-            'psicólogo desde el módulo de Citas. Si es una emergencia, llama al '
+            'Pedir ayuda es un acto de valentía. Puedes agendar una cita con '
+            'personal de Psicología desde el módulo de Citas. Si es una emergencia, llama al '
             '911 o a la línea de ayuda emocional 171 (opción 6).',
             style: TextStyle(
               color: AppColors.textSecondary,
