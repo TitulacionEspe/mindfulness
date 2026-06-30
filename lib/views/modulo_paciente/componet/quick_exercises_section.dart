@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../bubbles_exercise_view.dart';
 import '../calm_drawing_view.dart';
+import '../frecuencias/sound_therapy_selector_screen.dart';
 import '../spinner_view.dart';
 import '../stress_ball_view.dart';
 
@@ -29,6 +30,14 @@ class QuickExercisesSection extends StatelessWidget {
 
   List<QuickExerciseMock> _exercises() {
     return [
+      QuickExerciseMock(
+        id: 'sound_therapy',
+        title: 'Terapia de sonido',
+        subtitle: 'Frecuencias curativas',
+        icon: Icons.graphic_eq_rounded,
+        accentColor: AppColors.lavender,
+        iconBg: AppColors.warningBg,
+      ),
       QuickExerciseMock(
         id: 'bubbles',
         title: 'Burbujas',
@@ -96,7 +105,7 @@ class QuickExercisesSection extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 176,
+          height: 198,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
@@ -119,6 +128,7 @@ class _QuickExerciseCard extends StatelessWidget {
 
   void _navigate(BuildContext context) {
     final Widget nextView = switch (exercise.id) {
+      'sound_therapy' => const SoundTherapySelectorScreen(),
       'bubbles' => const BubblesExerciseView(),
       'ball' => const StressBallView(),
       'spinner' => const SpinnerView(),
@@ -141,7 +151,7 @@ class _QuickExerciseCard extends StatelessWidget {
           onTap: () => _navigate(context),
           borderRadius: BorderRadius.circular(18),
           child: Container(
-            width: 142,
+            width: 148,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: AppColors.surface,
@@ -152,22 +162,22 @@ class _QuickExerciseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     color: exercise.iconBg,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(13),
                     border: Border.all(
                       color: exercise.accentColor.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Icon(
                     exercise.icon,
-                    size: 25,
+                    size: 24,
                     color: exercise.accentColor,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   exercise.title,
                   maxLines: 2,
@@ -179,7 +189,7 @@ class _QuickExerciseCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 4),
                 Text(
                   exercise.subtitle,
                   maxLines: 2,
@@ -194,15 +204,15 @@ class _QuickExerciseCard extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 30,
+                    height: 30,
                     decoration: BoxDecoration(
                       color: exercise.accentColor.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(9),
                     ),
                     child: Icon(
                       Icons.arrow_forward_rounded,
-                      size: 17,
+                      size: 16,
                       color: exercise.accentColor,
                     ),
                   ),

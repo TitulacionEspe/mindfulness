@@ -25,6 +25,7 @@ dependencies:
   cryptography: ^2.7.0
   flutter_secure_storage: ^10.0.0
   audioplayers: ^6.6.0
+  flutter_pcm_sound: ^3.3.3
   file_picker: ^11.0.2
   path: ^1.9.1
   table_calendar: ^3.2.0
