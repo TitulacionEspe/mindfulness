@@ -30,7 +30,6 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
   late SoundTherapyEngine _engine;
   Duration _remaining = Duration.zero;
   bool _isPaused = false;
-  bool _isRunning = false;
 
   late AnimationController _pulseController;
 
@@ -69,7 +68,6 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
   }
 
   Future<void> _startSession() async {
-    setState(() => _isRunning = true);
     await _engine.start(widget.config);
   }
 
@@ -152,7 +150,7 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
                   config.frequency.description,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                     fontSize: 15,
                   ),
                 ),
@@ -182,7 +180,7 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -230,7 +228,7 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
                       height: 280 * ringScale,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.10 + i * 0.03),
+                        color: Colors.white.withValues(alpha: 0.10 + i * 0.03),
                       ),
                     ),
                   );
@@ -260,7 +258,7 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -279,7 +277,7 @@ class _SoundTherapyPlayerScreenState extends State<SoundTherapyPlayerScreen>
             '${config.binauralBeat != null ? " Usa auriculares para el ritmo binaural." : ""}',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               fontSize: 13.5,
               height: 1.4,
             ),

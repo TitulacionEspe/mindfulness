@@ -8,6 +8,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
 import 'sound_therapy_models.dart';
 import 'sound_therapy_player_screen.dart';
 
@@ -24,10 +25,8 @@ class _SoundTherapySelectorScreenState
   SoundFrequency _selectedFrequency = kSoundFrequencies[3]; // 528Hz default
   BinauralBeat? _selectedBinaural = kBinauralBeats[0]; // Delta 2Hz default
   ModulationLevel _selectedModulation = ModulationLevel.suave;
-  int _selectedDuration = 5;
-  double _volume = 0.5;
-
-  static const Color _purple = Color(0xFF5B4FE5);
+  int _selectedDuration = 10;
+  double _volume = 0.7;
 
   void _startSession() {
     final config = SoundTherapySessionConfig(
@@ -49,7 +48,7 @@ class _SoundTherapySelectorScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F5FB),
+      backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
       body: SafeArea(
         child: ListView(
@@ -83,19 +82,19 @@ class _SoundTherapySelectorScreenState
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       elevation: 0.5,
-      leading: const BackButton(color: Colors.black87),
+      leading: BackButton(color: AppColors.textPrimary),
       centerTitle: true,
       title: Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.graphic_eq, color: _purple, size: 22),
-          SizedBox(width: 8),
+        children: [
+          Icon(Icons.graphic_eq, color: AppColors.lavender, size: 22),
+          const SizedBox(width: 8),
           Text(
             'Terapia de Sonido',
             style: TextStyle(
-              color: Colors.black87,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
@@ -104,7 +103,7 @@ class _SoundTherapySelectorScreenState
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.info_outline, color: Colors.black54),
+          icon: Icon(Icons.info_outline, color: AppColors.textSecondary),
           onPressed: _showInfoDialog,
         ),
       ],
@@ -114,10 +113,10 @@ class _SoundTherapySelectorScreenState
   Widget _buildSectionLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,
-        color: _purple,
+        color: AppColors.lavender,
         letterSpacing: 0.5,
       ),
     );
@@ -143,10 +142,10 @@ class _SoundTherapySelectorScreenState
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: selected ? const Color(0xFFEDEBFF) : Colors.white,
+              color: selected ? AppColors.lavender.withValues(alpha: 0.15) : AppColors.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: selected ? _purple : Colors.grey.shade200,
+                color: selected ? AppColors.lavender : AppColors.outlineVariant,
                 width: selected ? 2 : 1,
               ),
             ),
@@ -158,7 +157,7 @@ class _SoundTherapySelectorScreenState
                     Icon(
                       freq.icon,
                       size: 18,
-                      color: selected ? _purple : Colors.grey.shade500,
+                      color: selected ? AppColors.lavender : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -166,7 +165,7 @@ class _SoundTherapySelectorScreenState
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
-                        color: selected ? _purple : Colors.black87,
+                        color: selected ? AppColors.lavender : AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -177,8 +176,8 @@ class _SoundTherapySelectorScreenState
                   style: TextStyle(
                     fontSize: 12.5,
                     color: selected
-                        ? _purple.withOpacity(0.85)
-                        : Colors.grey.shade600,
+                        ? AppColors.lavender.withValues(alpha: 0.85)
+                        : AppColors.textSecondary,
                     height: 1.3,
                   ),
                   maxLines: 2,
@@ -221,7 +220,7 @@ class _SoundTherapySelectorScreenState
         return _buildPillChoice(
           label: level.label,
           selected: selected,
-          color: Colors.blue,
+          color: AppColors.mint,
           onTap: () => setState(() => _selectedModulation = level),
         );
       }).toList(),
@@ -237,7 +236,7 @@ class _SoundTherapySelectorScreenState
         return _buildPillChoice(
           label: '$min min',
           selected: selected,
-          color: const Color(0xFF8E24AA),
+          color: AppColors.lavender,
           onTap: () => setState(() => _selectedDuration = min),
         );
       }).toList(),
@@ -256,10 +255,10 @@ class _SoundTherapySelectorScreenState
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         decoration: BoxDecoration(
-          color: selected ? color.withOpacity(0.08) : Colors.white,
+          color: selected ? color.withValues(alpha: 0.15) : AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? color : Colors.grey.shade300,
+            color: selected ? color : AppColors.outlineVariant,
             width: selected ? 1.6 : 1,
           ),
         ),
@@ -268,7 +267,7 @@ class _SoundTherapySelectorScreenState
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: selected ? color : Colors.black87,
+            color: selected ? color : AppColors.textPrimary,
           ),
         ),
       ),
@@ -279,30 +278,30 @@ class _SoundTherapySelectorScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: AppColors.outlineVariant),
       ),
       child: Row(
         children: [
-          const Icon(Icons.volume_down, color: _purple, size: 20),
+          Icon(Icons.volume_down, color: AppColors.lavender, size: 20),
           Expanded(
             child: Slider(
               value: _volume,
               onChanged: (v) => setState(() => _volume = v),
-              activeColor: _purple,
-              inactiveColor: Colors.grey.shade300,
+              activeColor: AppColors.lavender,
+              inactiveColor: AppColors.surfaceHigh,
             ),
           ),
-          const Icon(Icons.volume_up, color: _purple, size: 22),
+          Icon(Icons.volume_up, color: AppColors.lavender, size: 22),
           const SizedBox(width: 8),
           SizedBox(
             width: 44,
             child: Text(
               '${(_volume * 100).round()}%',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: _purple,
+                color: AppColors.lavender,
                 fontSize: 14,
               ),
             ),
@@ -316,8 +315,8 @@ class _SoundTherapySelectorScreenState
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.outlineVariant)),
       ),
       child: SizedBox(
         width: double.infinity,
@@ -330,8 +329,8 @@ class _SoundTherapySelectorScreenState
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: _purple,
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.mint,
+            foregroundColor: AppColors.buttonPrimaryText,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -345,19 +344,21 @@ class _SoundTherapySelectorScreenState
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
+        backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('¿Qué es la Terapia de Sonido?'),
-        content: const Text(
+        title: Text('¿Qué es la Terapia de Sonido?', style: TextStyle(color: AppColors.textPrimary)),
+        content: Text(
           'Las frecuencias Solfeggio son tonos asociados tradicionalmente con '
           'distintos estados de bienestar. Combinadas opcionalmente con ritmos '
           'binaurales, pueden ayudarte a relajarte, enfocarte o conciliar el sueño.\n\n'
           'Usa auriculares para una mejor experiencia, especialmente si activas '
           'un ritmo binaural.',
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendido'),
+            child: Text('Entendido', style: TextStyle(color: AppColors.lavender)),
           ),
         ],
       ),
