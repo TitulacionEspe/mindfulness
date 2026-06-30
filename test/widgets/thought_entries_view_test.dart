@@ -101,32 +101,26 @@ void main() {
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
 
-    expect(find.text('Descarga emocional'), findsOneWidget);
+    expect(find.text('Diario personal'), findsOneWidget);
     expect(find.text('Guardar nota privada'), findsOneWidget);
-    expect(find.text('Máximo 30 palabras. 0/30'), findsOneWidget);
-    expect(find.text('Historial privado'), findsOneWidget);
+    expect(find.text('Máximo 100 caracteres. 0/100'), findsOneWidget);
 
     await _scrollToHistory(tester);
 
+    expect(find.text('Historial del diario'), findsOneWidget);
     expect(find.text('entrada reciente'), findsOneWidget);
   });
 
-  testWidgets('shows inline word limit feedback', (tester) async {
+  testWidgets('shows character counter for note limit', (tester) async {
     final repository = FakeThoughtEntriesRepository();
 
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
 
-    final longContent = List.filled(31, 'calma').join(' ');
-    await tester.enterText(find.byType(TextField), longContent);
+    await tester.enterText(find.byType(TextField), 'nota breve');
     await tester.pumpAndSettle();
 
-    expect(
-      find.text(
-        'La nota privada permite máximo 30 palabras. Actualmente tiene 31.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Máximo 100 caracteres. 10/100'), findsOneWidget);
   });
 
   testWidgets('shows edit/delete only for recent entries', (tester) async {

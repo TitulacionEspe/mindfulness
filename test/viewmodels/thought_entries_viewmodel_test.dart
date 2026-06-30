@@ -100,10 +100,10 @@ void main() {
       expect(viewModel.successMessage, 'Nota privada guardada.');
     });
 
-    test('rejects entries longer than 30 words', () async {
+    test('rejects entries longer than 100 characters', () async {
       final repository = FakeThoughtEntriesRepository();
       final viewModel = ThoughtEntriesViewModel(repository: repository);
-      final longContent = List.filled(31, 'calma').join(' ');
+      final longContent = List.filled(101, 'a').join();
 
       final success = await viewModel.saveEntry(content: longContent);
 
@@ -111,7 +111,27 @@ void main() {
       expect(repository.createCalls, 0);
       expect(
         viewModel.errorMessage,
-        'La nota privada permite máximo 30 palabras. Actualmente tiene 31.',
+        'La nota privada permite máximo 100 caracteres. Actualmente tiene 101.',
+      );
+    });
+
+    test('limits new entries to 10 notes per day', () async {
+      final now = DateTime.now();
+      final seed = List.generate(
+        10,
+        (index) => _entry(id: '$index', createdAt: now),
+      );
+      final repository = FakeThoughtEntriesRepository(seed: seed);
+      final viewModel = ThoughtEntriesViewModel(repository: repository);
+      await viewModel.loadEntries();
+
+      final success = await viewModel.saveEntry(content: 'nota adicional');
+
+      expect(success, isFalse);
+      expect(repository.createCalls, 0);
+      expect(
+        viewModel.errorMessage,
+        'Hoy ya registraste 10 notas. Puedes volver a escribir mañana.',
       );
     });
 

@@ -110,6 +110,50 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> signUpWithAcceptedConsent({
+    required String email,
+    required String password,
+    required String fullName,
+  }) async {
+    _isLoading = true;
+    _isSigningUp = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      var userEntity = await _registerUseCase(
+        email: email,
+        password: password,
+        fullName: fullName,
+      );
+      var sessionUser = SupabaseConfig.isConfigured
+          ? Supabase.instance.client.auth.currentUser
+          : null;
+
+      if (sessionUser == null) {
+        userEntity = await _authRepository.signIn(email.trim(), password);
+        sessionUser = SupabaseConfig.isConfigured
+            ? Supabase.instance.client.auth.currentUser
+            : null;
+      }
+
+      await _authRepository.saveConsent(userEntity.id, currentConsentVersion);
+      _currentUser = sessionUser;
+      _userRole = userEntity.role;
+      _hasAcceptedConsent = true;
+      _justAcceptedConsent = false;
+      _errorMessage = null;
+    } catch (e) {
+      _hasAcceptedConsent = false;
+      _justAcceptedConsent = false;
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      _isLoading = false;
+      _isSigningUp = false;
+      notifyListeners();
+    }
+  }
+
   /// Signs in an existing user using email and password.
   /// Uses the AuthRepository to handle business logic, role fetching, and error mapping.
   Future<void> signIn(String email, String password) async {

@@ -32,8 +32,6 @@ class BubblesExerciseView extends StatefulWidget {
 class _BubblesExerciseViewState extends State<BubblesExerciseView> {
   final List<BubbleData> _bubbles = [];
 
-  final double _bubbleSize = 54.0;
-  final double _bubbleSpacing = 9.0;
   final int _cols = 5;
   final int _rows = 6;
 
@@ -65,13 +63,7 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
     for (int r = 0; r < _rows; r++) {
       for (int c = 0; c < _cols; c++) {
         _bubbles.add(
-          BubbleData(
-            id: id++,
-            position: Offset(
-              c * (_bubbleSize + _bubbleSpacing),
-              r * (_bubbleSize + _bubbleSpacing),
-            ),
-          ),
+          BubbleData(id: id++, position: Offset(c.toDouble(), r.toDouble())),
         );
       }
     }
@@ -205,10 +197,6 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
 
   @override
   Widget build(BuildContext context) {
-    final double gridWidth = _cols * _bubbleSize + (_cols - 1) * _bubbleSpacing;
-    final double gridHeight =
-        _rows * _bubbleSize + (_rows - 1) * _bubbleSpacing;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -231,12 +219,6 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: BackButton(color: AppColors.textPrimary),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Icon(Icons.info_outline, color: AppColors.textPrimary),
-          ),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -267,33 +249,49 @@ class _BubblesExerciseViewState extends State<BubblesExerciseView> {
                   border: Border.all(color: AppColors.outlineVariant),
                 ),
                 padding: const EdgeInsets.all(16),
-                child: Center(
-                  child: SizedBox(
-                    width: gridWidth,
-                    height: gridHeight,
-                    child: Stack(
-                      children: _bubbles.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final bubble = entry.value;
-                        return Positioned(
-                          left: bubble.position.dx,
-                          top: bubble.position.dy,
-                          child: GestureDetector(
-                            onTap: () => _popBubble(index),
-                            child: AnimatedScale(
-                              scale: bubble.scale,
-                              duration: const Duration(milliseconds: 120),
-                              curve: Curves.easeOutBack,
-                              child: _BubbleWidget(
-                                size: _bubbleSize,
-                                isPopped: bubble.isPopped,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    const spacing = 9.0;
+                    final maxBubbleSize =
+                        (constraints.maxWidth - ((_cols - 1) * spacing)) /
+                        _cols;
+                    final bubbleSize = maxBubbleSize
+                        .clamp(38.0, 54.0)
+                        .toDouble();
+                    final gridWidth =
+                        (_cols * bubbleSize) + ((_cols - 1) * spacing);
+                    final gridHeight =
+                        (_rows * bubbleSize) + ((_rows - 1) * spacing);
+
+                    return Center(
+                      child: SizedBox(
+                        width: gridWidth,
+                        height: gridHeight,
+                        child: Stack(
+                          children: _bubbles.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final bubble = entry.value;
+                            return Positioned(
+                              left: bubble.position.dx * (bubbleSize + spacing),
+                              top: bubble.position.dy * (bubbleSize + spacing),
+                              child: GestureDetector(
+                                onTap: () => _popBubble(index),
+                                child: AnimatedScale(
+                                  scale: bubble.scale,
+                                  duration: const Duration(milliseconds: 120),
+                                  curve: Curves.easeOutBack,
+                                  child: _BubbleWidget(
+                                    size: bubbleSize,
+                                    isPopped: bubble.isPopped,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
 

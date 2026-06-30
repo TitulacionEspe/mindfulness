@@ -8,7 +8,7 @@ class AppointmentsViewModel extends ChangeNotifier {
   AppointmentsViewModel({AppointmentsService? service})
     : _service = service ?? AppointmentsService();
 
-  static const int maxMotiveWords = 30;
+  static const int maxMotiveCharacters = 50;
 
   final AppointmentsService _service;
 
@@ -69,9 +69,9 @@ class AppointmentsViewModel extends ChangeNotifier {
     String? extraNote,
   }) async {
     final normalizedMotive = motive.trim();
-    final validationError = TextLimitUtils.requiredMaxWordsError(
+    final validationError = TextLimitUtils.requiredMaxCharactersError(
       normalizedMotive,
-      maxWords: maxMotiveWords,
+      maxCharacters: maxMotiveCharacters,
       emptyMessage: 'Ingresa el motivo de la cita.',
       fieldName: 'El motivo de la cita',
     );

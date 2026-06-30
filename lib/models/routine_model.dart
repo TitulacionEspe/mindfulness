@@ -26,7 +26,7 @@ class RoutineModel {
   }) {
     return RoutineModel(
       id: map['id'] as String,
-      title: map['title'] as String? ?? 'Rutina sin título',
+      title: map['title'] as String? ?? 'Actividad sin título',
       description: map['description'] as String? ?? '',
       category: RoutineCategoryX.fromValue(map['category'] as String?),
       durationSeconds: map['duration_seconds'] as int? ?? 180,
@@ -39,6 +39,18 @@ class RoutineModel {
   String get durationLabel {
     final minutes = (durationSeconds / 60).ceil();
     return '$minutes min';
+  }
+
+  String get displayTitle {
+    return title
+        .replaceAll('Respiracion', 'Respiración')
+        .replaceAll('Relajacion', 'Relajación');
+  }
+
+  String get shortDescription {
+    final cleaned = description.trim();
+    if (cleaned.isNotEmpty) return cleaned;
+    return category.shortDescription;
   }
 }
 
@@ -123,6 +135,23 @@ extension RoutineCategoryX on RoutineCategory {
       RoutineCategory.sleepInduction => 'Descanso',
       RoutineCategory.soundscape => 'Ambiente',
       RoutineCategory.terapiaSonido => 'Sonidos guiados',
+    };
+  }
+
+  String get shortDescription {
+    return switch (this) {
+      RoutineCategory.all =>
+        'Explora actividades breves para respirar, relajarte y preparar tu descanso.',
+      RoutineCategory.breathing =>
+        'Guías simples para respirar con calma y regular el ritmo.',
+      RoutineCategory.relaxation =>
+        'Prácticas corporales para soltar tensión de forma progresiva.',
+      RoutineCategory.sleepInduction =>
+        'Actividades suaves para preparar el cuerpo antes de dormir.',
+      RoutineCategory.soundscape =>
+        'Ambientes sonoros para acompañar descanso o concentración.',
+      RoutineCategory.terapiaSonido =>
+        'Sonidos guiados para crear una pausa breve y tranquila.',
     };
   }
 }

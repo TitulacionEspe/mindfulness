@@ -34,7 +34,7 @@ enum ReminderType {
       case ReminderType.sleepInduction:
         return 'Inducción al sueño';
       case ReminderType.routineStart:
-        return 'Inicio de rutina';
+        return 'Inicio de actividad';
       case ReminderType.briefRelaxation:
         return 'Relajación breve';
     }

@@ -45,7 +45,7 @@ class AssignedActivityCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            routine.title,
+                            routine.displayTitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(

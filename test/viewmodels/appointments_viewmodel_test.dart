@@ -46,10 +46,10 @@ class FakeAppointmentsService implements AppointmentsService {
 
 void main() {
   group('AppointmentsViewModel', () {
-    test('rejects appointment motive longer than 30 words', () async {
+    test('rejects appointment motive longer than 50 characters', () async {
       final service = FakeAppointmentsService();
       final viewModel = AppointmentsViewModel(service: service);
-      final longMotive = List.filled(31, 'descanso').join(' ');
+      final longMotive = List.filled(51, 'a').join();
 
       expect(
         () => viewModel.createNewRequest(
@@ -62,7 +62,7 @@ void main() {
             (error) => error.toString(),
             'message',
             contains(
-              'El motivo de la cita permite máximo 30 palabras. Actualmente tiene 31.',
+              'El motivo de la cita permite máximo 50 caracteres. Actualmente tiene 51.',
             ),
           ),
         ),
@@ -76,7 +76,7 @@ void main() {
       () async {
         final service = FakeAppointmentsService();
         final viewModel = AppointmentsViewModel(service: service);
-        final motive = List.filled(30, 'descanso').join(' ');
+        const motive = 'Quiero revisar mi descanso esta semana.';
 
         await viewModel.createNewRequest(
           'professional-1',

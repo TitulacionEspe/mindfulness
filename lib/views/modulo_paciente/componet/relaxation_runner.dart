@@ -563,28 +563,28 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
 
   Widget _buildBody() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: [
           Text(
             _current.name,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 26,
+              fontSize: 22,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
               height: 1.2,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           _buildEmojiIllustration(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 14),
           _buildPhaseCard(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           if (_isRunning) _buildTimerSection(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           _buildControls(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           _buildGroupDots(),
           const SizedBox(height: 8),
         ],
@@ -602,8 +602,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
         return Transform.scale(
           scale: scale,
           child: Container(
-            width: 120,
-            height: 120,
+            width: 96,
+            height: 96,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: _phaseBg,
@@ -625,7 +625,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                 child: Text(
                   _current.emoji(_isTension),
                   key: ValueKey('${_groupIndex}_$_isTension'),
-                  style: const TextStyle(fontSize: 58),
+                  style: const TextStyle(fontSize: 46),
                 ),
               ),
             ),
@@ -690,10 +690,10 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        color: isActive ? bgColor : Colors.transparent,
+        color: isActive ? bgColor : AppColors.surface.withValues(alpha: 0),
         borderRadius: BorderRadius.circular(18),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -713,7 +713,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                 label,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
-                  fontSize: 16,
+                  fontSize: 15,
                   color: isActive
                       ? color
                       : AppColors.textSecondary.withValues(alpha: 0.7),
@@ -741,11 +741,11 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                 ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           ...steps.asMap().entries.map((e) {
             final i = e.key;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 6),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -776,7 +776,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                     child: Text(
                       e.value,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         color: isActive
                             ? color
                             : AppColors.textSecondary.withValues(alpha: 0.7),
@@ -827,7 +827,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
           onPressed: _startSession,
           icon: const Icon(Icons.play_arrow_rounded, size: 24),
           label: const Text(
-            'Iniciar Sesión',
+            'Iniciar actividad',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
@@ -870,7 +870,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
             onPressed: () => _stopSession(),
             icon: const Icon(Icons.stop_rounded, size: 20),
             label: const Text(
-              'Detener',
+              'Finalizar sesión',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(

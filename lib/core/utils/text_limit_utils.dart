@@ -11,6 +11,15 @@ class TextLimitUtils {
     return wordCount(value) <= maxWords;
   }
 
+  static int characterCount(String value) => value.runes.length;
+
+  static bool isWithinCharacterLimit(
+    String value, {
+    required int maxCharacters,
+  }) {
+    return characterCount(value) <= maxCharacters;
+  }
+
   static String? maxWordsError(
     String value, {
     required int maxWords,
@@ -29,6 +38,30 @@ class TextLimitUtils {
   }) {
     if (value.trim().isEmpty) return emptyMessage;
     return maxWordsError(value, maxWords: maxWords, fieldName: fieldName);
+  }
+
+  static String? maxCharactersError(
+    String value, {
+    required int maxCharacters,
+    required String fieldName,
+  }) {
+    final count = characterCount(value);
+    if (count <= maxCharacters) return null;
+    return '$fieldName permite máximo $maxCharacters caracteres. Actualmente tiene $count.';
+  }
+
+  static String? requiredMaxCharactersError(
+    String value, {
+    required int maxCharacters,
+    required String emptyMessage,
+    required String fieldName,
+  }) {
+    if (value.trim().isEmpty) return emptyMessage;
+    return maxCharactersError(
+      value,
+      maxCharacters: maxCharacters,
+      fieldName: fieldName,
+    );
   }
 
   static String truncateWords(String value, {required int maxWords}) {

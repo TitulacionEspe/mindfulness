@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mindfulness_app/views/modulo_paciente/rmp_screen.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../bubbles_exercise_view.dart';
@@ -64,14 +63,6 @@ class QuickExercisesSection extends StatelessWidget {
         iconBg: AppColors.warningBg,
       ),
       QuickExerciseMock(
-        id: 'rmp',
-        title: 'Relajación muscular',
-        subtitle: 'Tensa y descansa',
-        icon: Icons.accessibility_new_rounded,
-        accentColor: AppColors.mint,
-        iconBg: AppColors.successBg,
-      ),
-      QuickExerciseMock(
         id: 'drawing',
         title: 'Dibujo calmado',
         subtitle: 'Traza y respira',
@@ -95,7 +86,7 @@ class QuickExercisesSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Ejercicios rápidos',
+                'Actividades rápidas',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -141,7 +132,6 @@ class _QuickExerciseCard extends StatelessWidget {
       'bubbles' => const BubblesExerciseView(),
       'ball' => const StressBallView(),
       'spinner' => const SpinnerView(),
-      'rmp' => const RmpScreen(),
       'drawing' => const CalmDrawingView(),
       _ => const CalmDrawingView(),
     };

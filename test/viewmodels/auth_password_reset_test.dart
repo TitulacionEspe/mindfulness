@@ -53,10 +53,10 @@ void main() {
       final repository = _FakeAuthRepository();
       final viewModel = AuthViewModel(authRepository: repository);
 
-      final success = await viewModel.updatePassword('Nidara123');
+      final success = await viewModel.updatePassword('Nidara1@');
 
       expect(success, isTrue);
-      expect(repository.updatedPassword, 'Nidara123');
+      expect(repository.updatedPassword, 'Nidara1@');
       expect(viewModel.isLoading, isFalse);
       expect(viewModel.errorMessage, isNull);
     });

@@ -27,12 +27,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
+  bool get _isFormReady {
+    return AuthValidators.fullName(_fullNameController.text) == null &&
+        AuthValidators.email(_emailController.text) == null &&
+        AuthValidators.securePassword(_passwordController.text) == null &&
+        AuthValidators.passwordsMatch(
+          _passwordController.text,
+          _confirmPasswordController.text,
+        );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fullNameController.addListener(_refreshFormState);
+    _emailController.addListener(_refreshFormState);
+    _passwordController.addListener(_refreshFormState);
+    _confirmPasswordController.addListener(_refreshFormState);
+  }
+
   @override
   void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _fullNameController
+      ..removeListener(_refreshFormState)
+      ..dispose();
+    _emailController
+      ..removeListener(_refreshFormState)
+      ..dispose();
+    _passwordController
+      ..removeListener(_refreshFormState)
+      ..dispose();
+    _confirmPasswordController
+      ..removeListener(_refreshFormState)
+      ..dispose();
     _fullNameFocus.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
@@ -40,16 +67,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  void _refreshFormState() {
+    if (mounted) setState(() {});
+  }
+
   Future<void> _handleSignUp(AuthViewModel viewModel) async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate() || !_isFormReady) {
       _focusFirstInvalidField();
       return;
     }
 
-    await viewModel.signUp(
-      AuthValidators.normalizeEmail(_emailController.text),
-      _passwordController.text,
-      AuthValidators.normalizeName(_fullNameController.text),
+    final acceptedConsent = await _showConsentDialog();
+    if (!mounted) return;
+
+    if (acceptedConsent != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No se creará la cuenta porque el consentimiento es necesario para usar Nidara.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    await viewModel.signUpWithAcceptedConsent(
+      email: AuthValidators.normalizeEmail(_emailController.text),
+      password: _passwordController.text,
+      fullName: AuthValidators.normalizeName(_fullNameController.text),
     );
 
     if (!mounted) return;
@@ -57,9 +102,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final messenger = ScaffoldMessenger.of(context);
     if (viewModel.errorMessage == null) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Registro exitoso. Inicia sesión.')),
+        const SnackBar(content: Text('Cuenta creada. Bienvenido a Nidara.')),
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       return;
     }
 
@@ -82,6 +127,80 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _confirmPasswordFocus.requestFocus();
   }
 
+  Future<bool?> _showConsentDialog() {
+    var accepted = false;
+
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: AppColors.surface,
+              title: const Text('Consentimiento para crear tu cuenta'),
+              content: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Antes de crear tu cuenta, confirma que entiendes el uso de Nidara.',
+                      ),
+                      const SizedBox(height: 18),
+                      _ConsentPoint(
+                        title: 'Uso de la aplicación',
+                        content:
+                            'Nidara acompaña tu bienestar, relajación e higiene del sueño. No sustituye terapia profesional ni atención clínica.',
+                      ),
+                      _ConsentPoint(
+                        title: 'Privacidad',
+                        content:
+                            'Tus datos personales se usan para habilitar tu experiencia en la aplicación y proteger tus registros.',
+                      ),
+                      _ConsentPoint(
+                        title: 'Compromiso',
+                        content:
+                            'Al aceptar, confirmas que leíste el aviso legal y que el consentimiento es necesario para usar Nidara.',
+                      ),
+                      const SizedBox(height: 10),
+                      CheckboxListTile(
+                        value: accepted,
+                        contentPadding: EdgeInsets.zero,
+                        activeColor: AppColors.mint,
+                        checkColor: AppColors.buttonPrimaryText,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: const Text(
+                          'He leído y acepto el aviso legal y el consentimiento ético.',
+                        ),
+                        onChanged: (value) =>
+                            setDialogState(() => accepted = value ?? false),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                OutlinedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('Rechazar'),
+                ),
+                ElevatedButton(
+                  onPressed: accepted
+                      ? () => Navigator.of(dialogContext).pop(true)
+                      : null,
+                  child: const Text('Aceptar y crear cuenta'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -100,6 +219,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               constraints: const BoxConstraints(maxWidth: 520),
               child: Form(
                 key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -125,8 +245,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       autofillHints: const [AutofillHints.name],
                       maxLength: AuthValidators.maxFullNameLength,
                       decoration: const InputDecoration(
-                        labelText: 'Nombre completo',
-                        hintText: 'Ej. Juan Pérez',
+                        labelText: 'Nombre y apellido',
+                        hintText: 'Ej. Doménica Cevallos',
+                        helperText: 'Ingresa un solo nombre y un apellido.',
                         prefixIcon: Icon(Icons.person_outline_rounded),
                         counterText: '',
                       ),
@@ -162,8 +283,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       maxLength: AuthValidators.maxPasswordLength,
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
-                        hintText: 'Mínimo 8 caracteres',
-                        helperText: 'Incluye al menos una letra y un número.',
+                        hintText: 'Entre 8 y 30 caracteres',
+                        helperText:
+                            'Usa solo letras, números y los caracteres *, . o @.',
                         prefixIcon: const Icon(Icons.lock_outlined),
                         counterText: '',
                         suffixIcon: IconButton(
@@ -214,13 +336,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         value,
                         _passwordController.text,
                       ),
-                      onFieldSubmitted: (_) =>
-                          _handleSignUp(context.read<AuthViewModel>()),
+                      onFieldSubmitted: (_) {
+                        if (_isFormReady) {
+                          _handleSignUp(context.read<AuthViewModel>());
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    _PasswordRequirementList(
+                      password: _passwordController.text,
+                      confirmation: _confirmPasswordController.text,
                     ),
                     const SizedBox(height: 28),
                     Consumer<AuthViewModel>(
                       builder: (context, viewModel, _) => ElevatedButton.icon(
-                        onPressed: viewModel.isLoading
+                        onPressed: viewModel.isLoading || !_isFormReady
                             ? null
                             : () => _handleSignUp(viewModel),
                         icon: viewModel.isLoading
@@ -242,6 +372,140 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PasswordRequirementList extends StatelessWidget {
+  const _PasswordRequirementList({
+    required this.password,
+    required this.confirmation,
+  });
+
+  final String password;
+  final String confirmation;
+
+  @override
+  Widget build(BuildContext context) {
+    final requirements = [
+      _RequirementState(
+        label: 'Al menos una mayúscula',
+        isMet: AuthValidators.hasUppercase(password),
+      ),
+      _RequirementState(
+        label: 'Al menos una minúscula',
+        isMet: AuthValidators.hasLowercase(password),
+      ),
+      _RequirementState(
+        label: 'Al menos un número',
+        isMet: AuthValidators.hasNumber(password),
+      ),
+      _RequirementState(
+        label: 'Un carácter especial permitido: *, . o @',
+        isMet: AuthValidators.hasAllowedSpecialCharacter(password),
+      ),
+      _RequirementState(
+        label: 'Las contraseñas coinciden',
+        isMet: AuthValidators.passwordsMatch(password, confirmation),
+      ),
+    ];
+
+    return Semantics(
+      label: 'Requisitos de contraseña',
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tu contraseña debe cumplir:',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 10),
+            ...requirements.map(_RequirementRow.new),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RequirementState {
+  const _RequirementState({required this.label, required this.isMet});
+
+  final String label;
+  final bool isMet;
+}
+
+class _RequirementRow extends StatelessWidget {
+  const _RequirementRow(this.requirement);
+
+  final _RequirementState requirement;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = requirement.isMet ? AppColors.mint : AppColors.error;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            requirement.isMet ? Icons.check_circle_rounded : Icons.cancel,
+            color: color,
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              requirement.label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textPrimary,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConsentPoint extends StatelessWidget {
+  const _ConsentPoint({required this.title, required this.content});
+
+  final String title;
+  final String content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.lavender,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            content,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.4),
+          ),
+        ],
       ),
     );
   }

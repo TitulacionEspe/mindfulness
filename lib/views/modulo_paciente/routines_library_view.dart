@@ -10,13 +10,11 @@ import 'frecuencias/sound_therapy_selector_screen.dart';
 import 'componet/assigned_activity_card.dart';
 import 'componet/category_filters.dart';
 import 'componet/category_icon.dart';
-import 'componet/emotional_dump_card.dart';
 import 'componet/library_routine_card.dart';
 import 'componet/quick_exercises_section.dart';
 import 'componet/section_title.dart';
 import 'componet/tasks_header.dart';
 import 'routine_detail_view.dart';
-import 'thought_entries_view.dart';
 
 class RoutinesLibraryView extends StatefulWidget {
   const RoutinesLibraryView({super.key});
@@ -70,17 +68,6 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               const SliverToBoxAdapter(child: TasksHeader()),
-              SliverToBoxAdapter(
-                child: EmotionalDumpCard(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const ThoughtEntriesView(),
-                      ),
-                    );
-                  },
-                ),
-              ),
               if (viewModel.errorMessage != null)
                 SliverToBoxAdapter(
                   child: _InlineMessage(message: viewModel.errorMessage!),
@@ -112,14 +99,9 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                   ),
                 ),
               const SliverToBoxAdapter(child: SizedBox(height: 14)),
-              //const SliverToBoxAdapter(
-              // child: SectionTitle(title: 'Cuestionario inicial'),
-              //),
-              //const SliverToBoxAdapter(child: QuestionnaireCard()),
-              const SliverToBoxAdapter(child: SizedBox(height: 14)),
               SliverToBoxAdapter(
                 child: SectionTitle(
-                  title: 'Biblioteca de rutinas',
+                  title: 'Biblioteca de actividades',
                   trailing: Container(
                     decoration: BoxDecoration(
                       color: AppColors.surfaceHigh,
@@ -262,12 +244,6 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                       }
 
                       final category = categories[index];
-                      final count = viewModel.routines
-                          .where(
-                            (r) =>
-                                r.category == category && r.createdBy == null,
-                          )
-                          .length;
 
                       return InkWell(
                         onTap: () {
@@ -303,10 +279,13 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '$count rutinas',
+                                category.shortDescription,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 13,
+                                  height: 1.25,
                                 ),
                               ),
                             ],
@@ -443,7 +422,7 @@ class _EmptyLibraryState extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 26),
       child: Text(
-        'No hay rutinas para el filtro seleccionado.',
+        'No hay actividades para el filtro seleccionado.',
         style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
       ),
     );

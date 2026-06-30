@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../accessibility/accessibility_preferences.dart';
+
 @immutable
 class AppPalette {
   const AppPalette({
@@ -108,6 +110,58 @@ class AppColors {
     secondaryContainer: Color(0xFF224E4B),
   );
 
+  static const AppPalette colorBlindLightPalette = AppPalette(
+    background: Color(0xFFF8F7F3),
+    surface: Color(0xFFFFFCF7),
+    surfaceLowest: Color(0xFFFFFFFF),
+    surfaceLow: Color(0xFFF0EDE6),
+    surfaceHigh: Color(0xFFE6E2D8),
+    surfaceHighest: Color(0xFFDAD5CA),
+    surfaceBright: Color(0xFFFFFCF7),
+    textPrimary: Color(0xFF211F1A),
+    textSecondary: Color(0xFF5B574E),
+    outline: Color(0xFF777064),
+    outlineVariant: Color(0xFFC9C0B4),
+    lavender: Color(0xFF6B5CA5),
+    mint: Color(0xFF006E9C),
+    tertiary: Color(0xFF8A5A00),
+    tertiaryContainer: Color(0xFFF2D28A),
+    tertiaryOnContainer: Color(0xFF2B1A00),
+    buttonPrimary: Color(0xFF006E9C),
+    buttonPrimaryText: Color(0xFFFFFFFF),
+    error: Color(0xFFA8326E),
+    successBg: Color(0x26006E9C),
+    warningBg: Color(0x266B5CA5),
+    tertiaryBg: Color(0x268A5A00),
+    secondaryContainer: Color(0xFFDCEFFD),
+  );
+
+  static const AppPalette colorBlindDarkPalette = AppPalette(
+    background: Color(0xFF151412),
+    surface: Color(0xFF211F1C),
+    surfaceLowest: Color(0xFF100F0E),
+    surfaceLow: Color(0xFF1D1B19),
+    surfaceHigh: Color(0xFF2C2925),
+    surfaceHighest: Color(0xFF39352F),
+    surfaceBright: Color(0xFF403C35),
+    textPrimary: Color(0xFFEEE8DD),
+    textSecondary: Color(0xFFD1C8BA),
+    outline: Color(0xFF9A9284),
+    outlineVariant: Color(0xFF504A42),
+    lavender: Color(0xFFD0C3FF),
+    mint: Color(0xFF8FD8FF),
+    tertiary: Color(0xFFFFD08A),
+    tertiaryContainer: Color(0xFFD2A54B),
+    tertiaryOnContainer: Color(0xFF4C3300),
+    buttonPrimary: Color(0xFF8FD8FF),
+    buttonPrimaryText: Color(0xFF00344D),
+    error: Color(0xFFFFB1D0),
+    successBg: Color(0x268FD8FF),
+    warningBg: Color(0x26D0C3FF),
+    tertiaryBg: Color(0x26FFD08A),
+    secondaryContainer: Color(0xFF174D65),
+  );
+
   static AppPalette _active = lightPalette;
 
   static AppPalette get active => _active;
@@ -122,6 +176,15 @@ class AppColors {
     } else {
       useLight();
     }
+  }
+
+  static void useVisualMode(ThemeMode mode, ColorVisionMode colorVisionMode) {
+    final useDarkMode = mode == ThemeMode.dark;
+    if (colorVisionMode == ColorVisionMode.redGreenSupport) {
+      _active = useDarkMode ? colorBlindDarkPalette : colorBlindLightPalette;
+      return;
+    }
+    _active = useDarkMode ? darkPalette : lightPalette;
   }
 
   static Color get background => _active.background;
