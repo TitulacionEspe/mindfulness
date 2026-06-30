@@ -97,7 +97,22 @@ void main() {
       expect(success, isTrue);
       expect(repository.createCalls, 1);
       expect(viewModel.entries.length, 1);
-      expect(viewModel.successMessage, 'Pensamiento guardado.');
+      expect(viewModel.successMessage, 'Nota privada guardada.');
+    });
+
+    test('rejects entries longer than 30 words', () async {
+      final repository = FakeThoughtEntriesRepository();
+      final viewModel = ThoughtEntriesViewModel(repository: repository);
+      final longContent = List.filled(31, 'calma').join(' ');
+
+      final success = await viewModel.saveEntry(content: longContent);
+
+      expect(success, isFalse);
+      expect(repository.createCalls, 0);
+      expect(
+        viewModel.errorMessage,
+        'La nota privada permite máximo 30 palabras. Actualmente tiene 31.',
+      );
     });
 
     test('prevents editing entries older than 24 hours', () async {
@@ -168,7 +183,7 @@ void main() {
 
       expect(
         viewModel.errorMessage,
-        'No se pudo cargar tu historial de pensamientos. Intenta nuevamente.',
+        'No se pudo cargar tu historial de notas privadas. Intenta nuevamente.',
       );
     });
   });

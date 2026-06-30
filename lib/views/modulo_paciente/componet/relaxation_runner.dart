@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
+
 // ═══════════════════════════════════════════════════════════════════════════
 //
 //  ╔══════════════════════════════════════════════╗
@@ -537,11 +539,11 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
 
   MuscleGroup get _current => kActiveGroups[_groupIndex];
 
-  Color get _phaseColor =>
-      _isTension ? const Color(0xFFE53935) : const Color(0xFF26A69A);
+  Color get _phaseColor => _isTension ? AppColors.error : AppColors.mint;
 
-  Color get _phaseBg =>
-      _isTension ? const Color(0xFFFFF0F0) : const Color(0xFFF0FAF8);
+  Color get _phaseBg => _isTension
+      ? AppColors.error.withValues(alpha: 0.12)
+      : AppColors.successBg;
 
   String get _phaseLabel => _isTension ? 'Tensión' : 'Relajación';
 
@@ -567,10 +569,10 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
           Text(
             _current.name,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
               height: 1.2,
             ),
           ),
@@ -637,17 +639,17 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: _isRunning
               ? _phaseColor.withValues(alpha: 0.4)
-              : Colors.grey.shade200,
+              : AppColors.outlineVariant,
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.outlineVariant.withValues(alpha: 0.16),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -657,17 +659,17 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
         children: [
           _buildSection(
             label: 'Tensión',
-            color: const Color(0xFFE53935),
-            bgColor: const Color(0xFFFFF0F0),
+            color: AppColors.error,
+            bgColor: AppColors.error.withValues(alpha: 0.12),
             isActive: _isTension && _isRunning,
             steps: _current.tensionSteps,
             countdown: (_isTension && _isRunning) ? _secondsLeft : null,
           ),
-          Divider(height: 1, color: Colors.grey.shade100),
+          Divider(height: 1, color: AppColors.outlineVariant),
           _buildSection(
             label: 'Relajación',
-            color: const Color(0xFF26A69A),
-            bgColor: const Color(0xFFF0FAF8),
+            color: AppColors.mint,
+            bgColor: AppColors.successBg,
             isActive: !_isTension && _isRunning,
             steps: _current.relaxationSteps,
             countdown: (!_isTension && _isRunning) ? _secondsLeft : null,
@@ -712,7 +714,9 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                  color: isActive ? color : Colors.grey.shade400,
+                  color: isActive
+                      ? color
+                      : AppColors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
               const Spacer(),
@@ -727,8 +731,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                   child: Center(
                     child: Text(
                       '$countdown',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppColors.buttonPrimaryText,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -753,7 +757,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                       borderRadius: BorderRadius.circular(6),
                       color: isActive
                           ? color.withValues(alpha: 0.15)
-                          : Colors.grey.shade100,
+                          : AppColors.surfaceHigh,
                     ),
                     child: Center(
                       child: Text(
@@ -761,7 +765,9 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: isActive ? color : Colors.grey.shade400,
+                          color: isActive
+                              ? color
+                              : AppColors.textSecondary.withValues(alpha: 0.7),
                         ),
                       ),
                     ),
@@ -771,7 +777,9 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                       e.value,
                       style: TextStyle(
                         fontSize: 14,
-                        color: isActive ? color : Colors.grey.shade400,
+                        color: isActive
+                            ? color
+                            : AppColors.textSecondary.withValues(alpha: 0.7),
                         height: 1.4,
                       ),
                     ),
@@ -793,7 +801,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
           child: LinearProgressIndicator(
             value: _progressFraction,
             minHeight: 6,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: AppColors.surfaceHigh,
             valueColor: AlwaysStoppedAnimation<Color>(_phaseColor),
           ),
         ),
@@ -823,8 +831,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7B61FF),
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.lavender,
+            foregroundColor: AppColors.buttonPrimaryText,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -847,8 +855,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.black87,
-              side: BorderSide(color: Colors.grey.shade300),
+              foregroundColor: AppColors.textPrimary,
+              side: BorderSide(color: AppColors.outlineVariant),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -866,8 +874,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE53935),
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.buttonPrimaryText,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -901,10 +909,10 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: active
-                        ? const Color(0xFF7B61FF)
+                        ? AppColors.lavender
                         : done
-                        ? const Color(0xFF7B61FF).withValues(alpha: 0.45)
-                        : Colors.grey.shade300,
+                        ? AppColors.lavender.withValues(alpha: 0.45)
+                        : AppColors.surfaceHigh,
                   ),
                 ),
               );
@@ -914,7 +922,7 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
         const SizedBox(height: 6),
         Text(
           'Grupo ${_groupIndex + 1}/${kActiveGroups.length}',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -924,8 +932,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.outlineVariant)),
       ),
       child: Row(
         children: [
@@ -941,8 +949,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
               icon: const Icon(Icons.arrow_back, size: 16),
               label: const Text('Atrás'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black87,
-                side: BorderSide(color: Colors.grey.shade300),
+                foregroundColor: AppColors.textPrimary,
+                side: BorderSide(color: AppColors.outlineVariant),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -962,8 +970,8 @@ class _RelaxationRunnerState extends State<RelaxationRunner>
               icon: const Icon(Icons.arrow_forward, size: 16),
               label: const Text('Siguiente'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black87,
-                side: BorderSide(color: Colors.grey.shade300),
+                foregroundColor: AppColors.textPrimary,
+                side: BorderSide(color: AppColors.outlineVariant),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

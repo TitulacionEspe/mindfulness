@@ -32,7 +32,7 @@ class _AsignarcontenState extends State<Asignarconten> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          "Asignaciones de Alumnos",
+          'Asignaciones de alumnos',
           style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
         ),
         backgroundColor: AppColors.background,
@@ -61,7 +61,7 @@ class _AsignarcontenState extends State<Asignarconten> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: AppColors.outlineVariant.withValues(alpha: 0.16),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -70,7 +70,7 @@ class _AsignarcontenState extends State<Asignarconten> {
         child: TextField(
           onChanged: (v) => viewModel.updateSearch(v),
           decoration: InputDecoration(
-            hintText: "Buscar por nombre del alumno...",
+            hintText: 'Buscar por nombre del alumno...',
             prefixIcon: Icon(Icons.search_rounded, color: AppColors.mint),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -136,7 +136,7 @@ class _PatientAssignmentCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.outlineVariant.withValues(alpha: 0.16),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),

@@ -11,6 +11,12 @@ abstract class IAuthRepository {
   /// Sign in existing user.
   Future<UserEntity> signIn(String email, String password);
 
+  /// Send a password reset email to the user.
+  Future<void> sendPasswordResetEmail(String email);
+
+  /// Update password for the authenticated recovery session.
+  Future<void> updatePassword(String password);
+
   /// Sign out current user.
   Future<void> signOut();
 

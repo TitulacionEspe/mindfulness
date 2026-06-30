@@ -18,7 +18,7 @@ class AsignarView extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          "Asignación de Retos",
+          'Asignación de retos',
           style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w900,
             color: AppColors.textPrimary,
@@ -68,7 +68,7 @@ class AsignarView extends StatelessWidget {
                   title: "Asistente IA",
                   subtitle: "Crear contenido",
                   icon: Icons.auto_awesome_rounded,
-                  color: const Color(0xFF7B61FF),
+                  color: AppColors.lavender,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const IAAssistantView()),
@@ -86,18 +86,21 @@ class AsignarView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(100),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: AppColors.outlineVariant.withValues(alpha: 0.16),
                     blurRadius: 15,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: const TextField(
+              child: TextField(
                 decoration: InputDecoration(
-                  hintText: "Proximamente no disponible aun",
-                  prefixIcon: Icon(Icons.search_rounded, color: Colors.grey),
+                  hintText: 'Próximamente disponible',
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: AppColors.textSecondary,
+                  ),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
             ),
@@ -114,7 +117,7 @@ class AsignarView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Actividad Reciente",
+                  'Actividad reciente',
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,

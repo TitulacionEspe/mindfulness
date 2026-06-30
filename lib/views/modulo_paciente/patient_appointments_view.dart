@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/text_limit_utils.dart';
 import '../../moduloCitas/model/appointment_model.dart';
 import '../../moduloCitas/viewmodels/appointments_viewmodel.dart';
 import 'componet/patient_navigation_helper.dart';
@@ -18,10 +19,12 @@ class PatientAppointmentsView extends StatefulWidget {
     super.key,
     this.initialTab,
     this.openRequestComposerOnStart = false,
+    this.showAppBar = true,
   });
 
   final PatientAppointmentsTab? initialTab;
   final bool openRequestComposerOnStart;
+  final bool showAppBar;
 
   @override
   State<PatientAppointmentsView> createState() =>
@@ -50,6 +53,18 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
           _professionals.isNotEmpty) {
         _openedComposer = true;
         _openRequestSheet(context);
+      } else if (widget.openRequestComposerOnStart &&
+          !_openedComposer &&
+          mounted &&
+          _professionals.isEmpty) {
+        _openedComposer = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Aún no hay profesionales disponibles para solicitar una cita.',
+            ),
+          ),
+        );
       }
     });
   }
@@ -93,6 +108,7 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
     final history = appointments.where((appointment) {
       if (appointment.status == 'COMPLETADA') return true;
       if (appointment.status == 'RECHAZADA') return true;
+      if (appointment.status == 'CANCELADA') return true;
       return false;
     }).toList();
 
@@ -114,32 +130,35 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text(
-          'Citas con Psicología',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Menú principal',
-            onPressed: () => PatientNavigationHelper.returnToMainMenu(context),
-            icon: const Icon(Icons.home_outlined),
-          ),
-          IconButton(
-            tooltip: 'Actualizar',
-            onPressed: () async {
-              await vm.loadAll();
-              await _loadProfessionals();
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
+      appBar: widget.showAppBar
+          ? AppBar(
+              backgroundColor: AppColors.background,
+              elevation: 0,
+              title: Text(
+                'Citas con Psicología',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              actions: [
+                IconButton(
+                  tooltip: 'Menú principal',
+                  onPressed: () =>
+                      PatientNavigationHelper.returnToMainMenu(context),
+                  icon: const Icon(Icons.home_outlined),
+                ),
+                IconButton(
+                  tooltip: 'Actualizar',
+                  onPressed: () async {
+                    await vm.loadAll();
+                    await _loadProfessionals();
+                  },
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: () async {
           await vm.loadAll();
@@ -148,6 +167,32 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 92),
           children: [
+            if (!widget.showAppBar) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Citas con Psicología',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Actualizar',
+                    onPressed: () async {
+                      await vm.loadAll();
+                      await _loadProfessionals();
+                    },
+                    icon: Icon(Icons.refresh, color: AppColors.textPrimary),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
             Text(
               'Gestiona tus solicitudes y agenda confirmada sin perder contexto.',
               style: TextStyle(
@@ -165,6 +210,17 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
             const SizedBox(height: 14),
             _buildTabSelector(),
             const SizedBox(height: 12),
+            if (vm.statusUpdateMessage != null) ...[
+              _StatusUpdateNotice(
+                message: vm.statusUpdateMessage!,
+                onDismiss: vm.clearStatusUpdateMessage,
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (!_loadingProfessionals && _professionals.isEmpty) ...[
+              const _NoProfessionalsNotice(),
+              const SizedBox(height: 12),
+            ],
             if (_tab == PatientAppointmentsTab.agenda) ...[
               _buildCalendar(eventsByDay),
               const SizedBox(height: 10),
@@ -186,9 +242,27 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: (_loadingProfessionals || _professionals.isEmpty)
-            ? null
-            : () => _openRequestSheet(context),
+        onPressed: () {
+          if (_loadingProfessionals) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Estamos cargando profesionales disponibles.'),
+              ),
+            );
+            return;
+          }
+          if (_professionals.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Aún no hay profesionales disponibles para solicitar una cita.',
+                ),
+              ),
+            );
+            return;
+          }
+          _openRequestSheet(context);
+        },
         icon: const Icon(Icons.add),
         label: const Text('Solicitar cita'),
       ),
@@ -766,7 +840,7 @@ class _PatientAppointmentsViewState extends State<PatientAppointmentsView> {
       PatientAppointmentsTab.agenda =>
         'No hay citas confirmadas para la fecha seleccionada. Prueba otro día en el calendario.',
       PatientAppointmentsTab.history =>
-        'Aún no hay citas finalizadas o rechazadas.',
+        'Aún no hay citas finalizadas, rechazadas o canceladas.',
     };
   }
 
@@ -853,6 +927,81 @@ class _RequestAppointmentSheet extends StatefulWidget {
       _RequestAppointmentSheetState();
 }
 
+class _StatusUpdateNotice extends StatelessWidget {
+  const _StatusUpdateNotice({required this.message, required this.onDismiss});
+
+  final String message;
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.successBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.mint.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.notifications_active_outlined, color: AppColors.mint),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                height: 1.35,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Ocultar aviso',
+            onPressed: onDismiss,
+            icon: Icon(Icons.close_rounded, color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoProfessionalsNotice extends StatelessWidget {
+  const _NoProfessionalsNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.tertiaryBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, color: AppColors.tertiary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Aún no hay profesionales disponibles para solicitar una cita. Intenta nuevamente más tarde o consulta con soporte.',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
   final _formKey = GlobalKey<FormState>();
   final _motiveController = TextEditingController();
@@ -861,198 +1010,231 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
   DateTime? _suggestedDate;
 
   @override
+  void initState() {
+    super.initState();
+    _motiveController.addListener(_handleMotiveChanged);
+  }
+
+  @override
   void dispose() {
+    _motiveController.removeListener(_handleMotiveChanged);
     _motiveController.dispose();
     super.dispose();
   }
+
+  void _handleMotiveChanged() {
+    if (mounted) setState(() {});
+  }
+
+  int get _motiveWordCount => TextLimitUtils.wordCount(_motiveController.text);
 
   @override
   Widget build(BuildContext context) {
     final vm = context.read<AppointmentsViewModel>();
 
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nueva solicitud de cita',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Describe brevemente tu necesidad para que la psicóloga proponga un horario.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Profesional'),
-              items: widget.professionals
-                  .map(
-                    (professional) => DropdownMenuItem<String>(
-                      value: professional['id']?.toString(),
-                      child: Text(professional['full_name'] ?? 'Profesional'),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) =>
-                  setState(() => _selectedProfessionalId = value),
-              validator: (value) =>
-                  value == null ? 'Selecciona un profesional' : null,
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: ['Primera vez', 'Seguimiento', 'Otro'].map((type) {
-                final selected = _appointmentType == type;
-                return ChoiceChip(
-                  label: Text(type),
-                  selected: selected,
-                  onSelected: (value) {
-                    if (value) setState(() => _appointmentType = type);
-                  },
-                  backgroundColor: AppColors.surfaceLow,
-                  selectedColor: AppColors.mint.withValues(alpha: 0.2),
-                  side: BorderSide(
-                    color: selected ? AppColors.mint : AppColors.outlineVariant,
-                  ),
-                  showCheckmark: false,
-                  labelStyle: TextStyle(
-                    color: selected ? AppColors.mint : AppColors.textSecondary,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _motiveController,
-              minLines: 3,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Describeme lo que sucede',
-                hintText:
-                    'Ej: Necesito apoyo para regular ansiedad por exámenes.',
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Ingresa el motivo de la cita';
-                }
-                if (value.trim().length < 10) {
-                  return 'Describe un poco más tu situación';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: 20,
-                  color: AppColors.textSecondary,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Nueva solicitud de cita',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _suggestedDate == null
-                        ? '¿Tienes alguna fecha en mente? (Opcional)'
-                        : 'Fecha sugerida: ${DateFormat('dd/MM/yyyy').format(_suggestedDate!)}',
-                    style: TextStyle(
-                      color: _suggestedDate == null
-                          ? AppColors.textSecondary
-                          : AppColors.mint,
-                      fontSize: 14,
-                      fontWeight: _suggestedDate == null
-                          ? FontWeight.normal
-                          : FontWeight.w600,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Describe brevemente qué necesitas conversar para que el personal de Psicología proponga un horario.',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Profesional'),
+                items: widget.professionals
+                    .map(
+                      (professional) => DropdownMenuItem<String>(
+                        value: professional['id']?.toString(),
+                        child: Text(professional['full_name'] ?? 'Profesional'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedProfessionalId = value),
+                validator: (value) =>
+                    value == null ? 'Selecciona un profesional' : null,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: ['Primera vez', 'Seguimiento', 'Otro'].map((type) {
+                  final selected = _appointmentType == type;
+                  return ChoiceChip(
+                    label: Text(type),
+                    selected: selected,
+                    onSelected: (value) {
+                      if (value) setState(() => _appointmentType = type);
+                    },
+                    backgroundColor: AppColors.surfaceLow,
+                    selectedColor: AppColors.mint.withValues(alpha: 0.2),
+                    side: BorderSide(
+                      color: selected
+                          ? AppColors.mint
+                          : AppColors.outlineVariant,
+                    ),
+                    showCheckmark: false,
+                    labelStyle: TextStyle(
+                      color: selected
+                          ? AppColors.mint
+                          : AppColors.textSecondary,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _motiveController,
+                minLines: 3,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'Motivo breve de la cita',
+                  hintText:
+                      'Ej: Me gustaría conversar sobre mi descanso y carga académica.',
+                  helperText:
+                      'Máximo ${AppointmentsViewModel.maxMotiveWords} palabras. $_motiveWordCount/${AppointmentsViewModel.maxMotiveWords}',
+                  semanticCounterText:
+                      '$_motiveWordCount de ${AppointmentsViewModel.maxMotiveWords} palabras',
+                  errorMaxLines: 2,
+                ),
+                validator: (value) {
+                  final trimmed = value?.trim() ?? '';
+                  final limitError = TextLimitUtils.requiredMaxWordsError(
+                    trimmed,
+                    maxWords: AppointmentsViewModel.maxMotiveWords,
+                    emptyMessage: 'Ingresa el motivo de la cita.',
+                    fieldName: 'El motivo de la cita',
+                  );
+                  if (limitError != null) return limitError;
+                  if (trimmed.length < 10) {
+                    return 'Describe un poco más tu situación.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _suggestedDate == null
+                          ? '¿Tienes alguna fecha en mente? (Opcional)'
+                          : 'Fecha sugerida: ${DateFormat('dd/MM/yyyy').format(_suggestedDate!)}',
+                      style: TextStyle(
+                        color: _suggestedDate == null
+                            ? AppColors.textSecondary
+                            : AppColors.mint,
+                        fontSize: 14,
+                        fontWeight: _suggestedDate == null
+                            ? FontWeight.normal
+                            : FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                TextButton(
+                  TextButton(
+                    onPressed: () async {
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now().add(
+                          const Duration(days: 1),
+                        ),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 60)),
+                      );
+                      if (date != null) {
+                        setState(() => _suggestedDate = date);
+                      }
+                    },
+                    child: Text(_suggestedDate == null ? 'Elegir' : 'Cambiar'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
                   onPressed: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now().add(const Duration(days: 1)),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 60)),
-                    );
-                    if (date != null) {
-                      setState(() => _suggestedDate = date);
+                    if (!_formKey.currentState!.validate() ||
+                        _selectedProfessionalId == null) {
+                      return;
+                    }
+
+                    String? extraNote;
+                    if (_suggestedDate != null) {
+                      final dateStr = DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(_suggestedDate!);
+                      extraNote = '(Fecha sugerida por el paciente: $dateStr)';
+                    }
+
+                    try {
+                      final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
+                      await vm.createNewRequest(
+                        _selectedProfessionalId!,
+                        _appointmentType,
+                        _motiveController.text.trim(),
+                        extraNote: extraNote,
+                      );
+                      if (!context.mounted) return;
+                      navigator.pop();
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Solicitud enviada con éxito.'),
+                        ),
+                      );
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      final msg = e.toString().replaceAll('Exception: ', '');
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Aviso'),
+                          content: Text(msg),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Entendido'),
+                            ),
+                          ],
+                        ),
+                      );
                     }
                   },
-                  child: Text(_suggestedDate == null ? 'Elegir' : 'Cambiar'),
+                  icon: const Icon(Icons.send_outlined),
+                  label: const Text('Enviar solicitud'),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate() ||
-                      _selectedProfessionalId == null) {
-                    return;
-                  }
-
-                  String finalMotive = _motiveController.text.trim();
-                  if (_suggestedDate != null) {
-                    final dateStr = DateFormat(
-                      'dd/MM/yyyy',
-                    ).format(_suggestedDate!);
-                    finalMotive +=
-                        '\n\n(Fecha sugerida por el paciente: $dateStr)';
-                  }
-
-                  try {
-                    await vm.createNewRequest(
-                      _selectedProfessionalId!,
-                      _appointmentType,
-                      finalMotive,
-                    );
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Solicitud enviada con éxito.'),
-                      ),
-                    );
-                  } catch (e) {
-                    if (!context.mounted) return;
-                    final msg = e.toString().replaceAll('Exception: ', '');
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('Aviso'),
-                        content: Text(msg),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Entendido'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.send_outlined),
-                label: const Text('Enviar solicitud'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

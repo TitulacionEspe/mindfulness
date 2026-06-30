@@ -48,7 +48,7 @@ class HomeBanner extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Psicologares",
+                        "Psicología",
                         style: TextStyle(
                           color: AppColors.mint,
                           fontSize: 18,

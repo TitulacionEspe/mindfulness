@@ -34,7 +34,7 @@ class AcesfastView extends StatelessWidget {
 
               // 2. ESPACIO PREPARADO PARA OTROS COMPONENTES
               // Aquí puedes llamar a otros widgets en el futuro
-              _buildSectionTitle("Próximas Citas"),
+              _buildSectionTitle("Próximas citas"),
               SizedBox(height: 10),
 
               // Ejemplo de un componente futuro (un placeholder)
@@ -65,10 +65,10 @@ class AcesfastView extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Color.fromARGB(221, 84, 201, 201),
+        color: AppColors.mint,
       ),
     );
   }

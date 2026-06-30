@@ -86,8 +86,8 @@ class BreathingSessionUI extends StatelessWidget {
         onPressed: onFinish,
         icon: const Icon(Icons.check_circle_outline_rounded),
         label: const Text(
-          "FINALIZAR SESIÓN",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          "Finalizar sesión",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.lavender.withValues(alpha: 0.15),
@@ -117,7 +117,7 @@ class _SoundToggle extends StatelessWidget {
       button: true,
       label: enabled
           ? 'Sonido activado. Toca para silenciar.'
-          : 'Sonido desactivado. Vibración activa.',
+          : 'Sonido desactivado. Vibración fuerte activa.',
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(

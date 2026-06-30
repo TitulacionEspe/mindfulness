@@ -9,15 +9,15 @@ class ActivityItemCard extends StatelessWidget {
 
   const ActivityItemCard({super.key, required this.routine});
 
-  String get _emoji {
+  IconData get _icon {
     final category = RoutineCategoryX.fromValue(routine.category);
     return switch (category) {
-      RoutineCategory.breathing => '🌬️',
-      RoutineCategory.relaxation => '🧘',
-      RoutineCategory.sleepInduction => '🌙',
-      RoutineCategory.soundscape => '🎧',
-      RoutineCategory.terapiaSonido => '🎶',
-      _ => '✨',
+      RoutineCategory.breathing => Icons.air_rounded,
+      RoutineCategory.relaxation => Icons.spa_rounded,
+      RoutineCategory.sleepInduction => Icons.dark_mode_rounded,
+      RoutineCategory.soundscape => Icons.graphic_eq_rounded,
+      RoutineCategory.terapiaSonido => Icons.music_note_rounded,
+      _ => Icons.auto_awesome_rounded,
     };
   }
 
@@ -31,13 +31,12 @@ class ActivityItemCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final category = RoutineCategoryX.fromValue(routine.category);
 
-    // Color dinámico según categoría para el indicador lateral
     final categoryColor = switch (category) {
       RoutineCategory.breathing => AppColors.mint,
       RoutineCategory.relaxation => AppColors.lavender,
-      RoutineCategory.sleepInduction => const Color(0xFF3F51B5),
+      RoutineCategory.sleepInduction => AppColors.secondaryContainer,
       RoutineCategory.soundscape => AppColors.tertiary,
-      RoutineCategory.terapiaSonido => const Color(0xFFE91E63),
+      RoutineCategory.terapiaSonido => AppColors.error,
       _ => AppColors.outline,
     };
 
@@ -48,7 +47,7 @@ class ActivityItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.outlineVariant.withValues(alpha: 0.16),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -89,16 +88,12 @@ class ActivityItemCard extends StatelessWidget {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          _emoji,
-                          style: const TextStyle(fontSize: 30),
-                        ),
+                        child: Icon(_icon, color: categoryColor, size: 30),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
 
-                  // Información Central
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),

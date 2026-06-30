@@ -78,17 +78,19 @@ class _AgendaViewState extends State<AgendaView> {
                 Navigator.of(context).pop();
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cita completada y registrada.'),
-                    backgroundColor: Colors.green,
+                  SnackBar(
+                    content: const Text('Cita completada y registrada.'),
+                    backgroundColor: AppColors.mint,
                   ),
                 );
               } catch (e) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Error al finalizar la cita: $e'),
-                    backgroundColor: Colors.red,
+                    content: const Text(
+                      'No se pudo finalizar la cita. Intenta nuevamente.',
+                    ),
+                    backgroundColor: AppColors.error,
                   ),
                 );
               }

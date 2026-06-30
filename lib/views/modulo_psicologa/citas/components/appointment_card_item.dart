@@ -139,7 +139,7 @@ class AppointmentCardItem extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: onComplete,
           icon: const Icon(Icons.check_circle_outline),
-          label: const Text('Finalizar sesión'),
+          label: const Text('Finalizar cita'),
         ),
       );
     }
@@ -175,6 +175,12 @@ class _StatusChip extends StatelessWidget {
         AppColors.surfaceHighest,
         AppColors.textPrimary,
         'Completada',
+      ),
+      'RECHAZADA' => (AppColors.tertiaryBg, AppColors.error, 'Rechazada'),
+      'CANCELADA' => (
+        AppColors.surfaceHighest,
+        AppColors.textSecondary,
+        'Cancelada',
       ),
       _ => (AppColors.surfaceHighest, AppColors.textSecondary, status),
     };

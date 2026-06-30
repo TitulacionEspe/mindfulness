@@ -43,7 +43,7 @@ class PatientFeatureGuideView extends StatelessWidget {
             Text(
               isFirstRun
                   ? 'Bienvenido a tu espacio de descanso'
-                  : '¿Qué puedes hacer en el sistema?',
+                  : '¿Qué puedes hacer en Nidara?',
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 28,
@@ -53,7 +53,7 @@ class PatientFeatureGuideView extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Esta aplicación te acompaña con rutinas de relajación, registro personal, hábitos de sueño, recordatorios, progreso y citas con Psicología. No realiza diagnósticos ni reemplaza la atención profesional.',
+              'En Nidara están disponibles estas actividades de acompañamiento para cuidar tu descanso y bienestar. La aplicación no realiza diagnósticos ni reemplaza la atención profesional.',
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 15,
@@ -75,7 +75,7 @@ class PatientFeatureGuideView extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Tus pensamientos y registros personales son privados. Usa la app como apoyo de bienestar y solicita ayuda profesional cuando lo necesites.',
+                      'Tus notas privadas y registros personales son confidenciales. Usa Nidara como apoyo de bienestar y solicita ayuda profesional cuando lo necesites.',
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 14,
@@ -103,7 +103,7 @@ class PatientFeatureGuideView extends StatelessWidget {
                 onPressed: onContinue,
                 icon: const Icon(Icons.check_circle_outline_rounded),
                 label: Text(
-                  isFirstRun ? 'Continuar al sistema' : 'Volver al inicio',
+                  isFirstRun ? 'Continuar a la aplicación' : 'Volver al inicio',
                 ),
               ),
             ),
@@ -116,8 +116,9 @@ class PatientFeatureGuideView extends StatelessWidget {
   List<_GuideItemData> _guideItems() {
     return [
       _GuideItemData(
+        step: 1,
         icon: Icons.self_improvement_outlined,
-        title: 'Iniciar rutinas de relajación',
+        title: 'Respiración y relajación',
         description:
             'Explora respiración, mindfulness, sonidos relajantes y sesiones breves para descansar.',
         buttonLabel: 'Probar rutinas',
@@ -125,24 +126,27 @@ class PatientFeatureGuideView extends StatelessWidget {
         color: AppColors.mint,
       ),
       _GuideItemData(
+        step: 2,
         icon: Icons.task_alt_outlined,
-        title: 'Revisar tareas asignadas',
+        title: 'Actividades asignadas',
         description:
-            'Consulta actividades enviadas por la psicóloga y completa sesiones guiadas.',
-        buttonLabel: 'Ver tareas',
+            'Consulta actividades enviadas por el personal de Psicología y completa sesiones guiadas.',
+        buttonLabel: 'Ver actividades',
         action: PatientFeatureAction.tasks,
         color: AppColors.lavender,
       ),
       _GuideItemData(
+        step: 3,
         icon: Icons.edit_note_rounded,
-        title: 'Registrar pensamientos',
+        title: 'Nota privada',
         description:
             'Realiza una descarga emocional privada antes de dormir o cuando tengas preocupaciones.',
-        buttonLabel: 'Registrar ahora',
+        buttonLabel: 'Escribir nota',
         action: PatientFeatureAction.thoughts,
         color: AppColors.tertiary,
       ),
       _GuideItemData(
+        step: 4,
         icon: Icons.notifications_active_outlined,
         title: 'Configurar recordatorios',
         description:
@@ -152,6 +156,7 @@ class PatientFeatureGuideView extends StatelessWidget {
         color: AppColors.lavender,
       ),
       _GuideItemData(
+        step: 5,
         icon: Icons.bedtime_outlined,
         title: 'Registrar hábitos de sueño',
         description:
@@ -161,15 +166,7 @@ class PatientFeatureGuideView extends StatelessWidget {
         color: AppColors.mint,
       ),
       _GuideItemData(
-        icon: Icons.trending_up_outlined,
-        title: 'Consultar progreso',
-        description:
-            'Revisa sesiones, emociones registradas y continuidad de uso sin interpretación clínica.',
-        buttonLabel: 'Ver progreso',
-        action: PatientFeatureAction.progress,
-        color: AppColors.tertiary,
-      ),
-      _GuideItemData(
+        step: 6,
         icon: Icons.calendar_month_outlined,
         title: 'Solicitar o revisar citas',
         description:
@@ -177,6 +174,16 @@ class PatientFeatureGuideView extends StatelessWidget {
         buttonLabel: 'Gestionar citas',
         action: PatientFeatureAction.appointments,
         color: AppColors.mint,
+      ),
+      _GuideItemData(
+        step: 7,
+        icon: Icons.trending_up_outlined,
+        title: 'Consultar progreso',
+        description:
+            'Revisa sesiones, emociones registradas y continuidad de uso sin interpretación clínica.',
+        buttonLabel: 'Ver progreso',
+        action: PatientFeatureAction.progress,
+        color: AppColors.tertiary,
       ),
     ];
   }
@@ -204,14 +211,43 @@ class _GuideActionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   color: AppColors.surfaceLowest,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.outlineVariant),
                 ),
-                child: Icon(item.icon, color: item.color),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned(
+                      top: 5,
+                      left: 5,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: item.color,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${item.step}',
+                          style: TextStyle(
+                            color: AppColors.buttonPrimaryText,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7, left: 8),
+                      child: Icon(item.icon, color: item.color, size: 24),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -283,6 +319,7 @@ class _GuideActionCard extends StatelessWidget {
 
 class _GuideItemData {
   const _GuideItemData({
+    required this.step,
     required this.icon,
     required this.title,
     required this.description,
@@ -291,6 +328,7 @@ class _GuideItemData {
     required this.color,
   });
 
+  final int step;
   final IconData icon;
   final String title;
   final String description;

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
+
 enum BreathingShape { circle, square, heart, spiral }
 
 class BreathingVisualizer extends StatelessWidget {
@@ -86,21 +88,10 @@ class BreathingVisualizer extends StatelessWidget {
 
   Color _getShapeColor() {
     return switch (shape) {
-      // Colores pastel claros y bellos
-      BreathingShape.circle => const Color.fromARGB(
-        255,
-        52,
-        87,
-        92,
-      ), // Cian pastel
-      BreathingShape.square => const Color(0xFFE1BEE7), // Lavanda pastel
-      BreathingShape.heart => const Color(0xFFFFCDD2), // Rosa pastel
-      BreathingShape.spiral => const Color.fromARGB(
-        255,
-        43,
-        212,
-        49,
-      ), // Menta pastel
+      BreathingShape.circle => AppColors.mint,
+      BreathingShape.square => AppColors.lavender,
+      BreathingShape.heart => AppColors.tertiary,
+      BreathingShape.spiral => AppColors.successText,
     };
   }
 }

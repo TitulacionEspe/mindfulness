@@ -5,6 +5,7 @@ import '../../../../core/constants/app_brand.dart';
 import '../../../../core/presentation/widgets/nidara_brand_mark.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../viewmodels/auth_viewmodel.dart';
+import '../domain/validators/auth_validators.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   late FocusNode _emailFocus;
@@ -37,27 +39,133 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _handleLogin(
-    AuthViewModel viewModel,
-    BuildContext context,
-  ) async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, completa todos los campos.')),
-      );
+  Future<void> _handleLogin(AuthViewModel viewModel) async {
+    if (!_formKey.currentState!.validate()) {
+      _focusFirstInvalidField();
       return;
     }
 
-    await viewModel.signIn(email, password);
+    await viewModel.signIn(
+      AuthValidators.normalizeEmail(_emailController.text),
+      _passwordController.text,
+    );
 
-    if (context.mounted && viewModel.errorMessage != null) {
+    if (mounted && viewModel.errorMessage != null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!)));
     }
+  }
+
+  void _focusFirstInvalidField() {
+    if (AuthValidators.email(_emailController.text) != null) {
+      _emailFocus.requestFocus();
+      return;
+    }
+    _passwordFocus.requestFocus();
+  }
+
+  Future<void> _showPasswordResetDialog() async {
+    final resetEmailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          scrollable: true,
+          title: const Text('Restablecer contraseña'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Escribe el correo asociado a tu cuenta. Te enviaremos un enlace para crear una nueva contraseña.',
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: resetEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.email],
+                  maxLength: AuthValidators.maxEmailLength,
+                  decoration: const InputDecoration(
+                    labelText: 'Correo personal o institucional',
+                    hintText: 'nombre@correo.com',
+                    counterText: '',
+                  ),
+                  validator: AuthValidators.email,
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    Navigator.of(context).pushNamed('/reset-password');
+                  },
+                  icon: const Icon(Icons.link_rounded),
+                  label: const Text('Ya tengo el enlace'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
+            Consumer<AuthViewModel>(
+              builder: (context, viewModel, _) {
+                return ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(140, 48),
+                  ),
+                  onPressed: viewModel.isLoading
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          final navigator = Navigator.of(dialogContext);
+                          final messenger = ScaffoldMessenger.of(context);
+                          final success = await viewModel
+                              .sendPasswordResetEmail(
+                                resetEmailController.text,
+                              );
+                          if (!context.mounted) return;
+                          navigator.pop();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success
+                                    ? 'Te enviamos un enlace para restablecer tu contraseña. Revisa tu correo.'
+                                    : viewModel.errorMessage ??
+                                          'No se pudo enviar el correo. Intenta nuevamente.',
+                              ),
+                            ),
+                          );
+                        },
+                  icon: viewModel.isLoading
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.buttonPrimaryText,
+                          ),
+                        )
+                      : const Icon(Icons.mail_outline_rounded),
+                  label: const Text('Enviar enlace'),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    resetEmailController.dispose();
   }
 
   @override
@@ -67,162 +175,184 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const NidaraBrandMark(
-                  iconSize: 104,
-                  subtitle: AppBrand.tagline,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Bienvenido a ${AppBrand.name}',
-                  style: Theme.of(context).textTheme.displayLarge,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppBrand.description,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                _buildInputField(
-                  controller: _emailController,
-                  focusNode: _emailFocus,
-                  label: 'Correo institucional',
-                  hint: 'usuario@espe.edu.ec',
-                  icon: Icons.email_outlined,
-                  onSubmitted: (_) => _passwordFocus.requestFocus(),
-                ),
-                const SizedBox(height: 20),
-                _buildInputField(
-                  controller: _passwordController,
-                  focusNode: _passwordFocus,
-                  label: 'Contraseña',
-                  hint: '••••••••',
-                  icon: Icons.lock_outlined,
-                  obscureText: _obscurePassword,
-                  suffixIcon: IconButton(
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      '¿Olvidaste tu contraseña?',
-                      style: TextStyle(
-                        color: AppColors.lavender,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Consumer<AuthViewModel>(
-                  builder: (context, viewModel, _) => ElevatedButton(
-                    onPressed: viewModel.isLoading
-                        ? null
-                        : () => _handleLogin(viewModel, context),
-                    child: viewModel.isLoading
-                        ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.buttonPrimaryText,
-                            ),
-                          )
-                        : const Text('Entrar a Nidara'),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      '¿No tienes cuenta? ',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    const NidaraBrandMark(
+                      iconSize: 104,
+                      subtitle: AppBrand.tagline,
                     ),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Bienvenido a ${AppBrand.name}',
+                      style: Theme.of(context).textTheme.displayLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppBrand.description,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    TextFormField(
+                      controller: _emailController,
+                      focusNode: _emailFocus,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
+                      maxLength: AuthValidators.maxEmailLength,
+                      decoration: const InputDecoration(
+                        labelText: 'Correo personal o institucional',
+                        hintText: 'nombre@correo.com',
+                        helperText:
+                            'Usa el correo con el que creaste tu cuenta.',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        counterText: '',
+                      ),
+                      validator: AuthValidators.email,
+                      onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
+                    ),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _passwordController,
+                      focusNode: _passwordFocus,
+                      obscureText: _obscurePassword,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.password],
+                      maxLength: AuthValidators.maxPasswordLength,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        hintText: 'Ingresa tu contraseña',
+                        prefixIcon: const Icon(Icons.lock_outlined),
+                        counterText: '',
+                        suffixIcon: IconButton(
+                          tooltip: _obscurePassword
+                              ? 'Mostrar contraseña'
+                              : 'Ocultar contraseña',
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        'Regístrate aquí',
-                        style: TextStyle(
-                          color: AppColors.mint,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
+                      validator: AuthValidators.requiredPassword,
+                      onFieldSubmitted: (_) =>
+                          _handleLogin(context.read<AuthViewModel>()),
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _showPasswordResetDialog,
+                        child: Text(
+                          '¿Olvidaste tu contraseña?',
+                          style: TextStyle(
+                            color: AppColors.lavender,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Consumer<AuthViewModel>(
+                      builder: (context, viewModel, _) => ElevatedButton.icon(
+                        onPressed: viewModel.isLoading
+                            ? null
+                            : () => _handleLogin(viewModel),
+                        icon: viewModel.isLoading
+                            ? SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.buttonPrimaryText,
+                                ),
+                              )
+                            : const Icon(Icons.login_rounded),
+                        label: const Text('Entrar a Nidara'),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _NewAccountCallout(
+                      onRegister: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required FocusNode focusNode,
-    required String label,
-    required String hint,
-    required IconData icon,
-    bool obscureText = false,
-    Widget? suffixIcon,
-    void Function(String)? onSubmitted,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+class _NewAccountCallout extends StatelessWidget {
+  const _NewAccountCallout({required this.onRegister});
+
+  final VoidCallback onRegister;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceHigh,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.person_add_alt_rounded, color: AppColors.mint),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '¿Primera vez en Nidara?',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          focusNode: focusNode,
-          obscureText: obscureText,
-          onSubmitted: onSubmitted,
-          style: TextStyle(color: AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            prefixIcon: Icon(icon, color: AppColors.mint, size: 20),
-            suffixIcon: suffixIcon,
-            filled: true,
-            fillColor: AppColors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+          const SizedBox(height: 8),
+          Text(
+            'Crea tu cuenta con un correo activo para acceder a rutinas, hábitos, progreso y citas.',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+              height: 1.35,
             ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
           ),
-        ),
-      ],
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: onRegister,
+            icon: const Icon(Icons.arrow_forward_rounded),
+            label: const Text('Crear cuenta'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -840,7 +840,7 @@ class _AdminSettingsViewState extends State<_AdminSettingsView> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Duracion recomendada: $_duration min',
+                  'Duración recomendada: $_duration min',
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -2551,7 +2551,7 @@ class _ContentFormDialogState extends State<_ContentFormDialog> {
                     controller: _durationController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
-                      labelText: 'Duracion en segundos',
+                      labelText: 'Duración en segundos',
                     ),
                     validator: (value) {
                       final parsed = int.tryParse(value ?? '');
@@ -2723,7 +2723,7 @@ class _MediaAssetFormDialogState extends State<_MediaAssetFormDialog> {
                   controller: _pathController,
                   decoration: const InputDecoration(
                     labelText: 'Ruta del archivo',
-                    helperText: 'Ej. audios/respiracion-4-6.mp3',
+                    helperText: 'Ej. audios/respiración-4-6.mp3',
                   ),
                   validator: (value) => value == null || value.trim().isEmpty
                       ? 'Ingresa la ruta del recurso'

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../reminders_view.dart';
 
 class TasksHeader extends StatelessWidget {
   const TasksHeader({super.key});
@@ -32,7 +33,7 @@ class TasksHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Asignadas por tu psicóloga y rutinas para tu descanso nocturno.',
+                  'Asignadas por el personal de Psicología y rutinas para tu descanso nocturno.',
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 16,
@@ -47,7 +48,11 @@ class TasksHeader extends StatelessWidget {
             width: 46,
             height: 46,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RemindersView()),
+                );
+              },
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.zero,
                 backgroundColor: AppColors.surfaceLowest,

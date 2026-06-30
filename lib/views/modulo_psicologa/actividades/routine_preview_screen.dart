@@ -14,12 +14,7 @@ class RoutinePreviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(
-        255,
-        204,
-        206,
-        208,
-      ), // Fondo oscuro consistente con reproductores
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -43,16 +38,15 @@ class RoutinePreviewScreen extends StatelessWidget {
       children: [
         IconButton(
           onPressed: () => Navigator.pop(context),
-          //color de la x de cierre
-          icon: const Icon(Icons.close, color: Color.fromARGB(179, 11, 11, 11)),
+          tooltip: 'Cerrar vista previa',
+          icon: Icon(Icons.close, color: AppColors.textPrimary),
         ),
         Expanded(
           child: Text(
             routine.title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              //color de titulo de arriva
-              color: Color.fromARGB(255, 120, 203, 43),
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),

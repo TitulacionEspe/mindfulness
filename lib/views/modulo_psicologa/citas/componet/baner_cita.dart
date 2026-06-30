@@ -40,7 +40,7 @@ class BannerCita extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Mis Citas",
+                        "Mis citas",
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 24,

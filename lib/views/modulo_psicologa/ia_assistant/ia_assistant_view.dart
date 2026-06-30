@@ -522,7 +522,7 @@ class _IAAssistantViewState extends State<IAAssistantView> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Genera guías, visualizaciones,\nresúmenes y contenido terapéutico.',
+              'Organiza guías, visualizaciones,\nresúmenes y actividades de acompañamiento.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textSecondary,

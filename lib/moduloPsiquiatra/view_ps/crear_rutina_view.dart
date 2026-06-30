@@ -102,10 +102,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                     itemBuilder: (context, i) {
                       final fav = vm.favorites[i];
                       return ListTile(
-                        leading: const Icon(
-                          Icons.music_note,
-                          color: Colors.blue,
-                        ),
+                        leading: Icon(Icons.music_note, color: AppColors.mint),
                         title: Text(fav['name'] ?? "Sin nombre"),
                         subtitle: Text(fav['category'] ?? ""),
                         onTap: () {
@@ -152,16 +149,16 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
       if (success) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("✅ Rutina creada y guardada correctamente"),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Rutina creada y guardada correctamente.'),
+            backgroundColor: AppColors.mint,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("❌ Error: ${vm.errorMessage}"),
-            backgroundColor: Colors.red,
+            content: Text(vm.errorMessage ?? 'No se pudo guardar la rutina.'),
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -208,11 +205,11 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                     maxLines: 3,
                   ),
                   const SizedBox(height: 24),
-                  _buildSectionTitle("Categoria y Duracion"),
+                  _buildSectionTitle("Categoría y duración"),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedCategory,
-                    decoration: _inputDecoration("Categoria", Icons.category),
+                    decoration: _inputDecoration("Categoría", Icons.category),
                     items: categories.map((c) {
                       return DropdownMenuItem(
                         value: c,
@@ -222,11 +219,11 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                     onChanged: (val) =>
                         setState(() => _selectedCategory = val!),
                     validator: (v) =>
-                        v == null ? "Selecciona una categoria" : null,
+                        v == null ? "Selecciona una categoría" : null,
                   ),
                   const SizedBox(height: 16),
                   CustomSlider(
-                    label: "Duracion total",
+                    label: "Duración total",
                     value: _durationMinutes,
                     min: 1,
                     max: 10,
@@ -237,7 +234,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                   const Divider(height: 48),
 
                   if (_selectedCategory == 'breathing') ...[
-                    _buildSectionTitle("Patron de Respiracion"),
+                    _buildSectionTitle("Patrón de respiración"),
                     const SizedBox(height: 16),
                     CustomSlider(
                       label: "Inhalar",
@@ -305,7 +302,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                       onPressed: _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.mint,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.buttonPrimaryText,
                         minimumSize: const Size(double.infinity, 60),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -313,7 +310,7 @@ class _CrearRutinaViewState extends State<CrearRutinaView> {
                         elevation: 0,
                       ),
                       child: const Text(
-                        "GUARDAR RUTINA",
+                        "Guardar rutina",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

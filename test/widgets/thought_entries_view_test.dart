@@ -81,6 +81,11 @@ Widget _buildApp(ThoughtEntriesRepository repository) {
   );
 }
 
+Future<void> _scrollToHistory(WidgetTester tester) async {
+  await tester.drag(find.byType(CustomScrollView), const Offset(0, -650));
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('renders composer and history', (tester) async {
     final repository = FakeThoughtEntriesRepository(
@@ -97,9 +102,31 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Descarga emocional'), findsOneWidget);
-    expect(find.text('Guardar pensamiento'), findsOneWidget);
+    expect(find.text('Guardar nota privada'), findsOneWidget);
+    expect(find.text('Máximo 30 palabras. 0/30'), findsOneWidget);
     expect(find.text('Historial privado'), findsOneWidget);
+
+    await _scrollToHistory(tester);
+
     expect(find.text('entrada reciente'), findsOneWidget);
+  });
+
+  testWidgets('shows inline word limit feedback', (tester) async {
+    final repository = FakeThoughtEntriesRepository();
+
+    await tester.pumpWidget(_buildApp(repository));
+    await tester.pumpAndSettle();
+
+    final longContent = List.filled(31, 'calma').join(' ');
+    await tester.enterText(find.byType(TextField), longContent);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        'La nota privada permite máximo 30 palabras. Actualmente tiene 31.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('shows edit/delete only for recent entries', (tester) async {
@@ -120,9 +147,10 @@ void main() {
 
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
+    await _scrollToHistory(tester);
 
-    expect(find.byTooltip('Editar entrada'), findsOneWidget);
-    expect(find.byTooltip('Eliminar entrada'), findsOneWidget);
+    expect(find.byTooltip('Editar nota privada'), findsOneWidget);
+    expect(find.byTooltip('Eliminar nota privada'), findsOneWidget);
   });
 
   testWidgets('deletes entry after confirmation dialog', (tester) async {
@@ -138,12 +166,13 @@ void main() {
 
     await tester.pumpWidget(_buildApp(repository));
     await tester.pumpAndSettle();
+    await _scrollToHistory(tester);
 
     expect(find.text('se elimina'), findsOneWidget);
-    await tester.tap(find.byTooltip('Eliminar entrada'));
+    await tester.tap(find.byTooltip('Eliminar nota privada'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Eliminar entrada'), findsOneWidget);
+    expect(find.text('Eliminar nota privada'), findsOneWidget);
     await tester.tap(find.text('Eliminar'));
     await tester.pumpAndSettle();
 

@@ -62,10 +62,10 @@ class BreathingCyclesInfo extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "Se realizarán $cycles ciclos completos en $durationMinutes min.",
+            'Se realizarán $cycles ciclos completos en $durationMinutes min.',
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontStyle: FontStyle.italic,
             ),
           ),

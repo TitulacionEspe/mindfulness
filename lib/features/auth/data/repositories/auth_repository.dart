@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/user_role.dart';
 import '../../domain/repositories/i_auth_repository.dart';
+import '../../domain/validators/auth_validators.dart';
 
 /// Concrete implementation of IAuthRepository (Data Layer).
 /// Handles calls to Supabase Auth and entity mapping.
@@ -78,7 +80,7 @@ class AuthRepository implements IAuthRepository {
       if (!userEntity.canAccessProtectedFeatures) {
         await Supabase.instance.client.auth.signOut();
         throw Exception(
-          'Tu cuenta esta desactivada o bloqueada. Contacta al administrador.',
+          'Tu cuenta está desactivada o bloqueada. Contacta al administrador.',
         );
       }
 
@@ -87,9 +89,77 @@ class AuthRepository implements IAuthRepository {
       final message = e.toString();
       if (message.contains('Invalid login') ||
           message.contains('credentials')) {
-        throw Exception('Correo o contraseña incorrectos');
+        throw Exception(
+          'No encontramos una cuenta con estos datos. Regístrate primero o verifica tus credenciales.',
+        );
       }
       throw Exception('Error al iniciar sesión: $message');
+    }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      final normalizedEmail = AuthValidators.normalizeEmail(email);
+      final emailError = AuthValidators.email(normalizedEmail);
+      if (emailError != null) throw Exception(emailError);
+
+      await Supabase.instance.client.auth.resetPasswordForEmail(
+        normalizedEmail,
+        redirectTo: kIsWeb ? '${Uri.base.origin}/#/reset-password' : null,
+      );
+    } catch (e) {
+      final message = e.toString();
+      if (message.contains('Ingresa')) {
+        throw Exception(message.replaceFirst('Exception: ', ''));
+      }
+      if (message.contains('email_rate_limit') ||
+          message.contains('rate limit')) {
+        throw Exception(
+          'Ya enviamos varios correos. Espera unos minutos e intenta nuevamente.',
+        );
+      }
+      if (message.contains('network') ||
+          message.contains('connect') ||
+          message.contains('fetch')) {
+        throw Exception(
+          'No se pudo conectar. Revisa tu internet e intenta nuevamente.',
+        );
+      }
+      throw Exception(
+        'No se pudo enviar el correo de recuperación. Verifica el correo e intenta nuevamente.',
+      );
+    }
+  }
+
+  @override
+  Future<void> updatePassword(String password) async {
+    try {
+      final passwordError = AuthValidators.securePassword(password);
+      if (passwordError != null) throw Exception(passwordError);
+
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(password: password),
+      );
+    } catch (e) {
+      final message = e.toString();
+      if (message.contains('Auth session missing') ||
+          message.contains('session_not_found') ||
+          message.contains('not authenticated')) {
+        throw Exception(
+          'Abre el enlace de recuperación desde tu correo antes de crear una nueva contraseña.',
+        );
+      }
+      if (message.contains('password') || message.contains('contraseña')) {
+        throw Exception(
+          message.replaceFirst('Exception: ', '').contains('contraseña')
+              ? message.replaceFirst('Exception: ', '')
+              : 'La contraseña no cumple con los requisitos de seguridad.',
+        );
+      }
+      throw Exception(
+        'No se pudo actualizar la contraseña. Intenta nuevamente.',
+      );
     }
   }
 

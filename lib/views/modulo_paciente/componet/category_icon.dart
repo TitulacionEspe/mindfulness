@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../models/routine_model.dart';
 
 class CategoryIcon extends StatelessWidget {
@@ -37,35 +38,35 @@ class CategoryIconStyle {
 
 CategoryIconStyle styleForCategory(RoutineCategory category) {
   return switch (category) {
-    RoutineCategory.breathing => const CategoryIconStyle(
+    RoutineCategory.breathing => CategoryIconStyle(
       icon: Icons.air_rounded,
-      background: Color(0xFFCCF0EC),
-      iconColor: Color(0xFF006B63),
+      background: AppColors.successBg,
+      iconColor: AppColors.mint,
     ),
-    RoutineCategory.relaxation => const CategoryIconStyle(
+    RoutineCategory.relaxation => CategoryIconStyle(
       icon: Icons.spa_outlined,
-      background: Color(0xFFD6EAD0),
-      iconColor: Color(0xFF2E7D32),
+      background: AppColors.warningBg,
+      iconColor: AppColors.lavender,
     ),
-    RoutineCategory.sleepInduction => const CategoryIconStyle(
+    RoutineCategory.sleepInduction => CategoryIconStyle(
       icon: Icons.dark_mode_outlined,
-      background: Color(0xFFD5E8F5),
-      iconColor: Color(0xFF1565C0),
+      background: AppColors.secondaryContainer,
+      iconColor: AppColors.mint,
     ),
-    RoutineCategory.soundscape => const CategoryIconStyle(
+    RoutineCategory.soundscape => CategoryIconStyle(
       icon: Icons.music_note_rounded,
-      background: Color(0xFFE8D5F5),
-      iconColor: Color(0xFF6A1B9A),
+      background: AppColors.warningBg,
+      iconColor: AppColors.lavender,
     ),
-    RoutineCategory.terapiaSonido => const CategoryIconStyle(
+    RoutineCategory.terapiaSonido => CategoryIconStyle(
       icon: Icons.graphic_eq_rounded,
-      background: Color(0xFFF5D5D5),
-      iconColor: Color(0xFFB71C1C),
+      background: AppColors.tertiaryBg,
+      iconColor: AppColors.tertiary,
     ),
-    RoutineCategory.all => const CategoryIconStyle(
+    RoutineCategory.all => CategoryIconStyle(
       icon: Icons.checklist_rounded,
-      background: Color(0xFFFFF3CC),
-      iconColor: Color(0xFFF57F17),
+      background: AppColors.surfaceHigh,
+      iconColor: AppColors.textSecondary,
     ),
   };
 }

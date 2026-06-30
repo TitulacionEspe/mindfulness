@@ -47,7 +47,7 @@ class CitaCont extends StatelessWidget {
           onTap: () => _goToResources(context),
         ),
         ActionButton(
-          label: 'Mis Citas',
+          label: 'Mis citas',
           icon: Icons.event_note_rounded,
           color: AppColors.mint,
           onTap: () => _goToFavorites(context),

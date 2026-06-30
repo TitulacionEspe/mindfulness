@@ -113,10 +113,10 @@ class RoutinesViewModel2 extends ChangeNotifier {
             holdIn == null ||
             exhale == null ||
             holdOut == null) {
-          throw Exception("Faltan datos del patron de respiracion");
+          throw Exception("Faltan datos del patrón de respiración");
         }
 
-        // CALCULO DE CICLOS: duracion / (suma de segundos del patron)
+        // Cálculo de ciclos: duración / (suma de segundos del patrón).
         final cycleSeconds = inhale + holdIn + exhale + holdOut;
         final cyclesRecommended = cycleSeconds > 0
             ? (durationSeconds / cycleSeconds).floor()

@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/utils/ai_parser.dart';
 import '../models/chat_message_model.dart';
 
 /// Resultado de enviar un mensaje: el mensaje del usuario y la respuesta del
-/// asistente ya persistidos, mas la senal de sugerir una cita.
+/// asistente ya persistidos, más la señal de sugerir una cita.
 class ChatSendResult {
   const ChatSendResult({
     required this.userMessage,
@@ -77,30 +79,61 @@ class SupabaseChatRepository implements ChatRepository {
       Map<String, dynamic>.from(userRow),
     );
 
+    Map<String, dynamic> map = {};
+    var cleanReply = AiParser.assistantUnavailableReply;
+
     // 2. Llama a la Edge Function (la API key vive en el servidor).
-    final invokeResponse = await _client.functions.invoke(
-      'emotional-chat',
-      body: {
-        'message': trimmed,
-        'history': history
-            .map(
-              (m) => {
-                'role': ChatMessageModel.roleToString(m.role),
-                'content': m.content,
-              },
-            )
-            .toList(),
-      },
-    );
+    // Si la IA falla por cuota, red o JSON inválido, mantenemos el flujo del
+    // chat con una respuesta clara y no mostramos fragmentos técnicos.
+    try {
+      final invokeResponse = await _client.functions.invoke(
+        'emotional-chat',
+        body: {
+          'message': trimmed,
+          'history': history
+              .map(
+                (m) => {
+                  'role': ChatMessageModel.roleToString(m.role),
+                  'content': m.content,
+                },
+              )
+              .toList(),
+        },
+      );
 
-    final data = invokeResponse.data;
-    final map = data is Map
-        ? Map<String, dynamic>.from(data)
-        : <String, dynamic>{};
+      final data = invokeResponse.data;
+      if (data is Map) {
+        map = Map<String, dynamic>.from(data);
+        if (AiParser.isUnavailablePayload(map)) {
+          cleanReply = AiParser.assistantUnavailableReply;
+        } else {
+          final rawReply = (map['reply'] as String?)?.trim() ?? '';
+          cleanReply = AiParser.cleanAssistantReply(
+            rawReply,
+            fallback: AiParser.assistantUnavailableReply,
+          );
+        }
+      } else if (data is String) {
+        try {
+          final decoded = jsonDecode(data);
+          if (decoded is Map) {
+            map = Map<String, dynamic>.from(decoded);
+          }
+        } catch (_) {}
 
-    final reply =
-        (map['reply'] as String?)?.trim() ??
-        'Estoy aqui contigo. Cuentame un poco mas, con calma.';
+        if (map.isNotEmpty && AiParser.isUnavailablePayload(map)) {
+          cleanReply = AiParser.assistantUnavailableReply;
+        } else {
+          cleanReply = AiParser.cleanAssistantReply(
+            data,
+            fallback: AiParser.assistantUnavailableReply,
+          );
+        }
+      }
+    } catch (_) {
+      cleanReply = AiParser.assistantUnavailableReply;
+    }
+
     final riskLevel = ChatMessageModel.riskFromString(
       map['riskLevel'] as String?,
     );
@@ -112,7 +145,7 @@ class SupabaseChatRepository implements ChatRepository {
         .insert({
           'patient_id': user.id,
           'role': 'assistant',
-          'content': reply,
+          'content': cleanReply,
           'risk_level': ChatMessageModel.riskToString(riskLevel),
         })
         .select(_columns)

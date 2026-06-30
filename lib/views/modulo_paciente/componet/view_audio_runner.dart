@@ -61,9 +61,9 @@ class _AudioRunnerState extends State<AudioRunner>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.error,
             content: Text(
-              "Error: No se pudo cargar el sonido de ${widget.category?.label ?? 'la rutina'}.",
+              "No se pudo cargar el sonido de ${widget.category?.label ?? 'la rutina'}. La sesión continuará sin audio.",
             ),
           ),
         );
@@ -119,7 +119,7 @@ class _AudioRunnerState extends State<AudioRunner>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (_isBuffering)
-                const CircularProgressIndicator(color: Color(0xFFB2EBF2))
+                CircularProgressIndicator(color: AppColors.mint)
               else
                 _CategoryVisualizer(
                   category: widget.category ?? RoutineCategory.terapiaSonido,
@@ -144,7 +144,7 @@ class _AudioRunnerState extends State<AudioRunner>
                       : Icons.play_circle_filled_rounded,
                 ),
                 iconSize: 90,
-                color: const Color(0xFFE1BEE7), // Lavanda pastel
+                color: AppColors.lavender,
                 onPressed: () {
                   if (_isPlaying) {
                     _player.pause();
@@ -188,8 +188,8 @@ class _AudioRunnerState extends State<AudioRunner>
         },
         icon: const Icon(Icons.check_circle_outline_rounded),
         label: const Text(
-          "FINALIZAR SESIÓN",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          "Finalizar sesión",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.lavender.withValues(alpha: 0.15),
@@ -230,7 +230,7 @@ class _CategoryVisualizer extends StatelessWidget {
       RoutineCategory.all => Icons.audiotrack_rounded,
     };
 
-    const color = Color.fromARGB(255, 14, 15, 15); // Cian pastel
+    final color = AppColors.mint;
 
     return AnimatedBuilder(
       animation: animation,

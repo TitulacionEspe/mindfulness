@@ -155,14 +155,14 @@ class _AsignarPacienteViewState extends State<AsignarPacienteView> {
                     onPressed: _selectedRoutineId != null ? _assign : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mint,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.buttonPrimaryText,
                       minimumSize: const Size(double.infinity, 56),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
                     child: const Text(
-                      "Confirmar Asignación",
+                      'Confirmar asignación',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
