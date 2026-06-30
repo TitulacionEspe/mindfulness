@@ -154,26 +154,31 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 12)),
-              SliverToBoxAdapter(
-                child: _SoundTherapyCard(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const SoundTherapySelectorScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 14)),
-              if (!_showAsGrid)
+              const SliverToBoxAdapter(child: SizedBox(height: 8)),
+              if (!_showAsGrid) ...[
                 SliverToBoxAdapter(
                   child: CategoryFilters(
                     selectedCategory: viewModel.selectedCategory,
                     onSelected: viewModel.selectCategory,
                   ),
                 ),
+                if (viewModel.selectedCategory == RoutineCategory.all ||
+                    viewModel.selectedCategory == RoutineCategory.terapiaSonido)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 4),
+                      child: _SoundTherapyCard(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const SoundTherapySelectorScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+              ],
               if (viewModel.isLoading && viewModel.routines.isEmpty)
                 const SliverToBoxAdapter(child: _LoadingBlock())
               else if (_showAsGrid)
@@ -191,6 +196,71 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                       final categories = RoutineCategory.values
                           .where((c) => c != RoutineCategory.all)
                           .toList();
+
+                      if (index == categories.length) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const SoundTherapySelectorScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: AppColors.lavender.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.warningBg,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.graphic_eq_rounded,
+                                    color: AppColors.lavender,
+                                    size: 24,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  'Terapia de sonido',
+                                  style: TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Frecuencias offline',
+                                  style: TextStyle(
+                                    color: AppColors.lavender,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
                       final category = categories[index];
                       final count = viewModel.routines
                           .where(
@@ -243,7 +313,7 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                           ),
                         ),
                       );
-                    }, childCount: RoutineCategory.values.length - 1),
+                    }, childCount: RoutineCategory.values.where((c) => c != RoutineCategory.all).length + 1),
                   ),
                 )
               else if (viewModel.filteredRoutines.isEmpty)
