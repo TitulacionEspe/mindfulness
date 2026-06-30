@@ -184,10 +184,16 @@ class RealSoundEngine implements SoundTherapyEngine {
       final amp = _volume * am * 32767.0;
 
       // ─── Canal izquierdo: frecuencia base ──────────────────
-      final sampleL = (sin(2 * pi * freqL * t) * amp).round().clamp(-32767, 32767);
+      final sampleL = (sin(2 * pi * freqL * t) * amp).round().clamp(
+        -32767,
+        32767,
+      );
 
       // ─── Canal derecho: frecuencia base + offset binaural ──
-      final sampleR = (sin(2 * pi * freqR * t) * amp).round().clamp(-32767, 32767);
+      final sampleR = (sin(2 * pi * freqR * t) * amp).round().clamp(
+        -32767,
+        32767,
+      );
 
       samples[i * 2] = sampleL;
       samples[i * 2 + 1] = sampleR;

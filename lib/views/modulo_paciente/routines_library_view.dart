@@ -153,7 +153,8 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => const SoundTherapySelectorScreen(),
+                              builder: (_) =>
+                                  const SoundTherapySelectorScreen(),
                             ),
                           );
                         },
@@ -174,18 +175,86 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                           mainAxisSpacing: 12,
                           childAspectRatio: 1.1,
                         ),
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final categories = RoutineCategory.values
-                          .where((c) => c != RoutineCategory.all)
-                          .toList();
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final categories = RoutineCategory.values
+                            .where((c) => c != RoutineCategory.all)
+                            .toList();
 
-                      if (index == categories.length) {
+                        if (index == categories.length) {
+                          return InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const SoundTherapySelectorScreen(),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.surface,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: AppColors.lavender.withValues(
+                                    alpha: 0.35,
+                                  ),
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.warningBg,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      Icons.graphic_eq_rounded,
+                                      color: AppColors.lavender,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    'Terapia de sonido',
+                                    style: TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Frecuencias offline',
+                                    style: TextStyle(
+                                      color: AppColors.lavender,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        final category = categories[index];
+
                         return InkWell(
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    const SoundTherapySelectorScreen(),
+                                    CategoryRoutinesView(category: category),
                               ),
                             );
                           },
@@ -195,29 +264,17 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: AppColors.lavender.withValues(alpha: 0.35),
+                                color: AppColors.outlineVariant,
                               ),
                             ),
                             padding: const EdgeInsets.all(16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.warningBg,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    Icons.graphic_eq_rounded,
-                                    color: AppColors.lavender,
-                                    size: 24,
-                                  ),
-                                ),
+                                CategoryIcon(category: category, size: 40),
                                 const Spacer(),
                                 Text(
-                                  'Terapia de sonido',
+                                  category.label,
                                   style: TextStyle(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w600,
@@ -228,71 +285,26 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Frecuencias offline',
-                                  style: TextStyle(
-                                    color: AppColors.lavender,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
+                                  category.shortDescription,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 13,
+                                    height: 1.25,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         );
-                      }
-
-                      final category = categories[index];
-
-                      return InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  CategoryRoutinesView(category: category),
-                            ),
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.outlineVariant),
-                          ),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CategoryIcon(category: category, size: 40),
-                              const Spacer(),
-                              Text(
-                                category.label,
-                                style: TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                category.shortDescription,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 13,
-                                  height: 1.25,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }, childCount: RoutineCategory.values.where((c) => c != RoutineCategory.all).length + 1),
+                      },
+                      childCount:
+                          RoutineCategory.values
+                              .where((c) => c != RoutineCategory.all)
+                              .length +
+                          1,
+                    ),
                   ),
                 )
               else if (viewModel.filteredRoutines.isEmpty)
@@ -511,10 +523,7 @@ class _SoundTherapyCard extends StatelessWidget {
               icon: const Icon(Icons.headphones_rounded),
               label: const Text(
                 'Abrir terapia de sonido',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.lavender,

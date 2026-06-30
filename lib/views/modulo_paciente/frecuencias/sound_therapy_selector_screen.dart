@@ -142,7 +142,9 @@ class _SoundTherapySelectorScreenState
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: selected ? AppColors.lavender.withValues(alpha: 0.15) : AppColors.surface,
+              color: selected
+                  ? AppColors.lavender.withValues(alpha: 0.15)
+                  : AppColors.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: selected ? AppColors.lavender : AppColors.outlineVariant,
@@ -157,7 +159,9 @@ class _SoundTherapySelectorScreenState
                     Icon(
                       freq.icon,
                       size: 18,
-                      color: selected ? AppColors.lavender : AppColors.textSecondary,
+                      color: selected
+                          ? AppColors.lavender
+                          : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -165,7 +169,9 @@ class _SoundTherapySelectorScreenState
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
-                        color: selected ? AppColors.lavender : AppColors.textPrimary,
+                        color: selected
+                            ? AppColors.lavender
+                            : AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -346,7 +352,10 @@ class _SoundTherapySelectorScreenState
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('¿Qué es la Terapia de Sonido?', style: TextStyle(color: AppColors.textPrimary)),
+        title: Text(
+          '¿Qué es la Terapia de Sonido?',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
         content: Text(
           'Las frecuencias Solfeggio son tonos asociados tradicionalmente con '
           'distintos estados de bienestar. Combinadas opcionalmente con ritmos '
@@ -358,7 +367,10 @@ class _SoundTherapySelectorScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Entendido', style: TextStyle(color: AppColors.lavender)),
+            child: Text(
+              'Entendido',
+              style: TextStyle(color: AppColors.lavender),
+            ),
           ),
         ],
       ),
