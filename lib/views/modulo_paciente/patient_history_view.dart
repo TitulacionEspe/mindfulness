@@ -7,7 +7,9 @@ import '../../models/patient_history_model.dart';
 import '../../viewmodels/patient_history_viewmodel.dart';
 
 class PatientHistoryView extends StatefulWidget {
-  const PatientHistoryView({super.key});
+  const PatientHistoryView({super.key, this.showBackButton = false});
+
+  final bool showBackButton;
 
   @override
   State<PatientHistoryView> createState() => _PatientHistoryViewState();
@@ -39,6 +41,21 @@ class _PatientHistoryViewState extends State<PatientHistoryView> {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
                 child: Row(
                   children: [
+                    if (widget.showBackButton) ...[
+                      SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: IconButton(
+                          tooltip: 'Volver',
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                     Expanded(
                       child: Text(
                         'Historial personal',
@@ -113,7 +130,7 @@ class _PatientHistoryViewState extends State<PatientHistoryView> {
                   padding: const EdgeInsets.all(4),
                   tabs: const [
                     Tab(text: 'Sesiones'),
-                    Tab(text: 'Pensamientos'),
+                    Tab(text: 'Notas'),
                   ],
                 ),
               ),
@@ -364,7 +381,7 @@ class _SessionsTab extends StatelessWidget {
       errorMessage: viewModel.errorMessage,
       isEmpty: viewModel.sessions.isEmpty,
       emptyMessage:
-          'No hay sesiones registradas en este rango. Completa una actividad desde Tareas para verla aquí.',
+          'No hay sesiones registradas en este rango. Completa una actividad desde Actividades para verla aquí.',
       onRefresh: () => viewModel.loadHistory(force: true),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -395,7 +412,7 @@ class _ThoughtsTab extends StatelessWidget {
       errorMessage: viewModel.errorMessage,
       isEmpty: viewModel.thoughts.isEmpty,
       emptyMessage:
-          'No hay pensamientos registrados en este rango. Puedes escribirlos desde Home o Tareas.',
+          'No hay notas registradas en este rango. Puedes escribirlas desde Diario personal.',
       onRefresh: () => viewModel.loadHistory(force: true),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(),

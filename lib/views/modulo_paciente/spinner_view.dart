@@ -201,12 +201,6 @@ class _SpinnerViewState extends State<SpinnerView>
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: BackButton(color: AppColors.textPrimary),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Icon(Icons.info_outline, color: AppColors.textPrimary),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
@@ -230,7 +224,7 @@ class _SpinnerViewState extends State<SpinnerView>
                   key: _spinnerKey,
                   width: 300,
                   height: 300,
-                  color: Colors.transparent,
+                  color: AppColors.background.withValues(alpha: 0),
                   child: Transform.rotate(
                     angle: _angle,
                     child: const _SpinnerWidget(size: 300),

@@ -8,6 +8,7 @@ class MockAuthRepository implements IAuthRepository {
   String? lastRegisteredEmail;
   String? lastRegisteredFullName;
   bool registerCalled = false;
+  bool consentSaved = false;
 
   @override
   Future<UserEntity> register(
@@ -34,7 +35,9 @@ class MockAuthRepository implements IAuthRepository {
   Future<bool> hasAcceptedConsent(String userId, String version) async => false;
 
   @override
-  Future<void> saveConsent(String userId, String version) async {}
+  Future<void> saveConsent(String userId, String version) async {
+    consentSaved = true;
+  }
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {}
@@ -63,45 +66,45 @@ void main() {
     test('calls repository with valid normalized data', () async {
       await useCase(
         email: ' TEST@ESPE.EDU.EC ',
-        password: 'password123',
-        fullName: '  Juan   Pérez  ',
+        password: 'Nidara1@',
+        fullName: '  Doménica   Cevallos  ',
       );
 
       expect(mockRepository.registerCalled, true);
       expect(mockRepository.lastRegisteredEmail, 'test@espe.edu.ec');
-      expect(mockRepository.lastRegisteredFullName, 'Juan Pérez');
+      expect(mockRepository.lastRegisteredFullName, 'Doménica Cevallos');
     });
 
-    test('throws error if fullName is empty', () async {
+    test('does not call repository with invalid name', () async {
       expect(
         () => useCase(
           email: 'test@espe.edu.ec',
-          password: 'password123',
-          fullName: '',
+          password: 'Nidara1@',
+          fullName: 'Doménica Isabel Cevallos',
         ),
         throwsA(isA<Exception>()),
       );
       expect(mockRepository.registerCalled, false);
     });
 
-    test('throws error if password has fewer than 8 characters', () async {
+    test('does not call repository with invalid email', () async {
       expect(
         () => useCase(
-          email: 'test@espe.edu.ec',
-          password: 'abc123',
-          fullName: 'Juan Pérez',
+          email: '${'a' * 244}@nidara.app',
+          password: 'Nidara1@',
+          fullName: 'Doménica Cevallos',
         ),
         throwsA(isA<Exception>()),
       );
       expect(mockRepository.registerCalled, false);
     });
 
-    test('throws error if password has no number', () async {
+    test('does not call repository with invalid password', () async {
       expect(
         () => useCase(
           email: 'test@espe.edu.ec',
           password: 'password',
-          fullName: 'Juan Pérez',
+          fullName: 'Doménica Cevallos',
         ),
         throwsA(isA<Exception>()),
       );

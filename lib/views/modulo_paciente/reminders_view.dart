@@ -140,7 +140,7 @@ class _RemindersViewState extends State<RemindersView> {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'Configura avisos para higiene del sueño, inicio de rutina y pausas de relajación.',
+                            'Configura avisos para higiene del sueño, inicio de actividades y pausas de relajación.',
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 16,
@@ -534,7 +534,7 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Elige si el aviso será para iniciar una rutina, preparar el descanso o hacer una pausa breve.',
+              'Elige si el aviso será para iniciar una actividad, preparar el descanso o hacer una pausa breve.',
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,
@@ -576,7 +576,7 @@ class _ReminderFormSheetState extends State<ReminderFormSheet> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Selecciona una hora realista, idealmente antes de dormir o al inicio de tu rutina nocturna.',
+              'Selecciona una hora realista, idealmente antes de dormir o al inicio de tu actividad nocturna.',
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,

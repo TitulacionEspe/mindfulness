@@ -103,7 +103,7 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
               sliver: SliverList(
                 delegate: SliverChildListDelegate.fixed([
                   Text(
-                    widget.routine.title,
+                    widget.routine.displayTitle,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 30,
@@ -134,7 +134,7 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
                   ),
                   const SizedBox(height: 16),
                   _SurfaceSection(
-                    title: 'Pasos de la practica',
+                    title: 'Pasos de la actividad',
                     child: Column(
                       children: [
                         for (var index = 0; index < steps.length; index++)
@@ -191,7 +191,7 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
                       ),
                     )
                   : const Text(
-                      'Iniciar sesión',
+                      'Iniciar actividad',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -229,7 +229,7 @@ class _RoutineDetailViewState extends State<RoutineDetailView> {
       RoutineCategory.terapiaSonido => const [
         'Usa audífonos para una mejor experiencia.',
         'Cierra los ojos y concéntrate en las vibraciones.',
-        'Deja que el sonido limpie tus pensamientos.',
+        'Deja que el sonido ayude a ordenar tus ideas.',
       ],
       RoutineCategory.all => const [],
     };

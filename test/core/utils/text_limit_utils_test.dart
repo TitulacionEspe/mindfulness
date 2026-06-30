@@ -28,5 +28,18 @@ void main() {
       expect(TextLimitUtils.wordCount(truncated), 30);
       expect(truncated.endsWith('...'), isTrue);
     });
+
+    test('returns a clear max character error', () {
+      final text = List.filled(101, 'a').join();
+
+      expect(
+        TextLimitUtils.maxCharactersError(
+          text,
+          maxCharacters: 100,
+          fieldName: 'La nota privada',
+        ),
+        'La nota privada permite máximo 100 caracteres. Actualmente tiene 101.',
+      );
+    });
   });
 }

@@ -1026,7 +1026,8 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
     if (mounted) setState(() {});
   }
 
-  int get _motiveWordCount => TextLimitUtils.wordCount(_motiveController.text);
+  int get _motiveCharacterCount =>
+      TextLimitUtils.characterCount(_motiveController.text);
 
   @override
   Widget build(BuildContext context) {
@@ -1109,21 +1110,21 @@ class _RequestAppointmentSheetState extends State<_RequestAppointmentSheet> {
                 controller: _motiveController,
                 minLines: 3,
                 maxLines: 5,
+                maxLength: AppointmentsViewModel.maxMotiveCharacters,
                 decoration: InputDecoration(
                   labelText: 'Motivo breve de la cita',
-                  hintText:
-                      'Ej: Me gustaría conversar sobre mi descanso y carga académica.',
+                  hintText: 'Ej: Quiero conversar sobre mi descanso.',
                   helperText:
-                      'Máximo ${AppointmentsViewModel.maxMotiveWords} palabras. $_motiveWordCount/${AppointmentsViewModel.maxMotiveWords}',
+                      'Máximo ${AppointmentsViewModel.maxMotiveCharacters} caracteres.',
                   semanticCounterText:
-                      '$_motiveWordCount de ${AppointmentsViewModel.maxMotiveWords} palabras',
+                      '$_motiveCharacterCount de ${AppointmentsViewModel.maxMotiveCharacters} caracteres',
                   errorMaxLines: 2,
                 ),
                 validator: (value) {
                   final trimmed = value?.trim() ?? '';
-                  final limitError = TextLimitUtils.requiredMaxWordsError(
+                  final limitError = TextLimitUtils.requiredMaxCharactersError(
                     trimmed,
-                    maxWords: AppointmentsViewModel.maxMotiveWords,
+                    maxCharacters: AppointmentsViewModel.maxMotiveCharacters,
                     emptyMessage: 'Ingresa el motivo de la cita.',
                     fieldName: 'El motivo de la cita',
                   );

@@ -99,14 +99,12 @@ void main() {
     expect(find.text('Sesiones completadas'), findsOneWidget);
     expect(find.text('Constancia semanal'), findsOneWidget);
     expect(find.text('Sesiones'), findsAtLeastNWidgets(1));
-    expect(find.text('Pensamientos'), findsAtLeastNWidgets(1));
+    expect(find.text('Notas'), findsAtLeastNWidgets(1));
     expect(find.text('Escaneo corporal nocturno'), findsOneWidget);
     expect(find.textContaining('Antes:'), findsOneWidget);
 
     final tabBar = find.byType(TabBar);
-    await tester.tap(
-      find.descendant(of: tabBar, matching: find.text('Pensamientos')),
-    );
+    await tester.tap(find.descendant(of: tabBar, matching: find.text('Notas')));
     await tester.pumpAndSettle();
     expect(find.text('Respiré profundo y me sentí mejor.'), findsOneWidget);
   });
@@ -146,7 +144,7 @@ void main() {
     expect(find.text('Historial personal'), findsOneWidget);
     expect(
       find.text(
-        'No hay sesiones registradas en este rango. Completa una actividad desde Tareas para verla aquí.',
+        'No hay sesiones registradas en este rango. Completa una actividad desde Actividades para verla aquí.',
       ),
       findsOneWidget,
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../accessibility/accessibility_preferences.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -18,6 +19,28 @@ class AppTheme {
 
   static ThemeData get darkTheme =>
       _buildTheme(palette: AppColors.darkPalette, brightness: Brightness.dark);
+
+  static ThemeData get colorBlindLightTheme => _buildTheme(
+    palette: AppColors.colorBlindLightPalette,
+    brightness: Brightness.light,
+  );
+
+  static ThemeData get colorBlindDarkTheme => _buildTheme(
+    palette: AppColors.colorBlindDarkPalette,
+    brightness: Brightness.dark,
+  );
+
+  static ThemeData lightThemeFor(ColorVisionMode mode) {
+    return mode == ColorVisionMode.redGreenSupport
+        ? colorBlindLightTheme
+        : lightTheme;
+  }
+
+  static ThemeData darkThemeFor(ColorVisionMode mode) {
+    return mode == ColorVisionMode.redGreenSupport
+        ? colorBlindDarkTheme
+        : darkTheme;
+  }
 
   static ThemeData _buildTheme({
     required AppPalette palette,

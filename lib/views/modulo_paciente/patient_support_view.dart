@@ -32,14 +32,14 @@ class PatientSupportView extends StatelessWidget {
             icon: Icons.shield_outlined,
             title: 'Privacidad y cifrado',
             subtitle:
-                'Tus registros de autopercepción y las sesiones de relajación se guardan de forma segura para mostrarte métricas de progreso. Las notas de pensamientos privados están cifradas y son 100% privadas; nadie más, ni siquiera los profesionales de psicología, pueden leerlas.',
+                'Tus registros de autopercepción y las actividades de relajación se guardan de forma segura para mostrarte métricas de progreso. Las notas del Diario personal están cifradas y son privadas; nadie más, ni siquiera el personal de Psicología, puede leerlas.',
           ),
           const SizedBox(height: 12),
           _SupportCard(
             icon: Icons.notifications_active_outlined,
             title: 'Ajustes de alertas locales',
             subtitle:
-                'Puedes programar alertas diarias para ayudarte a iniciar tus rutinas nocturnas. Si no recibes las notificaciones en la hora programada, asegúrate de activar los permisos de notificación de la aplicación en los ajustes de tu celular.',
+                'Puedes programar alertas diarias para ayudarte a iniciar tus actividades nocturnas. Si no recibes las notificaciones en la hora programada, asegúrate de activar los permisos de notificación de la aplicación en los ajustes de tu celular.',
           ),
           const SizedBox(height: 12),
           _SupportCard(

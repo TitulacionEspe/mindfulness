@@ -4,14 +4,20 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/text_limit_utils.dart';
-import '../../models/routine_model.dart';
 import '../../models/thought_entry_model.dart';
 import '../../viewmodels/thought_entries_viewmodel.dart';
-import 'category_routines_view.dart';
 import 'patient_appointments_view.dart';
+import 'routines_library_view.dart';
 
 class ThoughtEntriesView extends StatefulWidget {
-  const ThoughtEntriesView({super.key});
+  const ThoughtEntriesView({
+    super.key,
+    this.showBackButton = true,
+    this.onOpenActivities,
+  });
+
+  final bool showBackButton;
+  final VoidCallback? onOpenActivities;
 
   @override
   State<ThoughtEntriesView> createState() => _ThoughtEntriesViewState();
@@ -44,17 +50,21 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
     if (mounted) setState(() {});
   }
 
-  int get _wordCount => TextLimitUtils.wordCount(_controller.text);
+  int get _characterCount => TextLimitUtils.characterCount(_controller.text);
 
-  String? get _wordLimitError => TextLimitUtils.maxWordsError(
+  String? get _characterLimitError => TextLimitUtils.maxCharactersError(
     _controller.text,
-    maxWords: ThoughtEntriesViewModel.maxThoughtWords,
+    maxCharacters: ThoughtEntriesViewModel.maxNoteCharacters,
     fieldName: 'La nota privada',
   );
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ThoughtEntriesViewModel>();
+    final notesToday = viewModel.notesCreatedToday();
+    final hasReachedDailyLimit =
+        _editingEntry == null &&
+        notesToday >= ThoughtEntriesViewModel.maxNotesPerDay;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -66,12 +76,13 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
-                  child: Row(
-                    children: [
-                      SizedBox(
+              if (widget.showBackButton)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
                         width: 48,
                         height: 48,
                         child: OutlinedButton(
@@ -91,24 +102,17 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Descarga emocional',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
               SliverToBoxAdapter(
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(20, 8, 20, 14),
+                  margin: EdgeInsets.fromLTRB(
+                    20,
+                    widget.showBackButton ? 12 : 18,
+                    20,
+                    14,
+                  ),
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceHigh,
@@ -120,7 +124,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                     children: [
                       Text(
                         _editingEntry == null
-                            ? 'Escribe una nota privada antes de dormir.'
+                            ? 'Diario personal'
                             : 'Editando una nota privada reciente.',
                         style: TextStyle(
                           color: AppColors.textPrimary,
@@ -131,7 +135,16 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tus notas privadas son personales. Solo se permite editar o eliminar durante 24 horas.',
+                        'Las notas que registres en el diario son confidenciales: nadie podrá verlas, solo tú.',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 14,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Puedes registrar hasta 10 notas por día. Hoy llevas $notesToday/10.',
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 14,
@@ -140,6 +153,16 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                       ),
                       const SizedBox(height: 12),
                       const _ThoughtPrivacyNotice(),
+                      if (hasReachedDailyLimit) ...[
+                        const SizedBox(height: 12),
+                        _InlineFeedback(
+                          message:
+                              'Hoy ya registraste 10 notas. Puedes volver a escribir mañana.',
+                          icon: Icons.info_outline_rounded,
+                          color: AppColors.tertiaryOnContainer,
+                          background: AppColors.tertiaryBg,
+                        ),
+                      ],
                       if (_editingEntry != null) ...[
                         const SizedBox(height: 14),
                         Container(
@@ -186,6 +209,7 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         focusNode: _focusNode,
                         minLines: 4,
                         maxLines: 8,
+                        maxLength: ThoughtEntriesViewModel.maxNoteCharacters,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
@@ -193,13 +217,14 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         ),
                         decoration: InputDecoration(
                           hintText:
-                              'Escribe aquí una preocupación, idea o reflexión breve de hoy.',
+                              'Escribe una nota breve sobre cómo te sientes hoy.',
                           helperText:
-                              'Máximo ${ThoughtEntriesViewModel.maxThoughtWords} palabras. $_wordCount/${ThoughtEntriesViewModel.maxThoughtWords}',
-                          errorText: _wordLimitError,
+                              'Máximo ${ThoughtEntriesViewModel.maxNoteCharacters} caracteres. $_characterCount/${ThoughtEntriesViewModel.maxNoteCharacters}',
+                          counterText: '',
+                          errorText: _characterLimitError,
                           errorMaxLines: 2,
                           semanticCounterText:
-                              '$_wordCount de ${ThoughtEntriesViewModel.maxThoughtWords} palabras',
+                              '$_characterCount de ${ThoughtEntriesViewModel.maxNoteCharacters} caracteres',
                           hintStyle: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
@@ -211,7 +236,9 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
                         width: double.infinity,
                         height: 54,
                         child: ElevatedButton.icon(
-                          onPressed: viewModel.isSaving ? null : _saveCurrent,
+                          onPressed: viewModel.isSaving || hasReachedDailyLimit
+                              ? null
+                              : _saveCurrent,
                           icon: viewModel.isSaving
                               ? SizedBox(
                                   width: 20,
@@ -370,28 +397,15 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
               if (viewModel.successMessage != null)
                 SliverToBoxAdapter(
                   child: _AfterThoughtSaveActions(
-                    onBreathe: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const CategoryRoutinesView(
-                          category: RoutineCategory.breathing,
-                        ),
-                      ),
-                    ),
-                    onRelax: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const CategoryRoutinesView(
-                          category: RoutineCategory.relaxation,
-                        ),
-                      ),
-                    ),
-                    onClose: () => Navigator.of(context).pop(),
+                    onOpenActivities:
+                        widget.onOpenActivities ?? _openActivitiesAsRoute,
                   ),
                 ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
                   child: Text(
-                    'Historial privado',
+                    'Historial del diario',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 20,
@@ -437,11 +451,17 @@ class _ThoughtEntriesViewState extends State<ThoughtEntriesView> {
     );
   }
 
+  void _openActivitiesAsRoute() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const RoutinesLibraryView()));
+  }
+
   Future<void> _saveCurrent() async {
     final viewModel = context.read<ThoughtEntriesViewModel>();
     viewModel.clearMessages();
     final content = _controller.text;
-    if (_wordLimitError != null) {
+    if (_characterLimitError != null) {
       _focusNode.requestFocus();
       setState(() {});
       return;
@@ -683,7 +703,7 @@ class _ThoughtPrivacyNotice extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Este registro es personal y no se usa para diagnosticar. Si escribes algo que indique riesgo o necesitas ayuda inmediata, busca apoyo profesional o comunícate con emergencias.',
+              'Este diario es personal y no se usa para diagnosticar. Si escribes algo que indique riesgo o necesitas ayuda inmediata, busca apoyo profesional o comunícate con emergencias.',
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 14,
@@ -698,15 +718,9 @@ class _ThoughtPrivacyNotice extends StatelessWidget {
 }
 
 class _AfterThoughtSaveActions extends StatelessWidget {
-  const _AfterThoughtSaveActions({
-    required this.onBreathe,
-    required this.onRelax,
-    required this.onClose,
-  });
+  const _AfterThoughtSaveActions({required this.onOpenActivities});
 
-  final VoidCallback onBreathe;
-  final VoidCallback onRelax;
-  final VoidCallback onClose;
+  final VoidCallback onOpenActivities;
 
   @override
   Widget build(BuildContext context) {
@@ -722,7 +736,7 @@ class _AfterThoughtSaveActions extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Puedes continuar con una acción breve.',
+            'Puedes continuar con una actividad breve.',
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 14,
@@ -730,53 +744,16 @@ class _AfterThoughtSaveActions extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _ActionChipButton(
-                icon: Icons.air_rounded,
-                label: 'Respirar',
-                onPressed: onBreathe,
-              ),
-              _ActionChipButton(
-                icon: Icons.self_improvement_rounded,
-                label: 'Relajarme',
-                onPressed: onRelax,
-              ),
-              _ActionChipButton(
-                icon: Icons.check_rounded,
-                label: 'Cerrar',
-                onPressed: onClose,
-              ),
-            ],
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: onOpenActivities,
+              icon: const Icon(Icons.self_improvement_rounded, size: 18),
+              label: const Text('Ir a actividades'),
+            ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ActionChipButton extends StatelessWidget {
-  const _ActionChipButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      label: Text(label),
-      style: OutlinedButton.styleFrom(
-        minimumSize: const Size(0, 44),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
       ),
     );
   }
@@ -881,7 +858,7 @@ class _EmptyThoughtsState extends StatelessWidget {
             border: Border.all(color: AppColors.outlineVariant),
           ),
           child: Text(
-            'Aún no tienes notas guardadas. Escribe una nota privada breve para descargar tensión emocional.',
+            'Aún no tienes notas guardadas. Escribe una nota breve para registrar cómo te sientes hoy.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.textSecondary,

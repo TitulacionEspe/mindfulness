@@ -44,7 +44,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
       isDismissible: false,
       builder: (_) => PostSessionLikertSheet(
         sessionId: widget.sessionId,
-        routineTitle: widget.routine.title,
+        routineTitle: widget.routine.displayTitle,
       ),
     );
 
@@ -129,7 +129,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
         ),
         Expanded(
           child: Text(
-            widget.routine.title,
+            widget.routine.displayTitle,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -152,7 +152,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              widget.routine.title,
+              widget.routine.displayTitle,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -174,7 +174,7 @@ class _RoutineSessionViewState extends State<RoutineSessionView> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Text("Comenzar Ahora"),
+              child: const Text('Iniciar actividad'),
             ),
           ],
         ),
