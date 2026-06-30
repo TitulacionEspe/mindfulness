@@ -5,16 +5,15 @@ import '../../core/theme/app_colors.dart';
 import '../../models/routine_model.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/routines_viewmodel.dart';
+import 'category_routines_view.dart';
 import 'componet/assigned_activity_card.dart';
 import 'componet/category_filters.dart';
 import 'componet/category_icon.dart';
 import 'componet/emotional_dump_card.dart';
 import 'componet/library_routine_card.dart';
-import 'componet/questionnaire_card.dart';
 import 'componet/quick_exercises_section.dart';
 import 'componet/section_title.dart';
 import 'componet/tasks_header.dart';
-import 'category_routines_view.dart';
 import 'routine_detail_view.dart';
 import 'thought_entries_view.dart';
 
@@ -112,10 +111,10 @@ class _RoutinesLibraryViewState extends State<RoutinesLibraryView> {
                   ),
                 ),
               const SliverToBoxAdapter(child: SizedBox(height: 14)),
-              const SliverToBoxAdapter(
-                child: SectionTitle(title: 'Cuestionario inicial'),
-              ),
-              const SliverToBoxAdapter(child: QuestionnaireCard()),
+              //const SliverToBoxAdapter(
+              // child: SectionTitle(title: 'Cuestionario inicial'),
+              //),
+              //const SliverToBoxAdapter(child: QuestionnaireCard()),
               const SliverToBoxAdapter(child: SizedBox(height: 14)),
               SliverToBoxAdapter(
                 child: SectionTitle(
