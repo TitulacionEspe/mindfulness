@@ -63,9 +63,9 @@ class RoutinesViewModel extends ChangeNotifier {
     try {
       _routines = await _repository.fetchRoutines();
     } catch (_) {
-      _routines = RoutinesRepository.fallbackRoutines;
+      _routines = const [];
       _errorMessage =
-          'No se pudo sincronizar el catálogo con Supabase. Mostramos actividades básicas disponibles en el dispositivo.';
+          'No se pudo sincronizar el catálogo con Supabase. Verifica tu conexión e inténtalo nuevamente.';
     }
 
     try {

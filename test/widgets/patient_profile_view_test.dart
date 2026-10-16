@@ -56,5 +56,6 @@ void main() {
 
     expect(find.text('Perfil'), findsOneWidget);
     expect(find.text('Accesibilidad'), findsOneWidget);
+    expect(find.text('Reiniciar progreso'), findsOneWidget);
   });
 }

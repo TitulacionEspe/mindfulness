@@ -6,6 +6,10 @@ abstract class PatientHistoryRepository {
   Future<List<HistorySessionItem>> getSessions(int rangeDays);
   Future<List<HistoryEmotionItem>> getAssessments(int rangeDays);
   Future<List<HistoryThoughtItem>> getThoughtEntries(int rangeDays);
+  Future<void> resetProgress({
+    bool resetSleepHabits = false,
+    bool deleteThoughts = false,
+  });
 }
 
 class SupabasePatientHistoryRepository implements PatientHistoryRepository {
@@ -218,5 +222,24 @@ class SupabasePatientHistoryRepository implements PatientHistoryRepository {
         preview: preview,
       );
     }).toList();
+  }
+
+  @override
+  Future<void> resetProgress({
+    bool resetSleepHabits = false,
+    bool deleteThoughts = false,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      throw Exception('Usuario no autenticado');
+    }
+
+    await _client.rpc(
+      'reset_patient_progress',
+      params: {
+        'p_reset_sleep_habits': resetSleepHabits,
+        'p_delete_thoughts': deleteThoughts,
+      },
+    );
   }
 }

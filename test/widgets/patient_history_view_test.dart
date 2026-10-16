@@ -36,6 +36,17 @@ class FakePatientHistoryRepository implements PatientHistoryRepository {
     lastRangeDays = rangeDays;
     return thoughts;
   }
+
+  @override
+  Future<void> resetProgress({
+    bool resetSleepHabits = false,
+    bool deleteThoughts = false,
+  }) async {
+    if (shouldThrow) throw Exception('reset error');
+    sessions = const [];
+    emotions = const [];
+    thoughts = const [];
+  }
 }
 
 Widget _buildApp(PatientHistoryRepository repository) {

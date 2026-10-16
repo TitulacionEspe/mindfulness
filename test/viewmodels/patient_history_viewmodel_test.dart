@@ -31,6 +31,17 @@ class FakePatientHistoryRepository implements PatientHistoryRepository {
     lastRangeDays = rangeDays;
     return thoughts;
   }
+
+  @override
+  Future<void> resetProgress({
+    bool resetSleepHabits = false,
+    bool deleteThoughts = false,
+  }) async {
+    if (shouldThrow) throw Exception('reset error');
+    sessions = const [];
+    emotions = const [];
+    thoughts = const [];
+  }
 }
 
 void main() {
@@ -201,6 +212,47 @@ void main() {
       expect(viewModel.homeMetrics.assessableSessions, 2);
       expect(viewModel.homeMetrics.improvementRate, 0.5);
       expect(viewModel.homeMetricsErrorMessage, isNull);
+    });
+
+    test('resetProgress resets state and metrics on success', () async {
+      final repository = FakePatientHistoryRepository()
+        ..sessions = [
+          HistorySessionItem(
+            id: 's-1',
+            routineTitle: 'Calma',
+            startedAt: fixedNow,
+            completedAt: fixedNow,
+            status: HistorySessionStatus.completed,
+            assignmentContext: 'self-initiated',
+          ),
+        ];
+      final viewModel = PatientHistoryViewModel(
+        repository: repository,
+        nowProvider: () => fixedNow,
+      );
+
+      await viewModel.loadHistory();
+      expect(viewModel.sessions.length, 1);
+
+      final success = await viewModel.resetProgress();
+      expect(success, isTrue);
+      expect(viewModel.sessions, isEmpty);
+      expect(viewModel.emotions, isEmpty);
+      expect(viewModel.thoughts, isEmpty);
+      expect(viewModel.historyMetrics.completedSessionsInRange, 0);
+      expect(viewModel.errorMessage, isNull);
+    });
+
+    test('resetProgress sets error message on failure', () async {
+      final repository = FakePatientHistoryRepository()..shouldThrow = true;
+      final viewModel = PatientHistoryViewModel(
+        repository: repository,
+        nowProvider: () => fixedNow,
+      );
+
+      final success = await viewModel.resetProgress();
+      expect(success, isFalse);
+      expect(viewModel.errorMessage, contains('No se pudo reiniciar'));
     });
   });
 }

@@ -35,9 +35,11 @@ class AuthRepository implements IAuthRepository {
     } catch (e) {
       final message = e.toString();
       // Map common Supabase errors to user-friendly Spanish messages
-      if (message.contains('email_rate_limit')) {
+      if (message.contains('rate_limit') ||
+          message.contains('rate limit') ||
+          message.contains('over_email_send_rate_limit')) {
         throw Exception(
-          'Demasiados intentos. Espera unos minutos e intenta de nuevo',
+          'Demasiados intentos de envío de correo. Espera unos minutos e intenta de nuevo.',
         );
       }
       if (message.contains('Email not') || message.contains('email_already')) {
