@@ -322,8 +322,8 @@ class PatientProfileView extends StatelessWidget {
                       : () async {
                           setDialogState(() => isSubmitting = true);
                           final messenger = ScaffoldMessenger.of(context);
-                          final historyVm =
-                              context.read<PatientHistoryViewModel>();
+                          final historyVm = context
+                              .read<PatientHistoryViewModel>();
                           final sleepVm = context.read<SleepHabitsViewModel>();
 
                           final success = await historyVm.resetProgress(
