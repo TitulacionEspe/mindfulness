@@ -32,7 +32,7 @@ class RoutinesRepository implements RoutinesDataSource {
         .order('duration_seconds', ascending: true);
 
     final routines = List<Map<String, dynamic>>.from(routinesResponse as List);
-    if (routines.isEmpty) return fallbackRoutines;
+    if (routines.isEmpty) return const [];
 
     final routineIds = routines.map((r) => r['id'] as String).toList();
 
@@ -233,76 +233,4 @@ class RoutinesRepository implements RoutinesDataSource {
 
     return result;
   }
-
-  // ────────────────────────────────────────────────────────────────────────────
-  // RUTINAS DE RESPALDO (OFFLINE FALLBACK)
-  // Estas rutinas tienen IDs estáticos fijos y solo se muestran si la app
-  // no logra conectar con Supabase. No afectan la creación de nuevas rutinas.
-  // ────────────────────────────────────────────────────────────────────────────
-  static const List<RoutineModel> fallbackRoutines = [
-    RoutineModel(
-      id: '11111111-1111-4111-8111-111111111111',
-      title: 'Respiración 4-6',
-      description:
-          'Ejercicio breve para bajar el ritmo antes de dormir: inhala cuatro segundos y exhala seis segundos, sin retener el aire.',
-      category: RoutineCategory.breathing,
-      durationSeconds: 180,
-      breathingPattern: BreathingPatternModel(
-        routineId: '11111111-1111-4111-8111-111111111111',
-        inhaleSec: 4,
-        holdInSec: 0,
-        exhaleSec: 6,
-        holdOutSec: 0,
-        cyclesRecommended: 10,
-      ),
-    ),
-    RoutineModel(
-      id: '22222222-2222-4222-8222-222222222222',
-      title: 'Respiración 4-7-8',
-      description:
-          'Práctica de respiración con pausa suave. Si la retención incomoda, reduce el tiempo o vuelve a respiración natural.',
-      category: RoutineCategory.breathing,
-      durationSeconds: 240,
-      breathingPattern: BreathingPatternModel(
-        routineId: '22222222-2222-4222-8222-222222222222',
-        inhaleSec: 4,
-        holdInSec: 7,
-        exhaleSec: 8,
-        holdOutSec: 0,
-        cyclesRecommended: 8,
-      ),
-    ),
-    RoutineModel(
-      id: '33333333-3333-4333-8333-333333333333',
-      title: 'Relajación muscular breve',
-      description:
-          'Recorrido corporal sencillo para tensar y soltar grupos musculares, reduciendo activación física antes del descanso.',
-      category: RoutineCategory.relaxation,
-      durationSeconds: 360,
-    ),
-    RoutineModel(
-      id: '44444444-4444-4444-8444-444444444444',
-      title: 'Escaneo corporal nocturno',
-      description:
-          'Atención gradual desde la cabeza hasta los pies para reconocer sensaciones sin juzgarlas y preparar el descanso.',
-      category: RoutineCategory.sleepInduction,
-      durationSeconds: 300,
-    ),
-    RoutineModel(
-      id: '55555555-5555-4555-8555-555555555555',
-      title: 'Visualización de descanso',
-      description:
-          'Guía corta para imaginar un lugar seguro y tranquilo, con respiración estable y cierre progresivo del día.',
-      category: RoutineCategory.sleepInduction,
-      durationSeconds: 300,
-    ),
-    RoutineModel(
-      id: '66666666-6666-4666-8666-666666666666',
-      title: 'Silencio ambiental',
-      description:
-          'Sesión sin guía verbal para permanecer en calma, observar la respiración y dejar que el cuerpo reduzca el ritmo.',
-      category: RoutineCategory.soundscape,
-      durationSeconds: 480,
-    ),
-  ];
 }
