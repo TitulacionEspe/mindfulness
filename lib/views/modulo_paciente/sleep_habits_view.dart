@@ -296,6 +296,15 @@ class _SleepHabitsViewState extends State<SleepHabitsView> {
                         Navigator.of(context).canPop()) {
                       Navigator.of(context).pop();
                     }
+                  } else if (!success && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          viewModel.errorMessage ??
+                              'Error al guardar la configuración',
+                        ),
+                      ),
+                    );
                   }
                 },
           child: Text(
