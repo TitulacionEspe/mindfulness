@@ -235,4 +235,34 @@ class PatientHistoryViewModel extends ChangeNotifier {
     final local = value.toLocal();
     return '${local.year}-${local.month}-${local.day}';
   }
+
+  /// Resets the patient's personal progress via backend RPC.
+  Future<bool> resetProgress({
+    bool resetSleepHabits = false,
+    bool deleteThoughts = false,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _repository.resetProgress(
+        resetSleepHabits: resetSleepHabits,
+        deleteThoughts: deleteThoughts,
+      );
+      _sessions = const [];
+      _emotions = const [];
+      _thoughts = const [];
+      _historyMetrics = const ProgressMetrics.empty();
+      _homeMetrics = const ProgressMetrics.empty();
+      _errorMessage = null;
+      return true;
+    } catch (_) {
+      _errorMessage = 'No se pudo reiniciar el progreso. Intenta nuevamente.';
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }
