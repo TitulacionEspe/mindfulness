@@ -89,7 +89,10 @@ Para entender profundamente el sistema, consulta los siguientes documentos en la
 | [**PLANIFICACION.md**](./docs/PLANIFICACION.md) | Cronograma, hitos y hoja de ruta del MVP. |
 | [**README-dev.md**](./docs/README-dev.md) | Guía técnica detallada para desarrolladores y setup de Supabase. |
 | [**STORAGE-routines.md**](./docs/STORAGE-routines.md) | Protocolo de manejo de archivos de audio en Supabase Storage. |
+| [**METODOLOGIA_VISUAL.md**](./docs/METODOLOGIA_VISUAL.md) | Justificación metodológica de la paleta de colores y accesibilidad implementada. |
 | [**Diseno_Centrado_Usuario.md**](./docs/Diseno_Centrado_Usuario_Presentacion.md) | Guía de UX, accesibilidad y modo nocturno. |
+| [**MANUAL_USUARIO.md**](./docs/MANUAL_USUARIO.md) | Guia breve para el uso de Nidara por pacientes, profesionales y administradores. |
+| [**MANUAL_INSTALACION.md**](./docs/MANUAL_INSTALACION.md) | Pasos para preparar, configurar y ejecutar el proyecto localmente. |
 
 ---
 
